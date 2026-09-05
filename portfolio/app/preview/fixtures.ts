@@ -217,7 +217,9 @@ export const fixtureSections: TypedSectionInstance[] = [
     order: 5,
     content: {
       profileUrl: 'https://example.com/github/miraok',
-      stats: { repos: 34, stars: 2870, contributions: 1240 },
+      stats: { repos: 34, commitsLastYear: 1120, pullRequests: 214, contributions: 1240 },
+      githubUsername: 'miraok',
+      embedCards: ['stats', 'languages'],
       contributions: [
         {
           id: 'oss1',

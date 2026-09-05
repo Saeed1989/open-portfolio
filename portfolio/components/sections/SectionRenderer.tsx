@@ -6,6 +6,7 @@ import {
   type SectionType,
 } from '@openportfolio/registry';
 
+import type { PortfolioTheme } from '@/lib/theme';
 import { sectionRegistry } from './registry';
 
 /**
@@ -35,9 +36,11 @@ function isKnownType(type: string): type is SectionType {
 
 export interface SectionRendererProps {
   sections: readonly SectionInstance[];
+  /** Forwarded to every section; see SectionProps for why one needs it. */
+  theme?: PortfolioTheme;
 }
 
-export function SectionRenderer({ sections }: SectionRendererProps) {
+export function SectionRenderer({ sections, theme }: SectionRendererProps) {
   const visible = sections
     .filter((section) => section.enabled)
     .filter((section) => isKnownType(section.type))
@@ -59,7 +62,7 @@ export function SectionRenderer({ sections }: SectionRendererProps) {
 
         return (
           <Fragment key={`${section.type}-${section.order}`}>
-            <Component content={section.content} />
+            <Component content={section.content} theme={theme} />
           </Fragment>
         );
       })}

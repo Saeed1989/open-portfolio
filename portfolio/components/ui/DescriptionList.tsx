@@ -11,9 +11,13 @@ import { cn } from './cn';
  *
  * `stack` puts the label above the value (the project card). `inline` sets
  * them on one baseline, spread apart — the treatment the design uses for
- * label/value rows.
+ * label/value rows. `row` lays the pairs out along a wrapping line with the
+ * value above its label — the figure block the open-source section uses for
+ * repos / commits / pull requests, which has to be a real description list
+ * because those are the numbers a screen reader has to be able to read
+ * (FR-SEC-OSS-1).
  */
-export type DescriptionListLayout = 'stack' | 'inline';
+export type DescriptionListLayout = 'stack' | 'inline' | 'row';
 
 export interface DescriptionListProps {
   layout?: DescriptionListLayout;
@@ -22,8 +26,9 @@ export interface DescriptionListProps {
 }
 
 const LIST_LAYOUT: Record<DescriptionListLayout, string> = {
-  stack: 'gap-10',
-  inline: 'gap-8',
+  stack: 'flex-col gap-10',
+  inline: 'flex-col gap-8',
+  row: 'flex-row flex-wrap gap-x-32 gap-y-12',
 };
 
 export function DescriptionList({
@@ -32,7 +37,7 @@ export function DescriptionList({
   children,
 }: DescriptionListProps) {
   return (
-    <dl className={cn('m-0 flex min-w-0 flex-col', LIST_LAYOUT[layout], className)}>
+    <dl className={cn('m-0 flex min-w-0', LIST_LAYOUT[layout], className)}>
       {children}
     </dl>
   );
@@ -41,12 +46,14 @@ export function DescriptionList({
 /**
  * `prose` is sentence copy. `technical` is the design's stack line — the same
  * size in the display face, for a dot-separated list of technologies.
+ * `figure` is a single large number, the treatment the design gives a statistic.
  */
-export type DescriptionValueStyle = 'prose' | 'technical';
+export type DescriptionValueStyle = 'prose' | 'technical' | 'figure';
 
 const VALUE: Record<DescriptionValueStyle, string> = {
   prose: 'font-sans text-body-sm leading-relaxed',
   technical: 'font-display text-compact leading-normal',
+  figure: 'font-display text-skill leading-snug',
 };
 
 export interface DescriptionListItemProps {
@@ -76,6 +83,26 @@ export function DescriptionListItem({
   className,
   children,
 }: DescriptionListItemProps) {
+  /* Source order stays dt-then-dd, as the element requires. `flex-col-reverse`
+     is what puts the figure above its label on screen. */
+  if (layout === 'row') {
+    return (
+      <div className={cn('flex min-w-0 flex-col-reverse gap-4', className)}>
+        <dt className={TERM}>{label}</dt>
+        <dd
+          className={cn(
+            'm-0 min-w-0 break-words',
+            VALUE[valueStyle],
+            tone === 'muted' ? 'text-text-muted' : 'text-text',
+            emphasis ? 'font-medium' : 'font-regular',
+          )}
+        >
+          {children}
+        </dd>
+      </div>
+    );
+  }
+
   if (layout === 'inline') {
     return (
       <div

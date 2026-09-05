@@ -143,16 +143,44 @@ export interface OpenSourceContribution {
   readonly url?: string;
 }
 
+/**
+ * The figures the tenant types in, rendered as text.
+ *
+ * Stars are deliberately absent: a star count measures attention, not work,
+ * and the section is meant to show what the tenant did. Commits and pull
+ * requests are the two that do. `commitsLastYear` is a rolling twelve months,
+ * which is also the window the embedded card counts over — the two agree
+ * rather than inviting the reader to reconcile them.
+ */
 export interface OpenSourceStats {
   readonly repos?: number;
-  readonly stars?: number;
+  readonly commitsLastYear?: number;
+  readonly pullRequests?: number;
   readonly contributions?: number;
 }
+
+/**
+ * The third-party stat cards a tenant may switch on.
+ *
+ * They are rendered as `<img>` embeds pointed at the card service, so the
+ * visitor's browser makes the request and this system makes none — no fetch at
+ * render, no worker, no cache entry, no credential (FR-INT-1, NFR-PERF-3).
+ */
+export const GITHUB_EMBED_CARDS = ['stats', 'languages', 'streak'] as const;
+
+export type GitHubEmbedCard = (typeof GITHUB_EMBED_CARDS)[number];
 
 export interface OpenSourceContent {
   readonly profileUrl?: string;
   readonly stats?: OpenSourceStats;
   readonly contributions?: readonly OpenSourceContribution[];
+  /**
+   * Bare GitHub login, never a URL. It is interpolated into a third-party URL
+   * as a query parameter, percent-encoded at the point of use.
+   */
+  readonly githubUsername?: string;
+  /** Which embeds to draw. Absent means the descriptor's default. */
+  readonly embedCards?: readonly GitHubEmbedCard[];
 }
 
 export interface SpeakingItem {

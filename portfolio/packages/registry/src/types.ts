@@ -42,6 +42,7 @@ export type FieldKind =
   | 'tags'
   | 'list'
   | 'enum'
+  | 'multiselect'
   | 'link';
 
 export interface FieldDescriptor {
@@ -59,10 +60,16 @@ export interface FieldDescriptor {
    * group only decides what encloses a run of fields, never their sequence.
    */
   readonly group?: string;
-  /** Allowed values for `enum`. */
+  /** Allowed values for `enum` and `multiselect`. */
   readonly options?: readonly string[];
   /** Soft character guidance for text, hard cap for list/tags. */
   readonly max?: number;
+  /**
+   * Value a newly created section starts with. Admin seeds its form from this;
+   * it is never applied to content that already exists, so adding a default
+   * cannot retroactively change a published portfolio (FR-REG-4).
+   */
+  readonly defaultValue?: unknown;
 }
 
 interface DescriptorBase {

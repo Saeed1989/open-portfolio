@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import type { SectionType } from '@openportfolio/registry';
+import type { PortfolioTheme } from '@/lib/theme';
 
 import { Achievements } from './Achievements';
 import { Blog } from './Blog';
@@ -23,6 +24,16 @@ import { Testimonials } from './Testimonials';
  */
 export interface SectionProps {
   content: unknown;
+  /**
+   * The resolved theme, passed to every section and used by almost none.
+   *
+   * The open-source section needs it: its GitHub stat cards are third-party
+   * images whose title and icon colours are query parameters, so the accent
+   * has to be a value at render time rather than a custom property the
+   * browser resolves later. Reading it from CSS on the client instead would
+   * mean a second request after mount and a visible swap.
+   */
+  theme?: PortfolioTheme;
 }
 
 export type SectionComponent = ComponentType<SectionProps>;
@@ -35,7 +46,9 @@ export type SectionComponent = ComponentType<SectionProps>;
  * malformed enough to matter is caught by its emptyCondition and never
  * rendered at all.
  */
-function entry<T>(component: ComponentType<{ content: T }>): SectionComponent {
+function entry<T>(
+  component: ComponentType<{ content: T; theme?: PortfolioTheme }>,
+): SectionComponent {
   return component as SectionComponent;
 }
 

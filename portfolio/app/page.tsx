@@ -79,7 +79,7 @@ export default async function PortfolioPage() {
    */
   return (
     <main id="main">
-      <SectionRenderer sections={portfolio.sections} />
+      <SectionRenderer sections={portfolio.sections} theme={portfolio.theme} />
     </main>
   );
 }
