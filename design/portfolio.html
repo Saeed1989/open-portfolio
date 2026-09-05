@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;overflow-x:hidden}
+a{color:#2f5bff}
+a:hover{color:#1f3fc4}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="--accent-on:#ffffff;--accent:#2f5bff;--accent-ink:#1b3ac2;--bg:#f7f6f3;--surface:#ffffff;--text:#14161a;--text-muted:#565d6d;--line:color-mix(in srgb, var(--text) 12%, transparent);--track:color-mix(in srgb, var(--text) 14%, var(--surface));background:var(--bg);color:var(--text);font-family:'Spline Sans',ui-sans-serif,system-ui,sans-serif;min-height:100%;overflow-x:hidden">
+
+<a href="#main" style="position:absolute;left:-9999px;top:0;z-index:20;background:var(--accent);color:var(--accent-on);padding:12px 18px;font:500 15px/1 'Spline Sans',sans-serif;border-radius:0 0 8px 0" style-focus="left:0">Skip to content</a>
+
+<header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;padding:20px clamp(18px,5vw,64px);border-bottom:1px solid var(--line)">
+  <a href="#main" style="font:700 17px/1 'Space Grotesk',sans-serif;letter-spacing:-.02em;color:var(--text);text-decoration:none">Mira Okonkwo</a>
+  <nav aria-label="Sections">
+    <ul style="display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;padding:0;list-style:none">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="3">
+        <li><a href="{{ item.href }}" style="font:500 14.5px/1.4 'Spline Sans',sans-serif;color:var(--text-muted);text-decoration:none;padding:6px 2px;display:inline-block;min-height:32px;border-bottom:2px solid transparent" style-hover="color:var(--text);border-bottom-color:var(--accent)" style-focus="color:var(--text);outline:2px solid var(--accent);outline-offset:3px">{{ item.label }}</a></li>
+      </sc-for>
+    </ul>
+  </nav>
+</header>
+
+<main id="main" style="display:block">
+
+  <section aria-labelledby="hero-h" style="padding:clamp(44px,9vw,104px) clamp(18px,5vw,64px) clamp(40px,7vw,80px);max-width:1180px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(22px,4vw,56px);align-items:flex-start">
+      <div style="flex:1 1 340px;min-width:0">
+        <p style="margin:0 0 clamp(14px,2vw,20px);font:500 12.5px/1 'Space Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)">Full-stack engineer · Lagos / remote</p>
+        <h1 id="hero-h" style="margin:0;font:600 clamp(2.1rem,7.2vw,4rem)/1.04 'Space Grotesk',sans-serif;letter-spacing:-.035em;overflow-wrap:break-word">Mira Okonkwo</h1>
+        <p style="margin:clamp(14px,2vw,20px) 0 0;max-width:34ch;font:500 clamp(1.15rem,2.4vw,1.6rem)/1.35 'Space Grotesk',sans-serif;letter-spacing:-.015em;color:var(--text);text-wrap:pretty">I build server-rendered products that stay fast under real traffic.</p>
+        <p style="margin:clamp(16px,2.4vw,24px) 0 0;max-width:56ch;font:400 clamp(1rem,1.5vw,1.1rem)/1.65 'Spline Sans',sans-serif;color:var(--text-muted);text-wrap:pretty">Eight years across checkout, dispatch and internal tooling. I work close to the render path — measuring before rewriting, and shipping the smallest change that moves the number. Currently leading the front-end platform team at Ledgerwork.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:clamp(24px,3.5vw,34px)">
+          <a href="#" download="" style="display:inline-flex;align-items:center;min-height:48px;padding:0 24px;background:var(--accent);color:var(--accent-on);font:500 16px/1 'Spline Sans',sans-serif;text-decoration:none;border-radius:8px" style-hover="background:var(--accent-ink)" style-focus="outline:2px solid var(--text);outline-offset:3px">Download résumé</a>
+          <a href="#contact" style="display:inline-flex;align-items:center;min-height:48px;padding:0 24px;background:var(--surface);color:var(--text);font:500 16px/1 'Spline Sans',sans-serif;text-decoration:none;border:1px solid var(--line);border-radius:8px" style-hover="border-color:var(--text)" style-focus="outline:2px solid var(--accent);outline-offset:3px">Schedule a chat</a>
+        </div>
+      </div>
+      <sc-if value="{{ showAvatar }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:0 0 auto;width:clamp(104px,15vw,168px);aspect-ratio:1;border-radius:999px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center">
+          <span style="font:500 10.5px/1.4 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:0 14px">Photo placeholder</span>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <sc-if value="{{ hasProjects }}" hint-placeholder-val="{{ true }}">
+  <section id="projects" aria-labelledby="projects-h" style="padding:clamp(36px,6vw,72px) clamp(18px,5vw,64px);max-width:1180px;margin:0 auto;border-top:1px solid var(--line)">
+    <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;margin-bottom:clamp(24px,4vw,40px)">
+      <h2 id="projects-h" style="margin:0;font:600 clamp(1.4rem,3vw,2rem)/1.15 'Space Grotesk',sans-serif;letter-spacing:-.025em">Selected work</h2>
+      <p style="margin:0;font:400 14.5px/1.4 'Spline Sans',sans-serif;color:var(--text-muted)">{{ projectCountLabel }}</p>
+    </div>
+    <nav aria-label="Filter projects by category" style="margin:0 0 clamp(20px,3vw,28px)">
+      <ul style="display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none">
+        <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4">
+          <li><a href="{{ c.href }}" onClick="{{ c.onClick }}" aria-current="{{ c.current }}" style="{{ c.style }}" style-focus="outline:2px solid var(--accent);outline-offset:3px">{{ c.label }}</a></li>
+        </sc-for>
+      </ul>
+    </nav>
+    <ul style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:clamp(14px,2vw,22px);margin:0;padding:0;list-style:none">
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
+        <li style="display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:clamp(16px,2.2vw,22px);min-width:0">
+          <div style="aspect-ratio:16/10;border-radius:8px;background:var(--track);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center">
+            <span style="font:500 10.5px/1.4 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:0 16px">{{ p.shotLabel }}</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px">
+            <span style="font:500 11px/1 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);border:1px solid var(--line);border-radius:99px;padding:5px 9px">{{ p.cat }}</span>
+            <span style="font:400 12.5px/1 'Space Grotesk',sans-serif;letter-spacing:.09em;color:var(--text-muted)">{{ p.year }}</span>
+          </div>
+          <h3 style="margin:0;font:600 clamp(1.1rem,1.7vw,1.3rem)/1.25 'Space Grotesk',sans-serif;letter-spacing:-.02em;overflow-wrap:break-word">{{ p.title }}</h3>
+          <dl style="margin:0;display:flex;flex-direction:column;gap:10px">
+            <div>
+              <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Problem</dt>
+              <dd style="margin:0;font:400 15px/1.55 'Spline Sans',sans-serif;color:var(--text);text-wrap:pretty">{{ p.problem }}</dd>
+            </div>
+            <div>
+              <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Impact</dt>
+              <dd style="margin:0;font:500 15px/1.55 'Spline Sans',sans-serif;color:var(--text);text-wrap:pretty">{{ p.impact }}</dd>
+            </div>
+            <div>
+              <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Stack</dt>
+              <dd style="margin:0;font:400 14px/1.5 'Space Grotesk',sans-serif;color:var(--text);overflow-wrap:break-word">{{ p.stack }}</dd>
+            </div>
+          </dl>
+          <details style="border-top:1px solid var(--line);padding-top:10px">
+            <summary style="list-style:none;cursor:pointer;display:flex;align-items:center;min-height:44px;font:500 14px/1.4 'Spline Sans',sans-serif;color:var(--accent-ink)">Solution and my role</summary>
+            <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:4px">
+              <div>
+                <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Solution</dt>
+                <p style="margin:0;font:400 15px/1.55 'Spline Sans',sans-serif;color:var(--text-muted);text-wrap:pretty">{{ p.solution }}</p>
+              </div>
+              <div>
+                <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">My role</dt>
+                <p style="margin:0;font:400 15px/1.55 'Spline Sans',sans-serif;color:var(--text-muted);text-wrap:pretty">{{ p.role }}</p>
+              </div>
+            </div>
+          </details>
+          <div style="display:flex;flex-wrap:wrap;gap:6px 18px;margin:auto 0 0;padding-top:4px">
+            <a href="{{ p.demo }}" style="display:inline-flex;align-items:center;min-height:44px;font:500 15px/1.4 'Spline Sans',sans-serif;color:var(--text);text-decoration:none;border-bottom:2px solid var(--accent)" style-hover="color:var(--accent-ink)" style-focus="outline:2px solid var(--accent);outline-offset:3px">Live demo</a>
+            <sc-if value="{{ p.hasRepo }}" hint-placeholder-val="{{ true }}">
+              <a href="{{ p.repo }}" style="display:inline-flex;align-items:center;min-height:44px;font:500 15px/1.4 'Spline Sans',sans-serif;color:var(--text);text-decoration:none;border-bottom:2px solid var(--accent)" style-hover="color:var(--accent-ink)" style-focus="outline:2px solid var(--accent);outline-offset:3px">Source</a>
+            </sc-if>
+            <sc-if value="{{ p.confidential }}" hint-placeholder-val="{{ false }}">
+              <span style="display:inline-flex;align-items:center;min-height:44px;font:400 14px/1.4 'Spline Sans',sans-serif;color:var(--text-muted)">Client work — source not public</span>
+            </sc-if>
+          </div>
+        </li>
+      </sc-for>
+    </ul>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ hasSkills }}" hint-placeholder-val="{{ true }}">
+  <section id="skills" aria-labelledby="skills-h" style="padding:clamp(36px,6vw,72px) clamp(18px,5vw,64px);max-width:1180px;margin:0 auto;border-top:1px solid var(--line)">
+    <h2 id="skills-h" style="margin:0 0 10px;font:600 clamp(1.4rem,3vw,2rem)/1.15 'Space Grotesk',sans-serif;letter-spacing:-.025em">Prominent skills</h2>
+    <p style="margin:0 0 clamp(20px,3vw,32px);max-width:52ch;font:400 14.5px/1.6 'Spline Sans',sans-serif;color:var(--text-muted)">Rated out of 10: 9–10 I have designed and debugged it in production, 7–8 I work in it daily, 5–6 I am actively learning it.</p>
+    <ul style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(12px,1.6vw,18px);margin:0 0 clamp(40px,6vw,68px);padding:0;list-style:none">
+      <sc-for list="{{ prominentSkills }}" as="s" hint-placeholder-count="6">
+        <li style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px 18px;min-width:0">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:12px">
+            <span style="font:500 16.5px/1.3 'Space Grotesk',sans-serif;color:var(--text);overflow-wrap:break-word">{{ s.name }}</span>
+            <span style="font:500 13.5px/1.3 'Space Grotesk',sans-serif;color:var(--text-muted);white-space:nowrap">{{ s.score }}</span>
+          </div>
+          <div role="img" aria-label="{{ s.aria }}" style="height:8px;border-radius:99px;background:var(--track);overflow:hidden">
+            <div style="height:100%;border-radius:99px;background:var(--accent);width:{{ s.pct }}"></div>
+          </div>
+        </li>
+      </sc-for>
+    </ul>
+
+    <h2 style="margin:0 0 clamp(18px,3vw,28px);font:600 clamp(1.3rem,2.6vw,1.7rem)/1.15 'Space Grotesk',sans-serif;letter-spacing:-.025em">All skills</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(22px,3vw,44px)">
+      <sc-for list="{{ skillGroups }}" as="g" hint-placeholder-count="4">
+        <div style="min-width:0;break-inside:avoid">
+          <h3 style="margin:0 0 10px;font:500 12px/1 'Space Grotesk',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:var(--text-muted)">{{ g.label }}</h3>
+          <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="4">
+              <li style="min-width:0">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px;margin-bottom:5px">
+                  <span style="font:400 15px/1.4 'Spline Sans',sans-serif;color:var(--text);overflow-wrap:break-word">{{ s.name }}</span>
+                  <span style="font:400 12.5px/1.4 'Space Grotesk',sans-serif;color:var(--text-muted);white-space:nowrap">{{ s.score }}</span>
+                </div>
+                <div role="img" aria-label="{{ s.aria }}" style="height:4px;border-radius:99px;background:var(--track);overflow:hidden">
+                  <div style="height:100%;border-radius:99px;background:var(--accent);width:{{ s.pct }}"></div>
+                </div>
+              </li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ hasContact }}" hint-placeholder-val="{{ true }}">
+  <section id="contact" aria-labelledby="contact-h" style="padding:clamp(36px,6vw,72px) clamp(18px,5vw,64px);max-width:1180px;margin:0 auto;border-top:1px solid var(--line)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(20px,3vw,40px);align-items:start">
+      <div style="min-width:0">
+        <h2 id="contact-h" style="margin:0 0 14px;font:600 clamp(1.4rem,3vw,2rem)/1.15 'Space Grotesk',sans-serif;letter-spacing:-.025em">Contact</h2>
+        <p style="margin:0;max-width:44ch;font:400 16px/1.6 'Spline Sans',sans-serif;color:var(--text-muted);text-wrap:pretty">Open to staff-level front-end roles and short platform engagements. Replies within two days.</p>
+      </div>
+      <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;min-width:0">
+        <sc-for list="{{ contactLinks }}" as="c" hint-placeholder-count="3">
+          <li style="border-bottom:1px solid var(--line)">
+            <a href="{{ c.href }}" style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;min-height:48px;padding:12px 0;color:var(--text);text-decoration:none;font:400 16px/1.4 'Spline Sans',sans-serif;overflow-wrap:anywhere" style-hover="color:var(--accent-ink)" style-focus="outline:2px solid var(--accent);outline-offset:3px">
+              <span style="font:500 12.5px/1 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">{{ c.label }}</span>
+              <span>{{ c.value }}</span>
+            </a>
+          </li>
+        </sc-for>
+      </ul>
+    </div>
+  </section>
+  </sc-if>
+
+</main>
+
+<footer style="padding:28px clamp(18px,5vw,64px) 40px;max-width:1180px;margin:0 auto;border-top:1px solid var(--line)">
+  <p style="margin:0;font:400 13.5px/1.5 'Spline Sans',sans-serif;color:var(--text-muted)">© 2026 Mira Okonkwo</p>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;projectCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:5,&quot;min&quot;:0,&quot;max&quot;:5,&quot;step&quot;:1,&quot;unit&quot;:&quot; projects&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showSkills&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showContact&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showAvatar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showX&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Contact links&quot;},&quot;showSite&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Contact links&quot;}}">
+// Owner-ordered. Cap of 5 is enforced in renderVals (2.9); field order is fixed by the template (2.11).
+const PROJECTS = [
+  { year: "2025", cat: "Frontend", title: "Ledgerwork checkout",
+    problem: "A five-step checkout lost buyers at every hop, and the client-side bundle blocked first paint on mid-range Android.",
+    solution: "Rebuilt it as one server-rendered page with progressive enhancement, so the form works before any JavaScript runs.",
+    impact: "Completion up 14 points; median load 2.4s to 880ms.",
+    role: "I architected the render path and the payment-state machine, and paired with two engineers on the form components.",
+    stack: "Rails · Hotwire · Stripe · Postgres", demo: "#", repo: "#" },
+  { year: "2024", cat: "Frontend", title: "Beacon design system",
+    problem: "Nine product teams shipped four incompatible button implementations and no shared token source.",
+    solution: "62 framework-agnostic components on one token pipeline, adopted incrementally with no migration freeze.",
+    impact: "Adopted by all nine teams in seven months; UI review time down by half.",
+    role: "I owned the token pipeline and the release process, and wrote the contribution model the teams still use.",
+    stack: "TypeScript · Lit · Style Dictionary", demo: "#", repo: "#" },
+  { year: "2023", cat: "DevOps", title: "Freight ops console",
+    problem: "Dispatchers ran 400 daily routes from a spreadsheet, on tablets that lose signal inside the yard.",
+    solution: "Offline-first console with a local write queue and conflict review, keyboard-first for one-handed use.",
+    impact: "Route assignment down from 6 minutes to 40 seconds per load.",
+    role: "I built the sync layer and the conflict-resolution UI; the mapping integration was a colleague's.",
+    stack: "React · IndexedDB · Mapbox", demo: "#", repo: "#" },
+  { year: "2022", cat: "Data", title: "Council records search",
+    problem: "A city of 1.2M published two decades of minutes as unsearchable scanned PDFs.",
+    solution: "Full-text search over an OCR pipeline, with result pages that work in a screen reader and on a 2G connection.",
+    impact: "31,000 documents indexed; tested end to end with two local advocacy groups.",
+    role: "I designed the index schema and the search UI, and ran the accessibility testing sessions.",
+    stack: "Django · Postgres FTS · Tesseract", demo: "#", repo: "#" },
+  { year: "2021", cat: "Backend", title: "Shift planner (retail client)",
+    problem: "Managers built weekly rotas for hourly staff across six separate forms, and overtime went unnoticed until payroll.",
+    solution: "One editable weekly grid with live cost and overtime totals, validated server-side against local labour rules.",
+    impact: "Rota build time cut from ~2 hours to 25 minutes per store.",
+    role: "I owned the scheduling rules engine and the cost calculations end to end.",
+    stack: "Vue · Go · Postgres", demo: "#", confidential: true }
+];
+
+// One row per skill; rating stored once. `prom` is a flag, not a separate list (3.11).
+const SKILLS = [
+  { name: "TypeScript", cat: "Frontend", r: 9, prom: true },
+  { name: "React", cat: "Frontend", r: 9, prom: true },
+  { name: "CSS architecture", cat: "Frontend", r: 9, prom: true },
+  { name: "Server-rendered HTML", cat: "Frontend", r: 8 },
+  { name: "Vue", cat: "Frontend", r: 7 },
+  { name: "Lit / web components", cat: "Frontend", r: 7 },
+  { name: "Design systems", cat: "Platform", r: 9, prom: true },
+  { name: "Build & release tooling", cat: "Platform", r: 8, prom: true },
+  { name: "Performance budgets", cat: "Platform", r: 8, prom: true },
+  { name: "Node.js", cat: "Platform", r: 7 },
+  { name: "Edge runtimes", cat: "Platform", r: 6 },
+  { name: "PostgreSQL", cat: "Database", r: 7 },
+  { name: "Redis", cat: "Database", r: 6 },
+  { name: "WCAG 2.1 AA audits", cat: "Practice", r: 9 },
+  { name: "Testing strategy", cat: "Practice", r: 8 },
+  { name: "Technical writing", cat: "Practice", r: 8 },
+  { name: "Mentoring", cat: "Practice", r: 7 }
+];
+const SKILL_CATS = ["Frontend", "Platform", "Database", "Practice"];
+const decorate = (s) => ({
+  name: s.name, score: s.r + "/10", pct: s.r * 10 + "%",
+  aria: s.name + ": " + s.r + " out of 10"
+});
+
+// 4.1 required links are always on; 4.2 secondary links toggle independently (4.3).
+const CONTACT = [
+  { key: "email", label: "Email", value: "mira@okonkwo.dev", href: "mailto:mira@okonkwo.dev" },
+  { key: "github", label: "GitHub", value: "github.com/miraok", href: "#" },
+  { key: "linkedin", label: "LinkedIn", value: "linkedin.com/in/miraokonkwo", href: "#" },
+  { key: "x", label: "X", value: "@miraok", href: "#", optional: true },
+  { key: "site", label: "Personal site", value: "okonkwo.dev", href: "#", optional: true }
+];
+
+const DARK = { "--bg": "#0e1013", "--surface": "#171a1f", "--text": "#f2f3f5", "--text-muted": "#a7aeba", "--accent": "#8aa4ff", "--accent-ink": "#b3c4ff", "--accent-on": "#0e1013" };
+const LIGHT = { "--bg": "#f7f6f3", "--surface": "#ffffff", "--text": "#14161a", "--text-muted": "#565d6d", "--accent": "#2f5bff", "--accent-ink": "#1b3ac2", "--accent-on": "#ffffff" };
+
+const CHIP = {
+  display: "inline-flex", alignItems: "center", minHeight: "40px", padding: "0 14px",
+  borderRadius: "99px", textDecoration: "none", font: "500 14px/1 'Spline Sans',sans-serif"
+};
+
+class Component extends DCLogic {
+  state = { cat: "All" };
+  rootRef = React.createRef();
+
+  componentDidMount() { this.applyTheme(); }
+  componentDidUpdate() { this.applyTheme(); }
+
+  applyTheme() {
+    const el = this.rootRef.current;
+    if (!el) return;
+    const vars = (this.props.theme ?? "light") === "dark" ? DARK : LIGHT;
+    Object.keys(vars).forEach(k => el.style.setProperty(k, vars[k]));
+    document.body.style.background = vars["--bg"];
+  }
+
+  renderVals() {
+    const p = this.props;
+    const count = Math.max(0, Math.min(5, p.projectCount ?? 4));
+    const shown = PROJECTS.slice(0, count);
+    const cats = ["All"].concat(SKILL_CATS.concat(["Backend", "Data", "DevOps"])
+      .filter((c, i, a) => a.indexOf(c) === i && shown.some(x => x.cat === c)));
+    const active = cats.includes(this.state.cat) ? this.state.cat : "All";
+
+    const categories = cats.map(c => ({
+      label: c, href: "#projects", current: c === active ? "true" : undefined,
+      onClick: (e) => { e.preventDefault(); this.setState({ cat: c }); },
+      style: c === active
+        ? { ...CHIP, background: "var(--accent)", color: "var(--accent-on)", border: "1px solid var(--accent)" }
+        : { ...CHIP, background: "var(--surface)", color: "var(--text)", border: "1px solid var(--line)" }
+    }));
+
+    const projects = shown
+      .filter(x => active === "All" || x.cat === active)
+      .map(x => ({
+        ...x, hasRepo: !!x.repo, confidential: !!x.confidential,
+        shotLabel: x.title + " — screenshot placeholder"
+      }));
+    const skillsOn = p.showSkills ?? true;
+    const prominentSkills = skillsOn ? SKILLS.filter(s => s.prom).map(decorate) : [];
+    const skillGroups = skillsOn
+      ? SKILL_CATS
+          .map(c => ({ label: c, items: SKILLS.filter(s => s.cat === c).sort((a, b) => b.r - a.r).map(decorate) }))
+          .filter(g => g.items.length > 0)
+      : [];
+    const visible = { x: p.showX ?? true, site: p.showSite ?? true };
+    const contactLinks = (p.showContact ?? true)
+      ? CONTACT.filter(c => !c.optional || visible[c.key])
+      : [];
+
+    const hasProjects = shown.length > 0;
+    const hasSkills = skillGroups.length > 0;
+    const hasContact = contactLinks.length > 0;
+
+    const navItems = [
+      hasProjects && { label: "Work", href: "#projects" },
+      hasSkills && { label: "Skills", href: "#skills" },
+      hasContact && { label: "Contact", href: "#contact" }
+    ].filter(Boolean);
+
+    return {
+      projects, categories, skillGroups, prominentSkills, contactLinks,
+      hasProjects, hasSkills, hasContact, navItems,
+      rootRef: this.rootRef,
+      showAvatar: p.showAvatar ?? true,
+      projectCountLabel: projects.length + (projects.length === 1 ? " project" : " projects")
+        + (active === "All" ? "" : " in " + active)
+    };
+  }
+}
+</script>
+</body>
+</html>

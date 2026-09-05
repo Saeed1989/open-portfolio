@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-label="Sample image">
+  <rect width="320" height="200" fill="slategray"/>
+  <circle cx="96" cy="72" r="34" fill="lightsteelblue"/>
+  <path d="M0 200 L112 96 L192 158 L248 118 L320 200 Z" fill="darkslategray"/>
+</svg>
