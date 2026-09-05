@@ -337,7 +337,30 @@ export const fixtureSections: TypedSectionInstance[] = [
           issuer: 'Ledgerwork',
           date: '2023',
         },
+        {
+          id: 'credly-6f1b3c8a-2d47-4e19-9c05-8ab7de6f2413',
+          type: 'certification',
+          source: 'credly',
+          title: 'AWS Certified Solutions Architect – Associate',
+          issuer: 'Amazon Web Services',
+          date: '2025',
+          credlyBadgeId: '6f1b3c8a-2d47-4e19-9c05-8ab7de6f2413',
+          verifyUrl:
+            'https://www.credly.com/badges/6f1b3c8a-2d47-4e19-9c05-8ab7de6f2413',
+        },
+        {
+          id: 'credly-b04e7d15-9a62-4f83-b1c7-25de90a4f8b6',
+          type: 'certification',
+          source: 'credly',
+          title: 'Certified Kubernetes Application Developer',
+          issuer: 'The Linux Foundation',
+          date: '2024',
+          credlyBadgeId: 'b04e7d15-9a62-4f83-b1c7-25de90a4f8b6',
+          verifyUrl:
+            'https://www.credly.com/badges/b04e7d15-9a62-4f83-b1c7-25de90a4f8b6',
+        },
       ],
+      credlyUsername: 'mira-okonkwo',
     },
   },
 

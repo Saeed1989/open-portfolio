@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["esnext"],
+    /* `dom` is here for the web-platform globals the Credly import uses -
+       fetch, URL, AbortController, setTimeout - not because anything in this
+       package touches a document. Declaring them explicitly stops the package
+       depending on a hoisted @types/node it does not list as a dependency. */
+    "lib": ["esnext", "dom"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,

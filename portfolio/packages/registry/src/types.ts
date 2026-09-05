@@ -70,6 +70,12 @@ export interface FieldDescriptor {
    * cannot retroactively change a published portfolio (FR-REG-4).
    */
   readonly defaultValue?: unknown;
+  /**
+   * Admin draws no input for this field. It records where a value came from
+   * rather than asking the tenant for it — the field still exists, is still
+   * validated, and still takes its place in the render order (FR-REG-2).
+   */
+  readonly hidden?: boolean;
 }
 
 interface DescriptorBase {
@@ -108,6 +114,20 @@ export interface CollectionSectionDescriptor extends DescriptorBase {
 export type SectionDescriptor =
   | SingleSectionDescriptor
   | CollectionSectionDescriptor;
+
+/**
+ * One failure, addressed to the field it belongs to.
+ *
+ * FR-API-4 asks for field-level errors, so an operation that cannot complete
+ * says which field the tenant should look at rather than failing wholesale.
+ * Returned, never thrown — a Credly import that cannot reach the upstream
+ * comes back as one of these and not as a 500.
+ */
+export interface FieldError {
+  /** Dotted path within the section's content object. */
+  readonly path: string;
+  readonly message: string;
+}
 
 /** One entry in a portfolio's ordered section array (SRS §5.2). */
 export interface SectionInstance {

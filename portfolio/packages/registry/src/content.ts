@@ -197,13 +197,38 @@ export type AchievementType =
   | 'ranking'
   | 'hackathon';
 
+/**
+ * Where an achievement came from.
+ *
+ * Credly is a *source* of achievements, not a kind of section: an imported
+ * badge is an ordinary item in the one flat `achievements` collection, marked
+ * so the page can group it and so a re-import can recognise it. Nothing is
+ * nested, and no second collection exists (FR-REG-3).
+ */
+export type AchievementSource = 'manual' | 'credly';
+
 export interface AchievementItem {
   readonly id: string;
   readonly title: string;
-  readonly issuer: string;
-  readonly date: string;
+  /** Optional to match the descriptor: only `title` is required there. */
+  readonly issuer?: string;
+  readonly date?: string;
   readonly type: AchievementType;
   readonly url?: string;
+  /** Absent means `manual` — the value every item authored by hand takes. */
+  readonly source?: AchievementSource;
+  /**
+   * The badge's UUID, and *only* the UUID.
+   *
+   * The tenant supplies a Credly embed snippet; the api parses the id out of
+   * it server-side and throws the rest away. The markup is never stored,
+   * because storing tenant HTML and injecting it at render is stored XSS
+   * (FR-THM-6, NFR-SEC-2). The render path builds the embed element itself
+   * from this value.
+   */
+  readonly credlyBadgeId?: string;
+  /** Public verification page. Restricted to Credly's own hosts. */
+  readonly verifyUrl?: string;
 }
 
 export interface GalleryItem {
@@ -224,7 +249,15 @@ export type EducationContent = Collection<EducationItem>;
 export type BlogContent = Collection<BlogPost>;
 export type TestimonialsContent = Collection<Testimonial>;
 export type SpeakingContent = Collection<SpeakingItem>;
-export type AchievementsContent = Collection<AchievementItem>;
+export interface AchievementsContent {
+  readonly items: readonly AchievementItem[];
+  /**
+   * Used once, on explicit tenant action, to populate items from a public
+   * Credly wallet. It is not a connection: no credential is held, nothing is
+   * scheduled, and no cached payload sits behind it (the FR-INT-10 pattern).
+   */
+  readonly credlyUsername?: string;
+}
 export type GalleryContent = Collection<GalleryItem>;
 
 /** Maps a section type to the content object it carries. */

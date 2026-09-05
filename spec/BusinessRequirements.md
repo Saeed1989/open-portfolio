@@ -133,10 +133,14 @@ Two tiers on one page: a short showcase, then the full breakdown.
 
 | ID | Requirement |
 |---|---|
-| 9.1 | GitHub stats: repos, stars, contributions |
+| 9.1 | GitHub stats: repositories, commits over the last twelve months, pull requests, contributions |
 | 9.2 | Link to GitHub profile |
 | 9.3 | 2–3 major contributions highlighted by name |
 | 9.4 | Impact shown where available — downloads, stars, adoption |
+| 9.5 | The owner's own star total is not shown as a headline figure — it measures attention received, not work done. A specific project's stars may still appear as evidence of adoption under 9.4 |
+| 9.6 | GitHub stat cards, embedded from GitHub's own card service: an overall statistics card, a most-used-languages card, and a contribution streak card |
+| 9.7 | Owner chooses which cards appear. Statistics and languages are shown by default; the statistics card has its star count hidden so it agrees with 9.5 |
+| 9.8 | Every figure that matters is also typed by the owner and rendered as text. A card is a picture whose numbers cannot be read aloud, so it is never the only place a number appears |
 
 ---
 
@@ -170,11 +174,15 @@ Two tiers on one page: a short showcase, then the full breakdown.
 
 | ID | Requirement | Priority |
 |---|---|---|
-| 13.1 | GitHub — live repo links and profile stats | Should |
+| 13.1 | GitHub — repository links, profile statistics, and embedded stat cards | Should |
 | 13.2 | RSS feed from Medium or a personal blog | Should |
 | 13.3 | Latest posts from X/Twitter | Could |
 | 13.4 | LinkedIn import for experience and education | Could |
 | 13.5 | Every integration has a manual fallback and fails silently — no broken sections if an API is down or rate-limited | Must |
+| 13.6 | GitHub stat cards are images the visitor's browser requests from the card service directly. The site never calls GitHub itself: no account connection, no stored token, no refresh job, and nothing that can go stale | Must |
+| 13.7 | A card that fails to load is removed rather than left broken. When every card fails, the owner's typed figures and profile link still show | Must |
+
+The GitHub cards come from a third party the platform does not control. That is a deliberate trade: a current picture with no sign-in and nothing to store, in exchange for a service that may be slow, rate-limited, or gone. When it is, the cards do not appear and the figures under 9.1 carry the section on their own.
 
 ---
 
@@ -222,7 +230,7 @@ Two tiers on one page: a short showcase, then the full breakdown.
 | 18.1 | Any section with no content is hidden, never rendered empty |
 | 18.2 | Every section can be switched on or off independently |
 | 18.3 | Fully usable from 320px mobile width up to desktop |
-| 18.4 | Keyboard navigable, alt text on all images, adequate colour contrast |
+| 18.4 | Keyboard navigable, alt text on all images, adequate colour contrast. An embedded third-party card is described rather than transcribed — its contents cannot be read (9.8) |
 | 18.5 | Content loads fast — images optimised, lazy-loaded below the fold |
 | 18.6 | Adding or editing a project takes under 10 minutes and requires no layout changes |
 | 18.7 | Owner can update all content alone, with no third party involved |
