@@ -153,13 +153,19 @@ Two tiers on one page: a short showcase, then the full breakdown.
 | 10.1 | Per talk: conference name, date, title, link to video or slides |
 | 10.2 | Enable only with active community involvement |
 
-### 11. Achievements & Awards — Could
+### 11. Achievements & Awards — Should
 
 | ID | Requirement |
 |---|---|
 | 11.1 | Certifications, recognitions, rankings |
 | 11.2 | Hackathon wins and competition results |
 | 11.3 | High-signal badges only |
+| 11.4 | Credly badges sit in the same list as hand-entered achievements, and are edited, reordered and deleted the same way |
+| 11.5 | Two ways to add them: import every badge from a public Credly profile at once, or paste a single badge's embed code |
+| 11.6 | Import is a one-time populate, not a live connection. Running it again adds only badges that are new, and leaves existing ones — including any the owner has edited — untouched |
+| 11.7 | Imported badges arrive unpublished. Deciding which are high-signal under 11.3 is a judgement the import cannot make, so the owner culls before publishing |
+| 11.8 | A badge renders as Credly's own embedded frame and shows the badge alone. Its name and issuer are carried alongside for screen readers, because the frame's contents cannot be read aloud |
+| 11.9 | A badge's current state is drawn by Credly, not by the platform. A badge that has expired shows as expired, and the owner cannot restyle or suppress that |
 
 ### 12. Media Gallery — Could
 
@@ -181,8 +187,13 @@ Two tiers on one page: a short showcase, then the full breakdown.
 | 13.5 | Every integration has a manual fallback and fails silently — no broken sections if an API is down or rate-limited | Must |
 | 13.6 | GitHub stat cards are images the visitor's browser requests from the card service directly. The site never calls GitHub itself: no account connection, no stored token, no refresh job, and nothing that can go stale | Must |
 | 13.7 | A card that fails to load is removed rather than left broken. When every card fails, the owner's typed figures and profile link still show | Must |
+| 13.8 | Credly — badges imported from a public profile, or added one at a time by pasting a badge's embed code | Should |
+| 13.9 | Credly badges are frames the visitor's browser requests from Credly directly. The site never calls Credly to draw a page: no account connection, no stored credential, no refresh job | Must |
+| 13.10 | Only the badge identifier is kept from a pasted embed code. The pasted markup itself is never stored, and never re-injected into a page | Must |
 
-The GitHub cards come from a third party the platform does not control. That is a deliberate trade: a current picture with no sign-in and nothing to store, in exchange for a service that may be slow, rate-limited, or gone. When it is, the cards do not appear and the figures under 9.1 carry the section on their own.
+The GitHub cards and the Credly badges both come from third parties the platform does not control. That is a deliberate trade: a current picture with no sign-in and nothing to store, in exchange for a service that may be slow, rate-limited, or gone. When it is, the cards do not appear and the figures under 9.1 carry the section on their own.
+
+Credly fails less gracefully, and it is worth stating plainly. An unknown, revoked or mistyped badge identifier is answered as though it were valid, so the badge frame draws nothing and the platform cannot tell that apart from one still loading. There is no way to hide it automatically — the owner is the one who notices a blank badge, and 11.4 lets them delete it.
 
 ---
 
@@ -230,7 +241,7 @@ The GitHub cards come from a third party the platform does not control. That is 
 | 18.1 | Any section with no content is hidden, never rendered empty |
 | 18.2 | Every section can be switched on or off independently |
 | 18.3 | Fully usable from 320px mobile width up to desktop |
-| 18.4 | Keyboard navigable, alt text on all images, adequate colour contrast. An embedded third-party card is described rather than transcribed — its contents cannot be read (9.8) |
+| 18.4 | Keyboard navigable, alt text on all images, adequate colour contrast. The platform cannot read an embedded third-party card or badge, so it is described rather than transcribed, and where the frame carries no readable text of its own the name and issuer are placed alongside it for screen readers (9.8, 11.8) |
 | 18.5 | Content loads fast — images optimised, lazy-loaded below the fold |
 | 18.6 | Adding or editing a project takes under 10 minutes and requires no layout changes |
 | 18.7 | Owner can update all content alone, with no third party involved |
