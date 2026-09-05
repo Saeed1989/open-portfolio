@@ -191,6 +191,26 @@
   /* --border and --track re-derive from the new --text automatically. */
 }
 
+/* A tenant whose theme mode is `system` (FR-THM-1) follows the visitor's
+   setting. Scoping the media query to the attribute rather than to :root keeps
+   an explicit light or dark choice absolute, and does it with no client
+   JavaScript — so there is no flash of the wrong theme on first paint.
+
+   A tenant's own --accent is written inline on <html> and therefore wins over
+   the value below, in both modes. That is intended: it is their colour, and
+   FR-THM-3 has already checked it against both backgrounds. */
+@media (prefers-color-scheme: dark) {
+  [data-theme='system'] {
+    --accent: #8aa4ff;
+    --accent-ink: #b3c4ff;
+    --accent-on: #0e1013;
+    --bg: #0e1013;
+    --surface: #171a1f;
+    --text: #f2f3f5;
+    --text-muted: #a7aeba;
+  }
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;

@@ -1,0 +1,129 @@
+{
+  "slug": "sparse",
+  "publishedAt": "2026-08-30T16:40:00.000Z",
+  "version": 3,
+  "theme": {
+    "accent": "#1f7a5a",
+    "accentInk": "#155c43",
+    "accentOn": "#ffffff",
+    "mode": "system",
+    "fontPairing": "grotesk-inter"
+  },
+  "seo": {
+    "keywords": ["backend engineer", "Go", "Postgres"]
+  },
+  "sections": [
+    {
+      "_note": "The software-engineer preset (FR-REG-6): hero, projects, skills, contact. Everything else is simply absent from the payload.",
+      "type": "hero",
+      "enabled": true,
+      "order": 0,
+      "content": {
+        "name": "Sam Okafor",
+        "title": "Backend engineer · Manchester",
+        "tagline": "Boring systems, on purpose.",
+        "bio": "Four years on payment infrastructure. I like queues I can reason about and migrations I can roll back.",
+        "ctas": [
+          { "kind": "resume", "label": "Download résumé", "href": "/styleguide-sample.svg" }
+        ]
+      }
+    },
+    {
+      "type": "projects",
+      "enabled": true,
+      "order": 1,
+      "content": {
+        "categories": ["Backend", "Data"],
+        "items": [
+          {
+            "id": "settlement-engine",
+            "title": "Settlement engine",
+            "category": "Backend",
+            "year": "2025",
+            "problem": "Nightly settlement ran for six hours and could not be restarted after a failure without double-paying merchants.",
+            "solution": "Rewrote it as idempotent, resumable batches keyed on a settlement id, with a replay tool for operators.",
+            "impact": "Six hours to fifty minutes, and the first restart-without-fear in the team's history.",
+            "role": "I designed the idempotency scheme and wrote the replay tool; a colleague owned the ledger schema.",
+            "stack": ["Go", "Postgres", "NATS"],
+            "repoUrl": "https://example.com/settlement"
+          },
+          {
+            "id": "webhook-relay",
+            "title": "Webhook relay",
+            "category": "Backend",
+            "year": "2024",
+            "problem": "Merchant webhooks were delivered once, from the request path, so a slow endpoint slowed our checkout.",
+            "solution": "Moved delivery behind a queue with exponential backoff and a per-merchant circuit breaker.",
+            "impact": "Checkout p95 down 340ms; delivery success up from 91% to 99.6%.",
+            "role": "I built the relay end to end and ran the migration merchant by merchant.",
+            "stack": ["Go", "Redis", "Postgres"],
+            "demoUrl": "https://example.com/relay",
+            "repoUrl": "https://example.com/relay-source"
+          },
+          {
+            "id": "ledger-audit",
+            "title": "Ledger audit trail",
+            "category": "Data",
+            "year": "2023",
+            "problem": "Finance reconciled two systems by hand each month and found discrepancies weeks after they happened.",
+            "solution": "Append-only audit log with a daily reconciliation job that reports drift the morning it appears.",
+            "impact": "Discrepancy detection went from ~3 weeks to under 24 hours.",
+            "role": "I owned the append-only schema and the reconciliation job.",
+            "stack": ["Python", "Postgres", "dbt"],
+            "demoUrl": "https://example.com/ledger-audit",
+            "confidential": true
+          }
+        ]
+      }
+    },
+    {
+      "_note": "Five prominent skills — the floor FR-SEC-SKILL-3 enforces. `DevOps` is declared but has no skills, so FR-SEC-SKILL-8 drops the column.",
+      "type": "skills",
+      "enabled": true,
+      "order": 2,
+      "content": {
+        "legend": "Rated out of 10: 9–10 I have run it in production under load, 7–8 I work in it weekly, 5–6 I am still learning it.",
+        "categories": ["Backend", "Database", "Practice", "DevOps"],
+        "items": [
+          { "id": "k1", "name": "Go", "category": "Backend", "rating": 9, "prominent": true },
+          { "id": "k2", "name": "Postgres", "category": "Database", "rating": 9, "prominent": true },
+          { "id": "k3", "name": "Queue design", "category": "Backend", "rating": 8, "prominent": true },
+          { "id": "k4", "name": "Idempotency & retries", "category": "Backend", "rating": 8, "prominent": true },
+          { "id": "k5", "name": "Observability", "category": "Practice", "rating": 7, "prominent": true },
+          { "id": "k6", "name": "Python", "category": "Backend", "rating": 7 },
+          { "id": "k7", "name": "gRPC", "category": "Backend", "rating": 6 },
+          { "id": "k8", "name": "Redis", "category": "Database", "rating": 7 },
+          { "id": "k9", "name": "Schema migrations", "category": "Database", "rating": 8 },
+          { "id": "k10", "name": "Incident review", "category": "Practice", "rating": 7 },
+          { "id": "k11", "name": "Technical writing", "category": "Practice", "rating": 7 }
+        ]
+      }
+    },
+    {
+      "type": "contact",
+      "enabled": true,
+      "order": 3,
+      "content": {
+        "intro": "Open to backend and platform roles. Happy to talk through a system you are unhappy with.",
+        "email": {
+          "label": "Email",
+          "value": "sam@okafor.example",
+          "href": "mailto:sam@okafor.example",
+          "visible": true
+        },
+        "github": {
+          "label": "GitHub",
+          "value": "github.com/samok",
+          "href": "https://example.com/github/samok",
+          "visible": true
+        },
+        "linkedin": {
+          "label": "LinkedIn",
+          "value": "linkedin.com/in/samokafor",
+          "href": "https://example.com/in/samokafor",
+          "visible": true
+        }
+      }
+    }
+  ]
+}

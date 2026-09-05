@@ -1,0 +1,104 @@
+{
+  "slug": "minimal",
+  "publishedAt": "2026-09-01T11:05:00.000Z",
+  "version": 1,
+  "theme": {
+    "accent": "#8aa4ff",
+    "accentInk": "#b3c4ff",
+    "accentOn": "#0e1013",
+    "mode": "dark",
+    "fontPairing": "grotesk-spline"
+  },
+  "seo": {},
+  "sections": [
+    {
+      "type": "hero",
+      "enabled": true,
+      "order": 0,
+      "content": {
+        "name": "Ines Duarte",
+        "title": "Backend engineer · Porto",
+        "tagline": "I keep other people's data where they left it.",
+        "bio": "Six years on payment ledgers and reconciliation. Currently between roles and writing about idempotency more than is healthy.",
+        "ctas": [{ "kind": "url", "label": "Get in touch", "href": "mailto:ines@example.com" }]
+      }
+    },
+
+    {
+      "_note": "Disabled. FR-CFG-1 — dropped before emptyCondition is even consulted.",
+      "type": "projects",
+      "enabled": false,
+      "order": 1,
+      "content": {
+        "categories": ["Backend"],
+        "items": [
+          {
+            "id": "never-rendered",
+            "title": "Ledger reconciliation",
+            "problem": "Fully populated, and still must not appear anywhere on the page.",
+            "impact": "Proves `enabled: false` wins over content."
+          }
+        ]
+      }
+    },
+
+    {
+      "_note": "Enabled, empty items array. FR-CFG-2 — no heading, no rule, no gap.",
+      "type": "skills",
+      "enabled": true,
+      "order": 2,
+      "content": { "categories": ["Backend", "Data"], "items": [] }
+    },
+
+    {
+      "_note": "Enabled, items present but every one fails the emptyCondition's keep test — a blog post needs both a title and a url.",
+      "type": "blog",
+      "enabled": true,
+      "order": 3,
+      "content": {
+        "items": [
+          { "id": "b1", "title": "Draft with no link", "date": "2026", "url": "" },
+          { "id": "b2", "title": "", "date": "2026", "url": "https://example.com/orphan" }
+        ]
+      }
+    },
+
+    {
+      "_note": "Enabled, content object present but every field blank.",
+      "type": "opensource",
+      "enabled": true,
+      "order": 4,
+      "content": { "profileUrl": "", "stats": {}, "contributions": [] }
+    },
+
+    {
+      "_note": "Enabled, but every link is toggled off (FR-SEC-CON-2), so the section is empty.",
+      "type": "contact",
+      "enabled": true,
+      "order": 5,
+      "content": {
+        "intro": "This intro must not render on its own.",
+        "email": {
+          "label": "Email",
+          "value": "ines@example.com",
+          "href": "mailto:ines@example.com",
+          "visible": false
+        },
+        "github": {
+          "label": "GitHub",
+          "value": "github.com/inesd",
+          "href": "https://example.com/github/inesd",
+          "visible": false
+        }
+      }
+    },
+
+    {
+      "_note": "Enabled, no items at all.",
+      "type": "gallery",
+      "enabled": true,
+      "order": 6,
+      "content": { "items": [] }
+    }
+  ]
+}
