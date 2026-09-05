@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Design tokens — extracted from design/portfolio.html.
+   Every value below appears in the approved design. Nothing is invented except
+   where marked NOT-IN-DESIGN.
+
+   These are plain custom properties on :root so the theme can be swapped at
+   runtime by writing to them (the design does exactly this in applyTheme()).
+   tailwind.config.ts references them via var() only, so the build never
+   inlines a literal and never compiles a theme away.
+--------------------------------------------------------------------------- */
+
+:root,
+[data-theme='light'] {
+  /* -- Colour (design: LIGHT map + root inline style) --------------------- */
+  --accent: #2f5bff;
+  --accent-ink: #1b3ac2;      /* hover / secondary accent ink */
+  --accent-on: #ffffff;       /* foreground on an accent fill */
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --text: #14161a;
+  --text-muted: #565d6d;
+  /* Derived from --text, so they re-resolve automatically per theme. */
+  --border: color-mix(in srgb, var(--text) 12%, transparent);
+  --track: color-mix(in srgb, var(--text) 14%, var(--surface));
+
+  /* -- Type families ------------------------------------------------------ */
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Spline Sans', ui-sans-serif, system-ui, sans-serif;
+  /* NOT-IN-DESIGN: the design has no monospace text. Provided because the
+     Text primitive declares a `mono` variant. */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* -- Font weights ------------------------------------------------------- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* -- Font sizes --------------------------------------------------------- */
+  /* Fixed steps, named for the role they play in the design. */
+  --text-eyebrow: 10.5px;     /* uppercase dt labels, placeholder captions */
+  --text-chip: 11px;          /* project category chip */
+  --text-group: 12px;         /* skill-group heading */
+  --text-meta: 12.5px;        /* hero eyebrow, year, contact label */
+  --text-fine: 13.5px;        /* footer, prominent skill score */
+  --text-compact: 14px;       /* stack line, filter chip, disclosure summary */
+  --text-nav: 14.5px;         /* nav links, section description */
+  --text-body-sm: 15px;       /* card body copy, inline links */
+  --text-body: 16px;          /* buttons, contact rows */
+  --text-skill: 16.5px;       /* prominent skill name */
+  --text-logo: 17px;          /* wordmark */
+  /* Fluid steps. */
+  --text-body-fluid: clamp(1rem, 1.5vw, 1.1rem);
+  --text-card-title: clamp(1.1rem, 1.7vw, 1.3rem);
+  --text-tagline: clamp(1.15rem, 2.4vw, 1.6rem);
+  --text-subheading: clamp(1.3rem, 2.6vw, 1.7rem);
+  --text-heading: clamp(1.4rem, 3vw, 2rem);
+  --text-display: clamp(2.1rem, 7.2vw, 4rem);
+
+  /* -- Line heights ------------------------------------------------------- */
+  --leading-none: 1;
+  --leading-display: 1.04;
+  --leading-heading: 1.15;
+  --leading-title: 1.25;
+  --leading-snug: 1.3;
+  --leading-tagline: 1.35;
+  --leading-tight: 1.4;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.55;
+  --leading-loose: 1.6;
+  --leading-body: 1.65;
+
+  /* -- Letter spacing ----------------------------------------------------- */
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.025em;
+  --tracking-title: -0.02em;
+  --tracking-tagline: -0.015em;
+  --tracking-meta: 0.09em;
+  --tracking-wide: 0.1em;
+  --tracking-wider: 0.11em;
+  --tracking-widest: 0.13em;
+  --tracking-eyebrow: 0.14em;
+
+  /* -- Spacing ladder (name = px value in the design) --------------------- */
+  --space-0: 0px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-5: 5px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-9: 9px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-18: 18px;
+  --space-20: 20px;
+  --space-22: 22px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-34: 34px;
+  --space-40: 40px;
+  --space-44: 44px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  /* -- Fluid spacing (the design's clamp() steps) ------------------------- */
+  --space-gutter: clamp(18px, 5vw, 64px);        /* page side padding */
+  --space-section-y: clamp(36px, 6vw, 72px);     /* section block padding */
+  --space-hero-top: clamp(44px, 9vw, 104px);
+  --space-hero-bottom: clamp(40px, 7vw, 80px);
+  --space-hero-gap: clamp(22px, 4vw, 56px);
+  --space-section-gap: clamp(24px, 4vw, 40px);   /* section head → content */
+  --space-heading-gap: clamp(18px, 3vw, 28px);
+  --space-desc-gap: clamp(20px, 3vw, 32px);
+  --space-filter-gap: clamp(20px, 3vw, 28px);
+  --space-grid-gap: clamp(14px, 2vw, 22px);      /* project grid */
+  --space-card-pad: clamp(16px, 2.2vw, 22px);
+  --space-skill-gap: clamp(12px, 1.6vw, 18px);   /* prominent skill grid */
+  --space-group-gap: clamp(22px, 3vw, 44px);     /* skill category columns */
+  --space-contact-gap: clamp(20px, 3vw, 40px);
+  --space-block-gap: clamp(40px, 6vw, 68px);     /* skill tier separation */
+  --space-stack-sm: clamp(14px, 2vw, 20px);
+  --space-stack-md: clamp(16px, 2.4vw, 24px);
+  --space-stack-lg: clamp(24px, 3.5vw, 34px);
+
+  /* -- Radii -------------------------------------------------------------- */
+  --radius-none: 0px;
+  --radius-sm: 8px;    /* buttons, screenshot frame */
+  --radius-md: 10px;   /* skill card */
+  --radius-lg: 12px;   /* project card */
+  --radius-pill: 99px; /* chips, progress bars */
+  --radius-full: 999px;/* avatar */
+
+  /* -- Borders and focus ring --------------------------------------------- */
+  --border-width: 1px;
+  --border-width-emphasis: 2px;  /* underlined link, active nav item */
+  --ring-width: 2px;             /* focus outline */
+  --ring-offset: 3px;
+
+  /* -- Elevation ---------------------------------------------------------- */
+  /* The design uses no box-shadow at all — surfaces are separated by a 1px
+     --border against --surface. --shadow-none exists so a primitive can state
+     that intent explicitly rather than omitting the property. */
+  --shadow-none: none;
+
+  /* -- Sizes -------------------------------------------------------------- */
+  --size-content: 1180px;      /* max page width */
+  /* Auto-fit grid column minimums. Each is the `minmax(min(100%, X), 1fr)`
+     floor the design uses for that grid; naming them keeps the value out of
+     an arbitrary Tailwind class. */
+  --track-card: 330px;         /* project card grid */
+  --track-hero: 340px;         /* hero text column, before it wraps */
+  --track-skill: 300px;        /* prominent skill grid */
+  --track-group: 280px;        /* skill category columns */
+  --track-pair: 280px;         /* two-up split, e.g. contact */
+
+  /* -- Measures (the design's `max-width: NNch` caps on running text) ------ */
+  --measure-tagline: 34ch;
+  --measure-bio: 56ch;
+  --measure-legend: 52ch;
+  --measure-intro: 44ch;
+  --size-tap: 44px;            /* minimum interactive height */
+  --size-tap-lg: 48px;         /* buttons, contact rows */
+  --size-control: 40px;        /* filter chip height */
+  --size-control-sm: 32px;     /* nav link height */
+  --size-bar-lg: 8px;          /* prominent progress bar */
+  --size-bar-sm: 4px;          /* detailed progress bar */
+  --size-avatar: clamp(104px, 15vw, 168px);
+  --size-icon: 16px;
+  --size-icon-sm: 12px;
+  --size-icon-lg: 24px;
+}
+
+/* Both theme blocks are element selectors, not media queries, so a theme can
+   be scoped to any subtree — which is what /styleguide uses to show light and
+   dark side by side on one page. */
+[data-theme='dark'] {
+  --accent: #8aa4ff;
+  --accent-ink: #b3c4ff;
+  --accent-on: #0e1013;
+  --bg: #0e1013;
+  --surface: #171a1f;
+  --text: #f2f3f5;
+  --text-muted: #a7aeba;
+  /* --border and --track re-derive from the new --text automatically. */
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+
+  /* The design draws focus as an outline offset from the element, never as a
+     shadow. Applied globally so no primitive has to re-state it. */
+  :focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-offset);
+  }
+
+  /* The design draws its own disclosure affordance and hides the native
+     triangle. `list-style:none` alone does not remove it in WebKit. */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
