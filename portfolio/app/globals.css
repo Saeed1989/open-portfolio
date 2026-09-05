@@ -238,3 +238,22 @@
     display: none;
   }
 }
+
+/* Credly's embed script replaces our placeholder element with an iframe of its
+   own making, via `outerHTML`, and writes `width`/`height` onto it as an inline
+   style. Two consequences shape this rule.
+
+   The placeholder cannot carry the hook: it is destroyed, class and all. So the
+   class sits on a wrapper *around* it, which survives and still parents the
+   iframe afterwards.
+
+   An inline style outranks every rule in this file, so widening the frame to
+   its container needs `!important` — there is no other hook. Height is left as
+   the script set it: the badge's content is a fixed vertical stack, so a wider
+   frame does not need a taller one.
+
+   Scoped to the badge slot rather than to `iframe`, so it cannot reach any
+   other embed on the page. */
+.credly-badge-slot > iframe[name='acclaim-badge'] {
+  width: 100% !important;
+}

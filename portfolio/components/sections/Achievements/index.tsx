@@ -67,8 +67,16 @@ const CREDLY_EMBED_SCRIPT = 'https://cdn.credly.com/assets/utilities/embed.js';
  *
  * The reserved box carries no border or background, so one the script never
  * fills reads as whitespace rather than as a broken panel.
+ *
+ * The height is taller than the 150x270 Credly's own share dialog suggests.
+ * Their iframe is `scrolling="no"`, so anything past the bottom edge is cut
+ * off rather than scrolled to — and 270 only fits a short issuer name. A long
+ * one ("Amazon Web Services Training and Certification") wraps to three lines
+ * and, with an expiry chip above it, pushes the issuer and Credly's own
+ * footer out of view. Sized for the worst case: a badge that needs less
+ * simply sits in more whitespace, which costs nothing.
  */
-const BADGE_FRAME = { width: 150, height: 270 } as const;
+const BADGE_FRAME = { width: 150, height: 320 } as const;
 
 const RENDERERS = {
   type: (item: AchievementItem) =>
@@ -113,43 +121,43 @@ const RENDERERS = {
 };
 
 /**
- * The same fields, drawn for a badge.
+ * The same fields, drawn for a badge: the frame, and nothing visible beside it.
  *
- * `type` is deliberately absent: every imported badge is a certification, so
- * the chip would repeat itself down the whole block. A field with no renderer
- * is skipped by the walk, which is the mechanism for exactly this — the field
- * stays declared, validated and ordered, it simply draws nothing here.
+ * `type`, `date`, `url` and `verifyUrl` have no renderer here. A field with no
+ * renderer is skipped by the walk, which is the mechanism for exactly this —
+ * each stays declared and ordered, it simply draws nothing in this treatment.
+ * The verification link is not lost with it: Credly's own markup wraps the
+ * badge image in a link to that same page, so the frame carries it.
  *
- * The title and issuer are ordinary text, and that is not decoration. The
- * badge itself is an iframe: opaque to a screen reader, unreachable by our
- * theme, and gone entirely if the script never loads. The text beside it is
- * the only carrier of what the badge says, so it renders whatever happens
- * (NFR-A11Y-1, business req 13.5).
+ * The title and issuer are rendered but visually hidden, and that is the whole
+ * of this section's accessibility. The frame is a cross-origin iframe whose
+ * contents we cannot read and whose only title is Credly's generic "View my
+ * verified achievement on Credly" — so without this text a screen reader is
+ * never told which badge it is looking at. Hiding it visually satisfies the
+ * design; deleting it would leave NFR-A11Y-1 with nothing behind it.
  */
 const CREDLY_RENDERERS = {
   credlyBadgeId: (item: AchievementItem) =>
     item.credlyBadgeId ? (
-      <div
-        data-share-badge-id={item.credlyBadgeId}
-        data-share-badge-host={CREDLY_ORIGIN}
-        data-iframe-width={BADGE_FRAME.width}
-        data-iframe-height={BADGE_FRAME.height}
-        style={{ width: BADGE_FRAME.width, height: BADGE_FRAME.height }}
-      />
+      /* The outer element is the styling hook. The inner one is consumed by
+         the embed script, which replaces it — class and all — with the
+         iframe, leaving the iframe as a child of this wrapper. */
+      <div className="credly-badge-slot">
+        <div
+          data-share-badge-id={item.credlyBadgeId}
+          data-share-badge-host={CREDLY_ORIGIN}
+          data-iframe-width={BADGE_FRAME.width}
+          data-iframe-height={BADGE_FRAME.height}
+          style={{ width: '100%', height: BADGE_FRAME.height }}
+        />
+      </div>
     ) : null,
-
-  date: RENDERERS.date,
 
   title: (item: AchievementItem) =>
-    item.title ? (
-      <Heading level={4} visual="card">
-        {item.title}
-      </Heading>
-    ) : null,
+    item.title ? <span className="sr-only">{item.title}</span> : null,
 
-  issuer: RENDERERS.issuer,
-  url: RENDERERS.url,
-  verifyUrl: RENDERERS.verifyUrl,
+  issuer: (item: AchievementItem) =>
+    item.issuer ? <span className="sr-only">{`Issued by ${item.issuer}`}</span> : null,
 };
 
 const WRAPPERS: RunWrappers = {
@@ -160,16 +168,6 @@ const WRAPPERS: RunWrappers = {
   ),
   links: (nodes) => (
     <Stack direction="row" wrap gapX="18" gapY="6" className="mt-auto pt-4">
-      {nodes}
-    </Stack>
-  ),
-};
-
-/** As above, minus the card's push-to-bottom: a badge is not a filled panel. */
-const CREDLY_WRAPPERS: RunWrappers = {
-  meta: WRAPPERS.meta,
-  links: (nodes) => (
-    <Stack direction="row" wrap gapX="18" gapY="6">
       {nodes}
     </Stack>
   ),
@@ -192,11 +190,9 @@ function CredlyBadge({ item }: { item: AchievementItem }) {
     CREDLY_RENDERERS,
   );
 
-  return (
-    <Stack as="li" gap="8">
-      {renderRuns(runs, CREDLY_WRAPPERS)}
-    </Stack>
-  );
+  /* No wrappers: nothing but the frame is visible, so there is no run of
+     grouped fields left to enclose. */
+  return <Stack as="li">{renderRuns(runs)}</Stack>;
 }
 
 export function Achievements({ content }: { content: AchievementsContent }) {

@@ -348,24 +348,25 @@
             "date": "2023"
           },
           {
-            "id": "credly-6f1b3c8a-2d47-4e19-9c05-8ab7de6f2413",
+            "_note": "The two badge ids below are REAL public Credly badges, and they belong to other people. They are here because Credly answers an unknown badge id with HTTP 200 and an empty body, so an invented id renders a silent blank frame and proves nothing. Swap in your own ids; the surrounding title and issuer are the tenant's own text and must be edited to match.",
+            "id": "credly-8e5bf237-ba22-4682-be1b-bc96a9bd39c3",
+            "type": "certification",
+            "source": "credly",
+            "title": "AWS Certified Cloud Practitioner",
+            "issuer": "Amazon Web Services Training and Certification",
+            "date": "2025",
+            "credlyBadgeId": "8e5bf237-ba22-4682-be1b-bc96a9bd39c3",
+            "verifyUrl": "https://www.credly.com/badges/8e5bf237-ba22-4682-be1b-bc96a9bd39c3"
+          },
+          {
+            "id": "credly-e3ef1c7d-9c7f-4c53-97cd-e1dc75d243da",
             "type": "certification",
             "source": "credly",
             "title": "AWS Certified Solutions Architect – Associate",
-            "issuer": "Amazon Web Services",
-            "date": "2025",
-            "credlyBadgeId": "6f1b3c8a-2d47-4e19-9c05-8ab7de6f2413",
-            "verifyUrl": "https://www.credly.com/badges/6f1b3c8a-2d47-4e19-9c05-8ab7de6f2413"
-          },
-          {
-            "id": "credly-b04e7d15-9a62-4f83-b1c7-25de90a4f8b6",
-            "type": "certification",
-            "source": "credly",
-            "title": "Certified Kubernetes Application Developer",
-            "issuer": "The Linux Foundation",
+            "issuer": "Amazon Web Services Training and Certification",
             "date": "2024",
-            "credlyBadgeId": "b04e7d15-9a62-4f83-b1c7-25de90a4f8b6",
-            "verifyUrl": "https://www.credly.com/badges/b04e7d15-9a62-4f83-b1c7-25de90a4f8b6"
+            "credlyBadgeId": "e3ef1c7d-9c7f-4c53-97cd-e1dc75d243da",
+            "verifyUrl": "https://www.credly.com/badges/e3ef1c7d-9c7f-4c53-97cd-e1dc75d243da"
           }
         ],
         "credlyUsername": "mira-okonkwo"
