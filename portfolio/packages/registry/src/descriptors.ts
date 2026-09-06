@@ -19,8 +19,11 @@ import {
  *
  * Where the approved design (design/portfolio.html) fixes an order, the array
  * below matches it — the design's project card reads screenshot, category,
- * year, title, Problem, Impact, Stack, then the Solution / My role
- * disclosure, then links.
+ * year, title, then Problem, Impact and Stack.
+ *
+ * `projects` carries two runs of fields rather than one: the card-level run
+ * ending at `role`, and the `body` run behind it, which is the case-study
+ * modal (FR-SEC-PROJ-6). Both are walked from this one array.
  */
 export const REGISTRY = {
   hero: {
@@ -109,13 +112,16 @@ export const REGISTRY = {
         help: 'Required. Where no metric exists, state what changed.',
       },
       { key: 'stack', label: 'Stack', kind: 'tags', group: 'summary' },
-      { key: 'solution', label: 'Solution', kind: 'longtext', group: 'detail' },
+      /* Grouped with the summary above, not held back behind a disclosure:
+         the card is one description list now that the case study has moved
+         into the modal. */
+      { key: 'solution', label: 'Solution', kind: 'longtext', group: 'summary' },
       {
         key: 'role',
         label: 'My role',
         kind: 'longtext',
-        group: 'detail',
-        help: 'First person, named components.',
+        group: 'summary',
+        help: 'One line for the card. The long account goes in "My role" below.',
       },
       /*
        * The case study behind the card (FR-SEC-PROJ-1, business 2.17–2.23).

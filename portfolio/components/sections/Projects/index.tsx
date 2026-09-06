@@ -1,5 +1,5 @@
 import { REGISTRY, type ProjectsContent } from '@openportfolio/registry';
-import { SectionShell, Text } from '@/components/ui';
+import { SectionShell } from '@/components/ui';
 import { ProjectGallery } from './ProjectGallery';
 
 /**
@@ -20,19 +20,17 @@ import { ProjectGallery } from './ProjectGallery';
  * what it is given.
  */
 export function Projects({ content }: { content: ProjectsContent }) {
-  const items = content.items ?? [];
-
   return (
-    <SectionShell
-      id="projects"
-      heading={REGISTRY.projects.label}
-      aside={
-        <Text variant="caption" tone="muted">
-          {items.length} {items.length === 1 ? 'project' : 'projects'}
-        </Text>
-      }
-    >
-      <ProjectGallery items={items} />
+    /*
+     * No `aside` count here. The count moves with the filter, so it belongs
+     * beside the filter in the client component — stating a total next to the
+     * heading while the grid shows a subset would simply be wrong.
+     */
+    <SectionShell id="projects" heading={REGISTRY.projects.label}>
+      <ProjectGallery
+        items={content.items ?? []}
+        categories={content.categories}
+      />
     </SectionShell>
   );
 }
