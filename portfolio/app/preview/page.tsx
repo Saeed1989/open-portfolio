@@ -41,7 +41,7 @@ export default async function PreviewPage({
       <PageSection divided={false} className="py-24">
         <Stack direction="row" wrap align="baseline" justify="between" gapX="24" gapY="8">
           <Text variant="mono" tone="muted">
-            /preview — {heroOnly ? 'hero only' : 'all twelve sections'},{' '}
+            /preview — {heroOnly ? 'hero only' : 'all thirteen sections'},{' '}
             {sections.length} in the payload
           </Text>
           <Stack direction="row" wrap gapX="18" gapY="6">

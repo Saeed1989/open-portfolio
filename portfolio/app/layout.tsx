@@ -46,7 +46,14 @@ export default async function RootLayout({
             tenant supplies an id, never a URL. */}
         <link href={fontStylesheetHref(theme)} rel="stylesheet" />
       </head>
-      <body>{children}</body>
+      {/* Browser extensions — Grammarly, password managers, translators —
+          write their own attributes onto <body> before React hydrates, which
+          React reports as a mismatch it cannot patch up. The markup here has
+          no attributes at all, so there is nothing of ours to disagree about.
+          This suppresses the warning for this element's own attributes and
+          text only; it does not extend to children, so a genuine mismatch
+          inside the page is still reported. */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

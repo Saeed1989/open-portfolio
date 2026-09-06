@@ -373,9 +373,33 @@
       }
     },
     {
-      "type": "gallery",
+      "type": "trainings",
       "enabled": true,
       "order": 10,
+      "content": {
+        "items": [
+          {
+            "id": "tr1",
+            "type": "certification",
+            "title": "Distributed Systems for Practitioners",
+            "issuer": "Bradfield School of Computer Science",
+            "date": "2025",
+            "url": "https://example.com/courses/distributed-systems"
+          },
+          {
+            "id": "tr2",
+            "type": "certification",
+            "title": "Accessibility for Front-End Engineers",
+            "issuer": "Deque University",
+            "date": "2024"
+          }
+        ]
+      }
+    },
+    {
+      "type": "gallery",
+      "enabled": true,
+      "order": 11,
       "content": {
         "items": [
           {
@@ -405,7 +429,7 @@
     {
       "type": "contact",
       "enabled": true,
-      "order": 11,
+      "order": 12,
       "content": {
         "intro": "Open to staff-level front-end roles and short platform engagements. Replies within two days.",
         "email": {

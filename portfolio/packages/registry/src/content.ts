@@ -231,6 +231,30 @@ export interface AchievementItem {
   readonly verifyUrl?: string;
 }
 
+/**
+ * A completed course, workshop, bootcamp or structured programme
+ * (business §11a, FR-SEC-TRN-1).
+ *
+ * Field for field an achievement, minus the three Credly fields and minus the
+ * per-item publish flag that only an import needs. That is not a coincidence
+ * to be tidied away later: §11a.4 asks that a credential be listed once, as an
+ * achievement *or* as a training, which only works if the two carry the same
+ * information and differ in where the tenant files it.
+ *
+ * `type` reuses `AchievementType` deliberately. Certification / award /
+ * ranking / hackathon reads oddly for a training — SRS open question 7 records
+ * exactly that, along with the alternatives — and option (a), the enum
+ * unchanged, is what is specified today. It is not this section's to fix.
+ */
+export interface TrainingItem {
+  readonly id: string;
+  readonly title: string;
+  readonly issuer?: string;
+  readonly date?: string;
+  readonly type: AchievementType;
+  readonly url?: string;
+}
+
 export interface GalleryItem {
   readonly id: string;
   readonly image?: ImageRef | null;
@@ -258,6 +282,13 @@ export interface AchievementsContent {
    */
   readonly credlyUsername?: string;
 }
+/*
+ * No `credlyUsername` alongside `items`, unlike AchievementsContent. Trainings
+ * shares the field schema, not the import path: there is no badge import, no
+ * embed-code paste and no per-item publish state on this side (FR-SEC-ACH-2
+ * … 7 belong to `achievements` alone).
+ */
+export type TrainingsContent = Collection<TrainingItem>;
 export type GalleryContent = Collection<GalleryItem>;
 
 /** Maps a section type to the content object it carries. */
@@ -273,6 +304,7 @@ export interface SectionContentMap {
   readonly opensource: OpenSourceContent;
   readonly speaking: SpeakingContent;
   readonly achievements: AchievementsContent;
+  readonly trainings: TrainingsContent;
   readonly gallery: GalleryContent;
 }
 

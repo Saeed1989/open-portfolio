@@ -1,4 +1,5 @@
 export * from './types';
+export * from './version';
 export * from './content';
 export * from './empty';
 export * from './credly';
