@@ -117,6 +117,76 @@ export const REGISTRY = {
         group: 'detail',
         help: 'First person, named components.',
       },
+      /*
+       * The case study behind the card (FR-SEC-PROJ-1, business 2.17–2.23).
+       *
+       * This array is the modal's sub-section order, not just the admin form's:
+       * ProjectModal walks these same descriptors to draw its labelled regions,
+       * so the seven cannot be rendered in an order this file did not declare
+       * (FR-REG-2). Moving an entry here moves the section in the modal.
+       *
+       * `bodies.*` keys are dotted because the three rich-text bodies nest
+       * under one object; `FieldError.path` is already a dotted path, so a
+       * failure addresses the field the tenant sees.
+       */
+      {
+        key: 'bodies.business',
+        label: 'Business case',
+        kind: 'longtext',
+        required: true,
+        group: 'body',
+        help: 'Plain paragraphs and lists. No links or images.',
+      },
+      {
+        key: 'bodies.solution',
+        label: 'Solution',
+        kind: 'longtext',
+        required: true,
+        group: 'body',
+        help: 'Plain paragraphs and lists. No links or images.',
+      },
+      {
+        key: 'designation',
+        label: 'My designation',
+        kind: 'text',
+        required: true,
+        group: 'body',
+        help: 'The title you held on this engagement, e.g. "Lead front-end engineer".',
+      },
+      {
+        key: 'bodies.role',
+        label: 'My role',
+        kind: 'longtext',
+        required: true,
+        group: 'body',
+        /* FR-SEC-PROJ-8's guidance attaches here, to the long account — not to
+           the card's one-line `role` above. */
+        help: 'Plain paragraphs and lists. No links or images. First person, naming the components you owned — not "worked on".',
+      },
+      {
+        key: 'stackWorkedOn',
+        label: 'Tech stack I worked on',
+        kind: 'tags',
+        required: true,
+        group: 'body',
+        help: 'The part of the stack you personally touched. A subset of "Full tech stack".',
+      },
+      {
+        key: 'tools',
+        label: 'Tools',
+        kind: 'tags',
+        required: true,
+        group: 'body',
+        help: 'Non-runtime tooling — editors, CI, observability, design. Orthogonal to both stack lists, not a subset of either.',
+      },
+      {
+        key: 'fullStack',
+        label: 'Full tech stack',
+        kind: 'tags',
+        required: true,
+        group: 'body',
+        help: 'Everything the project runs on, including parts you did not work on. A superset of "Tech stack I worked on".',
+      },
       { key: 'demoUrl', label: 'Live demo', kind: 'url', group: 'links' },
       { key: 'repoUrl', label: 'Source', kind: 'url', group: 'links' },
       {

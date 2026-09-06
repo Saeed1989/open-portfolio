@@ -1,9 +1,9 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.2 (draft) · **Date** 6 September 2026
+**Version** 0.3 (draft) · **Date** 6 September 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
 
-*Changelog — 0.2 adds the `trainings` section type (§4.1, FR-SEC-TRN-1), ordered immediately after `achievements` and sourced from business §11a; see open question 7 for the unresolved `type` enum it inherits from Achievements. 0.2 also specifies the GitHub stat cards and Credly badges added to the business document as 9.5–9.8, 11.4–11.9 and 13.6–13.10 (§6.4.6, §6.6), which introduce the first third-party resources the visitor's browser fetches during a page view and amend §2.2, FR-INT-1, NFR-PERF-3 and NFR-SEC-4 accordingly. That same business revision promoted §11 from Could to Should, so `achievements` and FR-SEC-ACH-1 … 7 are re-prioritised to match, FR-INT-11 … 13 are corrected to Must against 13.6, 13.7 and 13.9, and §1.4 now states both how a Must requirement attaches to an optional section and which requirements this specification scopes below their section's blanket rating. Two v0.1 defects are corrected in passing: FR-SEC-OSS-1 listed the tenant's star total among the headline stats, which 9.5 forbids, and omitted two of the four figures 9.1 names; and 18.7 was mapped to tenant isolation rather than to the self-service authoring it actually describes.*
+*Changelog — 0.3 settles how a project is read at depth. FR-SEC-PROJ-6 is rewritten to commit the two-depth rendering to an in-page modal dialog rather than a dedicated `/{slug}/projects/{id}` route, which resolves open question 3 and accepts its trade-off: project detail is neither deep-linkable nor separately crawlable. The `projects` content schema gains seven modal-level fields alongside the existing card-level ones — three rich-text bodies, a designation, and three tag lists — extending FR-SEC-PROJ-1 and declared as required for publish by the new FR-SEC-PROJ-11; §4.1 is unchanged, since the schema grows but the cardinality and priority do not. The new FR-SEC-PROJ-10 specifies modal open, close, and scroll lock. The new FR-SEC-PROJ-12 specifies the write-time allowlist for the three rich-text bodies, which are the first rich-text fields in the system and so are the first concrete instance of NFR-SEC-2; the new FR-SEC-PROJ-13 specifies the modal's focus contract, the first focus-trapped overlay in the system and the first concrete instance of NFR-A11Y-1 and NFR-A11Y-2 for an overlay. §7.1 drops the dedicated project-detail endpoint, which the modal makes unnecessary — detail now travels in the portfolio payload. Business §2 is restructured in the same revision into card-level fields, modal-level fields (2.17–2.23), two new content rules (2.24, 2.25), and a new §2D on modal interaction (2.26–2.32); §9 maps all of them. 0.2 adds the `trainings` section type (§4.1, FR-SEC-TRN-1), ordered immediately after `achievements` and sourced from business §11a; see open question 7 for the unresolved `type` enum it inherits from Achievements. 0.2 also specifies the GitHub stat cards and Credly badges added to the business document as 9.5–9.8, 11.4–11.9 and 13.6–13.10 (§6.4.6, §6.6), which introduce the first third-party resources the visitor's browser fetches during a page view and amend §2.2, FR-INT-1, NFR-PERF-3 and NFR-SEC-4 accordingly. That same business revision promoted §11 from Could to Should, so `achievements` and FR-SEC-ACH-1 … 7 are re-prioritised to match, FR-INT-11 … 13 are corrected to Must against 13.6, 13.7 and 13.9, and §1.4 now states both how a Must requirement attaches to an optional section and which requirements this specification scopes below their section's blanket rating. Two v0.1 defects are corrected in passing: FR-SEC-OSS-1 listed the tenant's star total among the headline stats, which 9.5 forbids, and omitted two of the four figures 9.1 names; and 18.7 was mapped to tenant isolation rather than to the self-service authoring it actually describes.*
 
 ---
 
@@ -158,6 +158,8 @@ Each section type is declared once, in a registry shared across all three deploy
 
 Registry order is the default section order, so `trainings` ships directly after `achievements`. FR-CFG-3 continues to apply unchanged — a tenant may reorder or disable it like any other section.
 
+`projects` is unchanged in this table. Its field schema is extended by FR-SEC-PROJ-11 with the seven modal-level fields, but its cardinality stays `collection, 3–5` and its priority stays Must: the modal changes how deeply one project can be read, not how many a portfolio may hold.
+
 `trainings` reuses the `achievements` field schema verbatim. Per FR-REG-3 it therefore costs one registry entry and requires no schema, admin, or persistence change; the two types can be served by a single React component in `portfolio`, parameterised by label.
 
 ### 4.2 Generic structure, opinionated defaults
@@ -303,15 +305,19 @@ _id, portfolioId, userId, action, targetPath, timestamp, ipHash
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-SEC-PROJ-1 | Must | Per project: title, problem, solution, tech stack (tag list), impact, role, links, screenshot. *(2.1–2.8)* |
-| FR-SEC-PROJ-2 | Must | The 3–5 cap is enforced by the API, not merely advised in the UI. A sixth project is rejected. *(2.9)* |
+| FR-SEC-PROJ-1 | Must | A project carries two tiers of field, authored and stored separately rather than one derived from the other. **Card-level:** title, problem, solution, tech stack (tag list), impact, role, links, screenshot. **Modal-level:** `bodies.business`, `bodies.solution`, `bodies.role` (rich text, sanitised per FR-SEC-PROJ-12), `designation` (short text), `stackWorkedOn`, `tools`, `fullStack` (tag lists). The card fields are not truncations of the modal fields, and the modal is never rendered by cutting a card field short. `stackWorkedOn` is a subset of `fullStack`, and `tools` is orthogonal to both — that relationship is stated in admin help text and is the tenant's judgement, not a validated constraint. *(2.1–2.8, 2.17–2.23, 2.25)* |
+| FR-SEC-PROJ-2 | Must | The 3–5 cap is enforced by the API, not merely advised in the UI. A sixth project is rejected. The cap applies to the project collection regardless of how deeply any one project is rendered. *(2.9)* |
 | FR-SEC-PROJ-3 | Must | At least one link to a demo or repository is required per project, unless the project is flagged confidential. *(2.7, 2.15)* |
-| FR-SEC-PROJ-4 | Must | A confidential flag suppresses the repository link requirement and displays a "confidential engagement" note in place of employer identification. *(2.15)* |
-| FR-SEC-PROJ-5 | Must | Impact is a required field. Where no metric exists the tenant states what changed; the field cannot be saved empty. *(2.5, 2.13)* |
-| FR-SEC-PROJ-6 | Must | Projects render at two depths — a card scannable in roughly 15 seconds, and full detail on expansion or a dedicated `/{slug}/projects/{id}` route. *(2.12)* |
+| FR-SEC-PROJ-4 | Must | A confidential flag suppresses the repository link requirement and displays a "confidential engagement" note in place of employer identification. This holds wherever the project's links are rendered: on the card and in the modal footer, where the note — "Client work — source not public" — stands in the suppressed link's place rather than leaving a gap. *(2.15)* |
+| FR-SEC-PROJ-5 | Must | Impact is a required field. Where no metric exists the tenant states what changed; the field cannot be saved empty. It appears on the card and again in the modal, where it is set as the pull-quote above the labelled sub-sections. *(2.5, 2.13)* |
+| FR-SEC-PROJ-6 | Must | Projects render at two depths: a card scannable in roughly 15 seconds, and the full detail in an in-page modal dialog opened by clicking that card. There is no dedicated project route, no URL change, and no deep link to a single project. The trade-off is accepted deliberately — project detail is neither deep-linkable nor separately crawlable, and in exchange the system carries no additional routes and no additional sitemap surface. Resolves open question 3. *(2.12)* |
 | FR-SEC-PROJ-7 | Should | Category filtering across projects, with categories drawn from a tenant-editable list. Filtering is client-side over already-rendered data. *(2.10)* |
-| FR-SEC-PROJ-8 | Should | Admin shows writing guidance for role and impact fields — first person, named components, no "worked on". This is guidance only; the system does not assess prose quality. *(2.14)* |
-| FR-SEC-PROJ-9 | Should | The sync worker checks every project link weekly and records results in `linkHealth`. Two consecutive failures notify the tenant by email. Broken links are never auto-removed. *(2.16)* |
+| FR-SEC-PROJ-8 | Should | Admin shows writing guidance for role and impact fields — first person, named components, no "worked on". This is guidance only; the system does not assess prose quality. The role guidance attaches to the modal-level "My role (full)" field (`bodies.role`), where the account is given at length, not to the card's one-line role. *(2.14, 2.20)* |
+| FR-SEC-PROJ-9 | Should | The sync worker checks every project link weekly and records results in `linkHealth`. Two consecutive failures notify the tenant by email. Broken links are never auto-removed. A project's demo and repository links are stored once and checked once, wherever they are rendered — on the card and in the modal footer. *(2.16)* |
+| FR-SEC-PROJ-10 | Must | The modal opens on a click of the project card, which is recorded as the focus-return target for FR-SEC-PROJ-13. It closes on the Escape key, on a click of the backdrop outside the dialog, or on a click of the close button. Scrolling of the page behind the modal is locked while it is open and restored on close, leaving the visitor where they were in the project grid. *(2.26, 2.29)* |
+| FR-SEC-PROJ-11 | Must | The seven modal-level fields of FR-SEC-PROJ-1 are required for publish. Publish validation rejects a project with any of `bodies.business`, `bodies.solution`, `bodies.role`, `designation`, `stackWorkedOn`, `tools`, or `fullStack` empty, and reports every such failure at once rather than stopping at the first, per FR-PUB-6. *(2.17–2.23)* |
+| FR-SEC-PROJ-12 | Must | The three `bodies.*` fields are stored as sanitised HTML, admitted by allowlist: paragraph, unordered list, ordered list, list item, strong, emphasis, underline, and line break. No anchors, no images, no scripts, no styles, and no attributes on any admitted tag. Sanitisation runs at write time, so what is stored is already safe; the render path injects the stored markup as HTML and is safe only for that reason. These are the first rich-text fields in the system and therefore the first concrete instance of NFR-SEC-2. *(2.24)* |
+| FR-SEC-PROJ-13 | Must | While the modal is open, Tab and Shift+Tab cycle only among the focusable elements inside the dialog. On open, focus moves to the close button; on close, it returns to the card that opened the modal. The dialog carries `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` pointing at the heading that holds the project title. The close button carries `aria-label="Close case study"` and a hit area of at least 44×44 px. This concretises NFR-A11Y-1 and NFR-A11Y-2 for the modal pattern. *(2.27, 2.28, 2.30, 2.31)* |
 
 #### 6.4.3 Skills — `skills`
 
@@ -450,9 +456,10 @@ FR-INT-11 and FR-INT-13 are not exceptions to FR-INT-1 so much as a different ca
 
 ```
 GET  /public/portfolios/:slug            → render payload for a published portfolio
-GET  /public/portfolios/:slug/projects/:projectId
 GET  /public/portfolios/:slug/sitemap.xml
 ```
+
+Project detail is delivered inside the portfolio payload, modal-level fields included, and is not served by an endpoint of its own. The modal opens over content the page already holds (FR-SEC-PROJ-6), so a per-project route would add a surface that nothing requests.
 
 **FR-API-1 (Must)** — Public responses are assembled from dedicated DTOs that omit every internal field: user id, email, draft content, disabled sections, integration credentials, sync status, analytics ids.
 
@@ -518,6 +525,8 @@ POST /internal/revalidate      → shared-secret auth, called by api → portfol
 | NFR-SEC-5 | Must | Outbound requests from the sync worker are restricted against SSRF: no private ranges, no link-local addresses, redirect chains re-validated at each hop. |
 | NFR-SEC-6 | Should | Content mutations are recorded in `auditLog`. |
 
+NFR-SEC-2's rich-text clause was written against a hypothetical. FR-SEC-PROJ-12 is its first concrete instance: the three project `bodies.*` fields are the first rich text the system accepts, and they fix the allowlist — paragraph, lists, strong, emphasis, underline, line break, no attributes — applied server-side before storage. Any rich-text field added later, in any section type, inherits that same allowlist rather than negotiating its own.
+
 ### 8.3 Accessibility — `NFR-A11Y` *(18.4)*
 
 | ID | Priority | Requirement |
@@ -528,6 +537,8 @@ POST /internal/revalidate      → shared-secret auth, called by api → portfol
 | NFR-A11Y-4 | Must | Alt text is present on every image, enforced at upload. |
 | NFR-A11Y-5 | Should | The admin panel meets the same standard. |
 | NFR-A11Y-6 | Must | An embedded third-party card or badge is described rather than transcribed: the platform cannot read its contents, so the name, issuer, and every figure that matters are rendered as adjacent text. The frame itself carries an accessible name and is never the sole carrier of information. *(18.4, 9.8, 11.8)* |
+
+The project modal (FR-SEC-PROJ-13) is the first focus-trapped overlay in the system, and its focus contract — trap while open, focus to the close control on open, focus returned to the element that opened it on close, dialog named by its own heading — is the general one. Any overlay added later inherits it rather than defining its own.
 
 ### 8.4 Responsiveness — `NFR-RESP` *(18.3)*
 
@@ -559,11 +570,17 @@ Every business requirement maps to at least one software requirement, or is reco
 | 2.9 | FR-SEC-PROJ-2 |
 | 2.10 | FR-SEC-PROJ-7 |
 | 2.11 | FR-REG-2 |
-| 2.12 | FR-SEC-PROJ-6 |
+| 2.12 | FR-SEC-PROJ-6, FR-SEC-PROJ-10 |
 | 2.13 | FR-SEC-PROJ-5 |
-| 2.14 | FR-SEC-PROJ-8 (guidance only) |
+| 2.14 | FR-SEC-PROJ-8 (guidance only) — applied to the modal-level `bodies.role` |
 | 2.15 | FR-SEC-PROJ-4 |
 | 2.16 | FR-SEC-PROJ-9 |
+| 2.17–2.23 | FR-SEC-PROJ-1, FR-SEC-PROJ-11 |
+| 2.24 | FR-SEC-PROJ-12, NFR-SEC-2 |
+| 2.25 | FR-SEC-PROJ-1 — advisory; stated in help text, not enforced programmatically |
+| 2.26, 2.29 | FR-SEC-PROJ-10 |
+| 2.27, 2.28, 2.30, 2.31 | FR-SEC-PROJ-13, NFR-A11Y-1, NFR-A11Y-2 |
+| 2.32 | NFR-RESP-1, FR-SEC-PROJ-13 |
 | 3.1–3.4 | FR-SEC-SKILL-2, 3, 4 |
 | 3.5, 3.9, 3.13 | Editorial — help text only, not enforceable |
 | 3.6–3.8 | FR-SEC-SKILL-5, 8 |
@@ -635,7 +652,7 @@ Every business requirement maps to at least one software requirement, or is reco
 
 1. **Résumé hosting.** Requirement 1.4 offers résumé download as a CTA. Is the file uploaded to the platform (adding a PDF path to media handling), or linked externally? Currently specified as uploadable, at 10 MB.
 2. **Contact form.** Requirement 16.2 tracks a "contact form" goal, but no section in the source document defines one — §4 lists links only. Is a form in scope? If so it needs its own section type, spam protection, and an email delivery dependency.
-3. **Project detail routing.** FR-SEC-PROJ-6 permits either an expandable card or a dedicated page. A dedicated page is better for SEO but adds routes and sitemap entries. Which should v1 build?
+3. **Project detail routing — resolved (0.3).** The modal is chosen over the dedicated page. Clicking a card opens an in-page dialog holding the full case study; there is no `/{slug}/projects/{id}` route and no URL change. The cost is accepted: project detail is not deep-linkable and not separately crawlable, and the portfolio page remains the only indexable surface. In exchange the system carries no additional routes and no additional sitemap entries. FR-SEC-PROJ-6 is rewritten accordingly, FR-SEC-PROJ-10 and 13 specify the dialog's behaviour, and the now-unnecessary `GET /public/portfolios/:slug/projects/:projectId` endpoint is removed from §7.1 in the same revision.
 4. **Slug policy.** Are slugs first-come-first-served, or is there a reservation process for names matching well-known people or trademarks?
 5. **Public directory.** Should published portfolios be discoverable through a platform-level index, or reachable only by direct URL?
 6. **Section ordering freedom.** FR-CFG-3 allows arbitrary reordering, but requirement 6.3 states Education belongs below work and projects. Is the ordering fully free, or does the layout impose constraints the tenant cannot override?

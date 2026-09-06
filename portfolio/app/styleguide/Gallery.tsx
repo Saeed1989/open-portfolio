@@ -15,6 +15,7 @@ import {
   Link,
   PageSection,
   ProgressBar,
+  RichText,
   SectionShell,
   Stack,
   Tag,
@@ -22,6 +23,7 @@ import {
   TagListItem,
   Text,
 } from '@/components/ui';
+import { DialogDemo } from './DialogDemo';
 
 /**
  * Every primitive, in every variant. A development aid — excluded from the
@@ -503,6 +505,26 @@ export function Gallery() {
               </Text>
             </Disclosure>
           </Stack>
+        </Spec>
+      </Group>
+
+      <Group title="Dialog">
+        <Spec label="modal · focus trapped · Escape / backdrop / close button">
+          <DialogDemo />
+        </Spec>
+      </Group>
+
+      <Group title="RichText">
+        <Spec label="measure: prose | none — the allowlist, in full">
+          <div className="w-full min-w-0">
+            <RichText
+              html={
+                '<p>A paragraph, with <strong>bold</strong>, <em>italic</em> and <u>underline</u>.<br />A line break above this one.</p>' +
+                '<ul><li>An unordered item</li><li>Another</li></ul>' +
+                '<ol><li>An ordered item</li><li>Another</li></ol>'
+              }
+            />
+          </div>
         </Spec>
       </Group>
 
