@@ -167,6 +167,16 @@ Two tiers on one page: a short showcase, then the full breakdown.
 | 11.8 | A badge renders as Credly's own embedded frame and shows the badge alone. Its name and issuer are carried alongside for screen readers, because the frame's contents cannot be read aloud |
 | 11.9 | A badge's current state is drawn by Credly, not by the platform. A badge that has expired shows as expired, and the owner cannot restyle or suppress that |
 
+### 11a. Training & Continuing Education — Could
+
+| ID | Requirement |
+|---|---|
+| 11a.1 | Courses, workshops, bootcamps, and structured programmes completed |
+| 11a.2 | Per entry: title, issuing body, completion date, and an optional link to the certificate, syllabus, or course page |
+| 11a.3 | Recent and role-relevant learning only — an entry earns its place by supporting the target role, not by having been completed |
+| 11a.4 | A given credential is listed once — as an achievement under 11.1 or as a training outcome here, never in both sections |
+| 11a.5 | Distinct from Education (§6): §6 covers formal qualifications, this covers continuing and self-directed learning |
+
 ### 12. Media Gallery — Could
 
 | ID | Requirement |
