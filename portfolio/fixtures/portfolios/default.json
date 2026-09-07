@@ -63,7 +63,16 @@
             "role": "I architected the render path and the payment-state machine, and paired with two engineers on the form components.",
             "stack": ["Rails", "Hotwire", "Stripe", "Postgres"],
             "demoUrl": "https://example.com/ledgerwork",
-            "repoUrl": "https://example.com/ledgerwork-source"
+            "repoUrl": "https://example.com/ledgerwork-source",
+            "bodies": {
+              "business": "<p>A <strong>five-step checkout</strong> lost buyers at every hop, and the client-side bundle blocked first paint on mid-range Android. Support tickets clustered on the payment step, where a failed card silently reset the form.</p><ul><li>Median load <strong>2.4s</strong>, worst case over 6s on 3G</li><li>Drop-off of 31% between address and payment</li><li>No recovery path once a payment errored</li></ul>",
+              "solution": "<p>Rebuilt it as <strong>one server-rendered page</strong> with progressive enhancement, so the form works before any JavaScript runs. Payment state moved server-side, which made errors recoverable rather than destructive.</p><ul><li>Single POST target with per-field server validation</li><li>Hotwire frames for the address lookup, <em>optional</em> by design</li><li>Idempotent payment intents keyed to the cart</li></ul>",
+              "role": "<p>I <u>architected the render path</u> and the payment-state machine end to end, then paired with two engineers on the form components.</p><ul><li>Owned the performance budget and the regression gate in CI</li><li>Wrote the migration plan that let the old flow run in parallel for six weeks</li><li>Ran the rollout, including the <em>rollback</em> we needed on day two</li></ul>"
+            },
+            "designation": "Lead front-end engineer",
+            "stackWorkedOn": ["Rails", "Hotwire", "Stripe"],
+            "tools": ["GitHub Actions", "Datadog", "Figma", "k6"],
+            "fullStack": ["Rails", "Hotwire", "Stripe", "Postgres", "Redis", "Sidekiq"]
           },
           {
             "id": "beacon-design-system",
@@ -82,7 +91,16 @@
             "role": "I owned the token pipeline and the release process, and wrote the contribution model the teams still use.",
             "stack": ["TypeScript", "Lit", "Style Dictionary"],
             "demoUrl": "https://example.com/beacon",
-            "repoUrl": "https://example.com/beacon-source"
+            "repoUrl": "https://example.com/beacon-source",
+            "bodies": {
+              "business": "<p>Nine product teams shipped <strong>four incompatible button implementations</strong> and no shared token source. Every visual change meant nine tickets, and accessibility fixes landed in one product and nowhere else.</p><ul><li>No single source of truth for colour or spacing</li><li>UI review was the slowest stage in every release</li></ul>",
+              "solution": "<p>62 <em>framework-agnostic</em> components on one token pipeline, adopted incrementally with <strong>no migration freeze</strong>.</p><ul><li>Tokens compiled from one JSON source to CSS, iOS and Android</li><li>Components shipped as web components, usable from React and Vue</li><li>Visual regression suite gating every release</li></ul>",
+              "role": "<p>I owned the <u>token pipeline</u> and the release process, and wrote the contribution model the teams still use.</p><ul><li>Set the versioning and deprecation policy</li><li>Ran a weekly office hour for adopting teams</li></ul>"
+            },
+            "designation": "Design systems lead",
+            "stackWorkedOn": ["TypeScript", "Lit", "Style Dictionary"],
+            "tools": ["Chromatic", "Storybook", "Changesets", "Figma"],
+            "fullStack": ["TypeScript", "Lit", "Style Dictionary", "Sass", "Rollup", "Swift", "Kotlin"]
           },
           {
             "id": "freight-ops-console",
@@ -101,7 +119,16 @@
             "role": "I built the sync layer and the conflict-resolution UI; the mapping integration was a colleague's.",
             "stack": ["React", "IndexedDB", "Mapbox"],
             "demoUrl": "https://example.com/freight",
-            "repoUrl": "https://example.com/freight-source"
+            "repoUrl": "https://example.com/freight-source",
+            "bodies": {
+              "business": "<p>Dispatchers ran <strong>400 daily routes</strong> from a spreadsheet, on tablets that lose signal inside the yard. A lost connection meant re-entering an hour of assignments.</p><ul><li>Assignment took roughly <strong>6 minutes</strong> per load</li><li>No audit trail when two dispatchers edited the same route</li></ul>",
+              "solution": "<p>An <em>offline-first</em> console with a local write queue and conflict review, keyboard-first for one-handed use beside a truck.</p><ul><li>Writes queue locally and replay on reconnect</li><li>Conflicts surface as a side-by-side review, never a silent overwrite</li><li>Every action reachable without the touch keyboard</li></ul>",
+              "role": "<p>I built the <u>sync layer</u> and the conflict-resolution UI. The mapping integration was a colleague's work.</p><ul><li>Designed the write-queue schema and replay ordering</li><li>Shadowed two dispatch shifts before writing any code</li></ul>"
+            },
+            "designation": "Senior engineer, offline platform",
+            "stackWorkedOn": ["React", "IndexedDB", "TypeScript"],
+            "tools": ["Playwright", "Sentry", "Vite", "BrowserStack"],
+            "fullStack": ["React", "IndexedDB", "TypeScript", "Mapbox", "Node.js", "Postgres"]
           },
           {
             "id": "council-records-search",
@@ -120,7 +147,16 @@
             "role": "I designed the index schema and the search UI, and ran the accessibility testing sessions.",
             "stack": ["Django", "Postgres FTS", "Tesseract"],
             "demoUrl": "https://example.com/council",
-            "repoUrl": "https://example.com/council-source"
+            "repoUrl": "https://example.com/council-source",
+            "bodies": {
+              "business": "<p>A city of <strong>1.2M</strong> published two decades of minutes as unsearchable scanned PDFs. Residents and journalists had no way to find a decision without knowing its date.</p><ul><li>~31,000 documents, image-only, no text layer</li><li>Existing portal unusable with a screen reader</li></ul>",
+              "solution": "<p>Full-text search over an OCR pipeline, with result pages that work <em>in a screen reader</em> and on a <strong>2G connection</strong>.</p><ul><li>Tesseract pipeline with per-page confidence scoring</li><li>Postgres full-text ranking, tuned on real query logs</li><li>Server-rendered results, under 30KB per page</li></ul>",
+              "role": "<p>I designed the <u>index schema</u> and the search UI, and ran the accessibility testing sessions myself.</p><ul><li>Two rounds of moderated testing with local advocacy groups</li><li>Wrote the public documentation for the data export</li></ul>"
+            },
+            "designation": "Engineer and accessibility lead",
+            "stackWorkedOn": ["Django", "Postgres FTS", "Tesseract"],
+            "tools": ["axe", "NVDA", "pytest", "Docker"],
+            "fullStack": ["Django", "Postgres FTS", "Tesseract", "Celery", "Redis", "nginx"]
           },
           {
             "id": "shift-planner",
@@ -139,7 +175,16 @@
             "role": "I owned the scheduling rules engine and the cost calculations end to end.",
             "stack": ["Vue", "Go", "Postgres"],
             "demoUrl": "https://example.com/shift-planner",
-            "confidential": true
+            "confidential": true,
+            "bodies": {
+              "business": "<p>Managers built weekly rotas for hourly staff across <strong>six separate forms</strong>, and overtime went unnoticed until payroll closed.</p><ul><li>Rota build took roughly <strong>2 hours</strong> per store</li><li>Overtime breaches found weeks after the fact</li></ul>",
+              "solution": "<p>One <em>editable weekly grid</em> with live cost and overtime totals, validated server-side against local labour rules.</p><ul><li>Totals recompute per cell edit, server-authoritative</li><li>Rule violations block save with a plain-language reason</li></ul>",
+              "role": "<p>I owned the <u>scheduling rules engine</u> and the cost calculations end to end.</p><ul><li>Encoded the labour rules with the client's compliance lead</li><li>Built the reconciliation report payroll now runs weekly</li></ul>"
+            },
+            "designation": "Backend lead",
+            "stackWorkedOn": ["Go", "Postgres"],
+            "tools": ["GitLab CI", "Grafana", "Testcontainers"],
+            "fullStack": ["Vue", "Go", "Postgres", "RabbitMQ", "Terraform"]
           }
         ]
       }
@@ -373,9 +418,33 @@
       }
     },
     {
-      "type": "gallery",
+      "type": "trainings",
       "enabled": true,
       "order": 10,
+      "content": {
+        "items": [
+          {
+            "id": "tr1",
+            "type": "certification",
+            "title": "Distributed Systems for Practitioners",
+            "issuer": "Bradfield School of Computer Science",
+            "date": "2025",
+            "url": "https://example.com/courses/distributed-systems"
+          },
+          {
+            "id": "tr2",
+            "type": "certification",
+            "title": "Accessibility for Front-End Engineers",
+            "issuer": "Deque University",
+            "date": "2024"
+          }
+        ]
+      }
+    },
+    {
+      "type": "gallery",
+      "enabled": true,
+      "order": 11,
       "content": {
         "items": [
           {
@@ -405,7 +474,7 @@
     {
       "type": "contact",
       "enabled": true,
-      "order": 11,
+      "order": 12,
       "content": {
         "intro": "Open to staff-level front-end roles and short platform engagements. Replies within two days.",
         "email": {

@@ -4,7 +4,7 @@
  * it without inheriting a runtime (FR-REG-1).
  */
 
-/** The twelve declared section types (SRS §4.1). */
+/** The thirteen declared section types (SRS §4.1). */
 export const SECTION_TYPES = [
   'hero',
   'projects',
@@ -17,6 +17,12 @@ export const SECTION_TYPES = [
   'opensource',
   'speaking',
   'achievements',
+  /*
+   * Registry order is the default section order, so `trainings` sits directly
+   * after `achievements` and before `gallery` (SRS §4.1). It shares that
+   * neighbour's field schema verbatim and none of its Credly path.
+   */
+  'trainings',
   'gallery',
 ] as const;
 

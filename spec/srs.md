@@ -1,7 +1,9 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.1 (draft) · **Date** 5 September 2026
+**Version** 0.3 (draft) · **Date** 6 September 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
+
+*Changelog — 0.3 settles how a project is read at depth. FR-SEC-PROJ-6 is rewritten to commit the two-depth rendering to an in-page modal dialog rather than a dedicated `/{slug}/projects/{id}` route, which resolves open question 3 and accepts its trade-off: project detail is neither deep-linkable nor separately crawlable. The `projects` content schema gains seven modal-level fields alongside the existing card-level ones — three rich-text bodies, a designation, and three tag lists — extending FR-SEC-PROJ-1 and declared as required for publish by the new FR-SEC-PROJ-11; §4.1 is unchanged, since the schema grows but the cardinality and priority do not. The new FR-SEC-PROJ-10 specifies modal open, close, and scroll lock. The new FR-SEC-PROJ-12 specifies the write-time allowlist for the three rich-text bodies, which are the first rich-text fields in the system and so are the first concrete instance of NFR-SEC-2; the new FR-SEC-PROJ-13 specifies the modal's focus contract, the first focus-trapped overlay in the system and the first concrete instance of NFR-A11Y-1 and NFR-A11Y-2 for an overlay. §7.1 drops the dedicated project-detail endpoint, which the modal makes unnecessary — detail now travels in the portfolio payload. Business §2 is restructured in the same revision into card-level fields, modal-level fields (2.17–2.23), two new content rules (2.24, 2.25), and a new §2D on modal interaction (2.26–2.32); §9 maps all of them. 0.2 adds the `trainings` section type (§4.1, FR-SEC-TRN-1), ordered immediately after `achievements` and sourced from business §11a; see open question 7 for the unresolved `type` enum it inherits from Achievements. 0.2 also specifies the GitHub stat cards and Credly badges added to the business document as 9.5–9.8, 11.4–11.9 and 13.6–13.10 (§6.4.6, §6.6), which introduce the first third-party resources the visitor's browser fetches during a page view and amend §2.2, FR-INT-1, NFR-PERF-3 and NFR-SEC-4 accordingly. That same business revision promoted §11 from Could to Should, so `achievements` and FR-SEC-ACH-1 … 7 are re-prioritised to match, FR-INT-11 … 13 are corrected to Must against 13.6, 13.7 and 13.9, and §1.4 now states both how a Must requirement attaches to an optional section and which requirements this specification scopes below their section's blanket rating. Two v0.1 defects are corrected in passing: FR-SEC-OSS-1 listed the tenant's star total among the headline stats, which 9.5 forbids, and omitted two of the four figures 9.1 names; and 18.7 was mapped to tenant isolation rather than to the self-service authoring it actually describes.*
 
 ---
 
@@ -20,8 +22,9 @@ Where the business document says "the owner decides X at launch", this specifica
 - Multi-tenant account creation via OAuth
 - Admin panel for content authoring, section toggling, and theming
 - Server-rendered public portfolio at `{slug}.site.com`
-- Twelve section types, generic in structure, shipped with a software-engineering preset
+- Thirteen section types, generic in structure, shipped with a software-engineering preset
 - GitHub and RSS integrations with mandatory manual fallback
+- Browser-embedded GitHub stat cards and Credly badges, stored as URLs rather than synced
 - Draft / publish lifecycle with cache invalidation
 
 **Out of scope (v1)** — see §10.2 for rationale
@@ -39,7 +42,7 @@ Where the business document says "the owner decides X at launch", this specifica
 | **Tenant** | A registered user account. One tenant owns exactly one portfolio in v1. |
 | **Portfolio** | The complete configured document for a tenant — sections, content, theme, SEO. |
 | **Section** | An instance of a section type within a portfolio, with its own enabled flag, order, and content. |
-| **Section type** | One of twelve declared kinds (`hero`, `projects`, `skills`, …), defined in the section registry. |
+| **Section type** | One of thirteen declared kinds (`hero`, `projects`, `skills`, …), defined in the section registry. |
 | **Slug** | The tenant's subdomain label. `alice` → `alice.site.com`. |
 | **Draft** | The working copy edited in admin. Not publicly visible. |
 | **Published** | The immutable-until-next-publish copy served to the public. |
@@ -49,7 +52,9 @@ Where the business document says "the owner decides X at launch", this specifica
 
 Software requirements use the form `FR-<GROUP>-<n>` and `NFR-<GROUP>-<n>`. Business requirements are referenced by their original identifiers (`2.9`, `18.2`, …). §9 maps between them.
 
-Priority follows the source document: **Must** = launch blocker, **Should** = v1 if capacity allows, **Could** = post-launch.
+Priority follows the source document: **Must** = launch blocker, **Should** = v1 if capacity allows, **Could** = post-launch. The business document assigns priority per section across §1–§12 and per row only in §13, so a section's rating is inherited by every requirement drawn from it. Where a single requirement is deliberately scoped below its section's blanket rating — FR-SEC-PROJ-7, 8 and 9, and FR-SEC-SKILL-9 and 10 — that is this specification's judgement rather than the source document's, and is recorded here so the divergence stays visible.
+
+**Priority attaches to the requirement, not to the feature it serves.** A requirement may outrank the section it governs, and several do: FR-INT-14 and NFR-SEC-4 are Must while `achievements` is only Should. They do not oblige the system to ship Credly badges. They bind absolutely *if* it does. Read a Must on an optional feature as conditional — not "build this before launch", but "if this ships at all, it ships this way or not at all". Security, privacy, and accessibility requirements are the usual occupants of that category, because the cost of getting them wrong does not scale down with the priority of the feature that carries them.
 
 ---
 
@@ -81,7 +86,9 @@ The two surfaces use separate controllers, separate guards, and separate respons
 5. `api` loads the published document, strips disabled sections, and returns a render-ready payload including any cached integration data.
 6. `portfolio` renders the layout, iterating the ordered section array and dispatching each entry to the component registered for its type.
 
-**No third-party API is contacted during a page render.** Integration data comes only from the cache written by the background sync job (§6.6).
+**The server contacts no third-party API during a page render.** Integration data it renders comes only from the cache written by the background sync job (§6.6).
+
+Two features are deliberate exceptions, and they sit on the *client* side of that line. GitHub stat cards and Credly badges are stored as URLs, so the visitor's browser requests them directly from those services after the HTML has been sent *(13.6, 13.9)*. The render itself still makes no external call and caches nothing, which is precisely why neither can go stale; the price is that a slow, rate-limited, or absent third party is visible to the visitor. §6.4.6 specifies the behaviour, FR-INT-11 and FR-INT-13 the transport, and NFR-SEC-4 the content-security-policy consequence.
 
 ### 2.3 Request flow — publish
 
@@ -145,8 +152,15 @@ Each section type is declared once, in a registry shared across all three deploy
 | `testimonials` | collection, 2–4 | Should | §8 |
 | `opensource` | single | Should | §9 |
 | `speaking` | collection | Could | §10 |
-| `achievements` | collection | Could | §11 |
+| `achievements` | collection | Should | §11 |
+| `trainings` | collection | Could | §11a |
 | `gallery` | collection | Could | §12 |
+
+Registry order is the default section order, so `trainings` ships directly after `achievements`. FR-CFG-3 continues to apply unchanged — a tenant may reorder or disable it like any other section.
+
+`projects` is unchanged in this table. Its field schema is extended by FR-SEC-PROJ-11 with the seven modal-level fields, but its cardinality stays `collection, 3–5` and its priority stays Must: the modal changes how deeply one project can be read, not how many a portfolio may hold.
+
+`trainings` reuses the `achievements` field schema verbatim. Per FR-REG-3 it therefore costs one registry entry and requires no schema, admin, or persistence change; the two types can be served by a single React component in `portfolio`, parameterised by label.
 
 ### 4.2 Generic structure, opinionated defaults
 
@@ -188,6 +202,8 @@ Each entry in `sections`:
 { type, enabled: bool, order: int, content: <type-specific object> }
 ```
 
+**Imported items carry their own publish state.** A Credly badge arrives from import unpublished and is promoted by the tenant *(11.7)*, so an achievements item additionally carries `published: bool`, independent of the portfolio-level draft/published trees. An unpublished item stays in `draft` and is simply not copied into `published`. This is the only per-item publish flag in the model; it exists because the import cannot judge which badges are high-signal.
+
 **Document size.** Media is referenced by asset id, never embedded, and integration payloads live in a separate collection, so a realistic portfolio stays under 200 KB against MongoDB's 16 MB limit. Both content trees together are still an order of magnitude below the cap.
 
 **FR-DAT-1 (Must)** — `slug` is unique across all tenants and validated against a reserved list: `www`, `api`, `admin`, `app`, `mail`, `static`, `cdn`, `assets`, `status`, `blog`, `help`, `support`, `docs`, plus any label matching the operator's infrastructure hostnames.
@@ -211,6 +227,8 @@ config: { username | feedUrl | ... },
 credentials: <encrypted at rest>,
 status ('ok'|'failing'|'revoked'), lastSyncAt, lastError, consecutiveFailures
 ```
+
+GitHub stat cards and Credly badges deliberately have **no** row in this collection. Both are embedded by URL and hold no credential, no token, and no refresh schedule *(13.6, 13.9)*, so a tenant who uses only cards and badges has no `integrationConnections` document at all.
 
 ### 5.5 `integrationCache`
 
@@ -287,15 +305,19 @@ _id, portfolioId, userId, action, targetPath, timestamp, ipHash
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-SEC-PROJ-1 | Must | Per project: title, problem, solution, tech stack (tag list), impact, role, links, screenshot. *(2.1–2.8)* |
-| FR-SEC-PROJ-2 | Must | The 3–5 cap is enforced by the API, not merely advised in the UI. A sixth project is rejected. *(2.9)* |
+| FR-SEC-PROJ-1 | Must | A project carries two tiers of field, authored and stored separately rather than one derived from the other. **Card-level:** title, problem, solution, tech stack (tag list), impact, role, links, screenshot. **Modal-level:** `bodies.business`, `bodies.solution`, `bodies.role` (rich text, sanitised per FR-SEC-PROJ-12), `designation` (short text), `stackWorkedOn`, `tools`, `fullStack` (tag lists). The card fields are not truncations of the modal fields, and the modal is never rendered by cutting a card field short. `stackWorkedOn` is a subset of `fullStack`, and `tools` is orthogonal to both — that relationship is stated in admin help text and is the tenant's judgement, not a validated constraint. *(2.1–2.8, 2.17–2.23, 2.25)* |
+| FR-SEC-PROJ-2 | Must | The 3–5 cap is enforced by the API, not merely advised in the UI. A sixth project is rejected. The cap applies to the project collection regardless of how deeply any one project is rendered. *(2.9)* |
 | FR-SEC-PROJ-3 | Must | At least one link to a demo or repository is required per project, unless the project is flagged confidential. *(2.7, 2.15)* |
-| FR-SEC-PROJ-4 | Must | A confidential flag suppresses the repository link requirement and displays a "confidential engagement" note in place of employer identification. *(2.15)* |
-| FR-SEC-PROJ-5 | Must | Impact is a required field. Where no metric exists the tenant states what changed; the field cannot be saved empty. *(2.5, 2.13)* |
-| FR-SEC-PROJ-6 | Must | Projects render at two depths — a card scannable in roughly 15 seconds, and full detail on expansion or a dedicated `/{slug}/projects/{id}` route. *(2.12)* |
+| FR-SEC-PROJ-4 | Must | A confidential flag suppresses the repository link requirement and displays a "confidential engagement" note in place of employer identification. This holds wherever the project's links are rendered: on the card and in the modal footer, where the note — "Client work — source not public" — stands in the suppressed link's place rather than leaving a gap. *(2.15)* |
+| FR-SEC-PROJ-5 | Must | Impact is a required field. Where no metric exists the tenant states what changed; the field cannot be saved empty. It appears on the card and again in the modal, where it is set as the pull-quote above the labelled sub-sections. *(2.5, 2.13)* |
+| FR-SEC-PROJ-6 | Must | Projects render at two depths: a card scannable in roughly 15 seconds, and the full detail in an in-page modal dialog opened by clicking that card. There is no dedicated project route, no URL change, and no deep link to a single project. The trade-off is accepted deliberately — project detail is neither deep-linkable nor separately crawlable, and in exchange the system carries no additional routes and no additional sitemap surface. Resolves open question 3. *(2.12)* |
 | FR-SEC-PROJ-7 | Should | Category filtering across projects, with categories drawn from a tenant-editable list. Filtering is client-side over already-rendered data. *(2.10)* |
-| FR-SEC-PROJ-8 | Should | Admin shows writing guidance for role and impact fields — first person, named components, no "worked on". This is guidance only; the system does not assess prose quality. *(2.14)* |
-| FR-SEC-PROJ-9 | Should | The sync worker checks every project link weekly and records results in `linkHealth`. Two consecutive failures notify the tenant by email. Broken links are never auto-removed. *(2.16)* |
+| FR-SEC-PROJ-8 | Should | Admin shows writing guidance for role and impact fields — first person, named components, no "worked on". This is guidance only; the system does not assess prose quality. The role guidance attaches to the modal-level "My role (full)" field (`bodies.role`), where the account is given at length, not to the card's one-line role. *(2.14, 2.20)* |
+| FR-SEC-PROJ-9 | Should | The sync worker checks every project link weekly and records results in `linkHealth`. Two consecutive failures notify the tenant by email. Broken links are never auto-removed. A project's demo and repository links are stored once and checked once, wherever they are rendered — on the card and in the modal footer. *(2.16)* |
+| FR-SEC-PROJ-10 | Must | The modal opens on a click of the project card, which is recorded as the focus-return target for FR-SEC-PROJ-13. It closes on the Escape key, on a click of the backdrop outside the dialog, or on a click of the close button. Scrolling of the page behind the modal is locked while it is open and restored on close, leaving the visitor where they were in the project grid. *(2.26, 2.29)* |
+| FR-SEC-PROJ-11 | Must | The seven modal-level fields of FR-SEC-PROJ-1 are required for publish. Publish validation rejects a project with any of `bodies.business`, `bodies.solution`, `bodies.role`, `designation`, `stackWorkedOn`, `tools`, or `fullStack` empty, and reports every such failure at once rather than stopping at the first, per FR-PUB-6. *(2.17–2.23)* |
+| FR-SEC-PROJ-12 | Must | The three `bodies.*` fields are stored as sanitised HTML, admitted by allowlist: paragraph, unordered list, ordered list, list item, strong, emphasis, underline, and line break. No anchors, no images, no scripts, no styles, and no attributes on any admitted tag. Sanitisation runs at write time, so what is stored is already safe; the render path injects the stored markup as HTML and is safe only for that reason. These are the first rich-text fields in the system and therefore the first concrete instance of NFR-SEC-2. *(2.24)* |
+| FR-SEC-PROJ-13 | Must | While the modal is open, Tab and Shift+Tab cycle only among the focusable elements inside the dialog. On open, focus moves to the close button; on close, it returns to the card that opened the modal. The dialog carries `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` pointing at the heading that holds the project title. The close button carries `aria-label="Close case study"` and a hit area of at least 44×44 px. This concretises NFR-A11Y-1 and NFR-A11Y-2 for the modal pattern. *(2.27, 2.28, 2.30, 2.31)* |
 
 #### 6.4.3 Skills — `skills`
 
@@ -326,14 +348,38 @@ Business requirements 3.5, 3.9, and 3.13 are editorial judgements about *which* 
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-SEC-EXP-1 | Should | Experience: company, title, start/end dates, description, accomplishment list. Individually collapsible on the public page, ordered by the tenant. *(5.1–5.4)* |
+| FR-SEC-EXP-1 | Should | Experience: company, title, start/end dates, description, accomplishment list. Individually collapsible on the public page, ordered by the tenant. *(5.1, 5.3, 5.4)* |
+| FR-SEC-EXP-2 | Should | Admin shows writing guidance on the accomplishment list — impact rather than duties. Guidance only; as with FR-SEC-PROJ-8 the system does not assess prose quality. *(5.2)* |
 | FR-SEC-EDU-1 | Should | Education: degree, institution, graduation date, plus individually hideable GPA, coursework, scholarships, honours. Default position below experience and projects. *(6.1–6.3)* |
 | FR-SEC-BLOG-1 | Should | Blog: per post title, date, summary, link — entered manually or populated by RSS sync. *(7.1, 7.2)* |
 | FR-SEC-TEST-1 | Should | Testimonials: name, company, role, quote, optional photo. 2–4 entries enforced. *(8.1–8.3)* |
-| FR-SEC-OSS-1 | Should | Open source: GitHub profile link, stats block (repos, stars, contributions), and 2–3 named contributions each with an optional impact figure. *(9.1–9.4)* |
+| FR-SEC-OSS-1 | Should | Open source: GitHub profile link, stats block (repositories, commits over the last twelve months, pull requests, contributions), and 2–3 named contributions each with an optional impact figure. The tenant's own star total is not one of the stats; a named contribution may carry a star count as adoption evidence. *(9.1–9.4)* |
 | FR-SEC-SPK-1 | Could | Speaking: conference, date, title, link to video or slides. *(10.1)* |
-| FR-SEC-ACH-1 | Could | Achievements: title, issuer, date, optional link, type (certification / award / ranking / hackathon). *(11.1–11.3)* |
+| FR-SEC-ACH-1 | Should | Achievements: title, issuer, date, optional link, type (certification / award / ranking / hackathon). *(11.1–11.3)* |
+| FR-SEC-TRN-1 | Could | Trainings: title, issuer, date, optional link, type (certification / award / ranking / hackathon) — field for field identical to Achievements, differing only in label, help text, and default order. *(11a.1–11a.5)* |
 | FR-SEC-GAL-1 | Could | Gallery: images with captions and alt text, plus embedded video by URL from an allowlist of providers. *(12.1, 12.2)* |
+
+#### 6.4.6 Embedded third-party content — GitHub cards and Credly badges
+
+GitHub stat cards *(9.6, 9.7)* and Credly badges *(11.4–11.9)* are one mechanism wearing two labels: a URL the platform stores and the visitor's browser resolves. Neither creates an account connection, stores a credential, nor runs a refresh job *(13.6, 13.9)*. The platform therefore always shows a current picture with nothing to keep in sync, in exchange for a dependency it does not control.
+
+Both are also **opaque** to the platform: it cannot read what a card or badge draws. No figure that matters may live only inside one.
+
+The requirements below are Should, following business §9 and §11. The rules governing *how* they connect — FR-INT-11 … 14 and NFR-SEC-4 — are Must, because they constrain what the platform stores and what it lets into a page. §1.4 explains the split.
+
+| ID | Priority | Requirement |
+|---|---|---|
+| FR-SEC-OSS-2 | Should | Three GitHub card types are offered — overall statistics, most-used languages, and contribution streak. The tenant chooses which appear; statistics and languages are enabled by default. *(9.6, 9.7)* |
+| FR-SEC-OSS-3 | Should | The statistics card is requested with its star count suppressed, and the tenant's own total star count is never rendered as a headline figure — it measures attention received, not work done. A named project's stars may still appear as adoption evidence under FR-SEC-OSS-1. *(9.5, 9.7)* |
+| FR-SEC-OSS-4 | Should | Every figure that matters is also typed by the tenant and rendered as text. A card is never the sole carrier of a number. *(9.8)* |
+| FR-SEC-ACH-2 | Should | Credly badges occupy the same ordered list as hand-entered achievements and are edited, reordered, and deleted identically. There is no separate badges list. *(11.4)* |
+| FR-SEC-ACH-3 | Should | Two ways to add a badge: bulk import from a public Credly profile, or paste a single badge's embed code. *(11.5, 13.8)* |
+| FR-SEC-ACH-4 | Should | Import is a one-time populate, not a live connection. Re-running it adds only badges not already present, and never overwrites an existing item — including one the tenant has edited. *(11.6)* |
+| FR-SEC-ACH-5 | Should | Imported badges arrive unpublished. Deciding which are high-signal is a judgement the import cannot make, so the tenant promotes them individually before they reach the published tree. *(11.7, 11.3)* |
+| FR-SEC-ACH-6 | Should | A badge renders as Credly's own embedded frame, showing the badge alone. Its name and issuer are stored alongside and rendered as text, because the frame's contents cannot be read aloud. *(11.8)* |
+| FR-SEC-ACH-7 | Should | A badge's state is drawn by Credly, not by the platform. An expired badge displays as expired; the tenant may delete it but cannot restyle or suppress that state. *(11.9)* |
+
+**A known limitation, accepted rather than solved.** An unknown, revoked, or mistyped badge identifier is answered by Credly as though it were valid, so the frame draws nothing and the platform cannot tell that apart from one still loading. No automatic detection is possible. The tenant is the one who notices a blank badge, and FR-SEC-ACH-2 lets them delete it.
 
 ### 6.5 Media — `FR-MED`
 
@@ -353,7 +399,7 @@ Business requirement 13.5 is the strongest constraint in the source document and
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-INT-1 | Must | No third-party API is called during a public page render. All external data is read from `integrationCache`. *(13.5)* |
+| FR-INT-1 | Must | The server calls no third-party API during a public page render; all external data it renders is read from `integrationCache`. Embedded cards and badges (FR-INT-11, FR-INT-13) are fetched by the visitor's browser after the response is sent, and are not part of the render. *(13.5)* |
 | FR-INT-2 | Must | A scheduled worker refreshes each connection on its own interval — GitHub every 6 hours, RSS every 3 hours — with exponential backoff on failure. |
 | FR-INT-3 | Must | On sync failure the previous cached payload continues to serve and is marked `stale`. The public page renders identically; staleness is visible only in admin. *(13.5)* |
 | FR-INT-4 | Must | Every integration-backed field is also manually editable. Manual values take precedence over synced values when both exist. *(13.5)* |
@@ -363,6 +409,12 @@ Business requirement 13.5 is the strongest constraint in the source document and
 | FR-INT-8 | Should | RSS: posts from Medium, Dev.to, Substack, or a self-hosted feed, capped at 10 most recent. Feed URLs are validated against SSRF — no private address ranges, no redirects to them. *(13.2)* |
 | FR-INT-9 | Could | X/Twitter latest posts. *(13.3)* |
 | FR-INT-10 | Could | LinkedIn import for experience and education, as a one-time populate rather than a live sync. *(13.4)* |
+| FR-INT-11 | Must | GitHub stat cards are stored as URLs and requested by the visitor's browser from GitHub's card service. The platform holds no account connection, no token, and no refresh job for them, and stores no card content. *(13.6)* |
+| FR-INT-12 | Must | A card that fails to load is removed from the layout rather than left as a broken image. With every card absent, the section still renders from the tenant's typed figures and profile link. *(13.7)* |
+| FR-INT-13 | Must | Credly badges are stored as identifiers and requested by the visitor's browser from Credly. The platform holds no account connection and no stored credential, and runs no refresh job. *(13.9)* |
+| FR-INT-14 | Must | Only the badge identifier is extracted from a pasted Credly embed code. The pasted markup itself is never stored and never re-injected into a page. *(13.10)* |
+
+FR-INT-11 and FR-INT-13 are not exceptions to FR-INT-1 so much as a different category. FR-INT-1 constrains what the *server* does while assembling a response; a card or badge URL is inert content within that response, resolved later by the browser. Nothing is fetched, so nothing is cached, so FR-INT-2 and FR-INT-3 have nothing to act on — which is why these two carry no staleness story at all. What they carry instead is a visitor-visible failure mode, handled by FR-INT-12 and FR-SEC-OSS-4.
 
 ### 6.7 Theme — `FR-THM`
 
@@ -373,7 +425,7 @@ Business requirement 13.5 is the strongest constraint in the source document and
 | FR-THM-3 | Must | The accent colour picker rejects values failing WCAG AA contrast against both light and dark backgrounds, offering the nearest compliant shade. *(18.4)* |
 | FR-THM-4 | Could | Logo or avatar reused across the site and in social previews. *(14.3)* |
 | FR-THM-5 | Could | Layout density — compact or spacious — as a spacing-scale multiplier. *(14.4)* |
-| FR-THM-6 | Must | Tenants cannot supply raw CSS, HTML, or JavaScript. |
+| FR-THM-6 | Must | Tenants cannot supply raw CSS, HTML, or JavaScript. A pasted Credly embed code is not an exception: only the badge identifier is extracted from it and the markup is discarded (FR-INT-14). |
 
 ### 6.8 SEO and publishing — `FR-PUB`
 
@@ -404,9 +456,10 @@ Business requirement 13.5 is the strongest constraint in the source document and
 
 ```
 GET  /public/portfolios/:slug            → render payload for a published portfolio
-GET  /public/portfolios/:slug/projects/:projectId
 GET  /public/portfolios/:slug/sitemap.xml
 ```
+
+Project detail is delivered inside the portfolio payload, modal-level fields included, and is not served by an endpoint of its own. The modal opens over content the page already holds (FR-SEC-PROJ-6), so a per-project route would add a surface that nothing requests.
 
 **FR-API-1 (Must)** — Public responses are assembled from dedicated DTOs that omit every internal field: user id, email, draft content, disabled sections, integration credentials, sync status, analytics ids.
 
@@ -431,6 +484,8 @@ GET   /admin/integrations
 POST  /admin/integrations/:provider
 POST  /admin/integrations/:provider/sync     → manual refresh
 DELETE /admin/integrations/:provider
+POST  /admin/integrations/credly/import      → one-time populate from a public profile
+POST  /admin/integrations/credly/badge       → add one badge from a pasted embed code
 POST  /admin/publish
 POST  /admin/unpublish
 GET   /admin/link-health
@@ -456,7 +511,7 @@ POST /internal/revalidate      → shared-secret auth, called by api → portfol
 |---|---|---|
 | NFR-PERF-1 | Must | A cached public page responds in under 200 ms at the edge; an uncached render completes in under 800 ms at p95. |
 | NFR-PERF-2 | Must | Largest Contentful Paint under 2.5 s on a 4G connection; Cumulative Layout Shift under 0.1. |
-| NFR-PERF-3 | Must | A public page render performs at most one database read, and zero external HTTP calls. |
+| NFR-PERF-3 | Must | A public page render performs at most one database read and zero server-side external HTTP calls. Cards and badges are fetched by the visitor's browser, are excluded from render timing, and are lazy-loaded with reserved dimensions so they cannot spend NFR-PERF-2's layout-shift budget. |
 | NFR-PERF-4 | Should | The system sustains 500 concurrent public page views without degradation. |
 
 ### 8.2 Security and isolation — `NFR-SEC`
@@ -466,9 +521,11 @@ POST /internal/revalidate      → shared-secret auth, called by api → portfol
 | NFR-SEC-1 | Must | Cross-tenant read or write is impossible through any endpoint. This is verified by an automated test suite that attempts every admin endpoint with a second tenant's identifiers. |
 | NFR-SEC-2 | Must | All tenant-supplied text is escaped on render. Rich text, if permitted in any field, passes an allowlist sanitiser server-side before storage. |
 | NFR-SEC-3 | Must | Integration credentials and OAuth tokens are encrypted at rest with a key held outside the database. |
-| NFR-SEC-4 | Must | A strict Content Security Policy is served on public pages, permitting only the platform's own origins, the CDN, and a configured analytics origin. |
+| NFR-SEC-4 | Must | A strict Content Security Policy is served on public pages, permitting only the platform's own origins, the CDN, a configured analytics origin, GitHub's card service in `img-src`, and Credly's badge host in `frame-src`. No third-party origin is granted `script-src`. *(13.6, 13.9)* |
 | NFR-SEC-5 | Must | Outbound requests from the sync worker are restricted against SSRF: no private ranges, no link-local addresses, redirect chains re-validated at each hop. |
 | NFR-SEC-6 | Should | Content mutations are recorded in `auditLog`. |
+
+NFR-SEC-2's rich-text clause was written against a hypothetical. FR-SEC-PROJ-12 is its first concrete instance: the three project `bodies.*` fields are the first rich text the system accepts, and they fix the allowlist — paragraph, lists, strong, emphasis, underline, line break, no attributes — applied server-side before storage. Any rich-text field added later, in any section type, inherits that same allowlist rather than negotiating its own.
 
 ### 8.3 Accessibility — `NFR-A11Y` *(18.4)*
 
@@ -479,6 +536,9 @@ POST /internal/revalidate      → shared-secret auth, called by api → portfol
 | NFR-A11Y-3 | Must | Skill bars carry an accessible name and value; the rating is conveyed as text, never by bar or colour alone. |
 | NFR-A11Y-4 | Must | Alt text is present on every image, enforced at upload. |
 | NFR-A11Y-5 | Should | The admin panel meets the same standard. |
+| NFR-A11Y-6 | Must | An embedded third-party card or badge is described rather than transcribed: the platform cannot read its contents, so the name, issuer, and every figure that matters are rendered as adjacent text. The frame itself carries an accessible name and is never the sole carrier of information. *(18.4, 9.8, 11.8)* |
+
+The project modal (FR-SEC-PROJ-13) is the first focus-trapped overlay in the system, and its focus contract — trap while open, focus to the close control on open, focus returned to the element that opened it on close, dialog named by its own heading — is the general one. Any overlay added later inherits it rather than defining its own.
 
 ### 8.4 Responsiveness — `NFR-RESP` *(18.3)*
 
@@ -510,11 +570,17 @@ Every business requirement maps to at least one software requirement, or is reco
 | 2.9 | FR-SEC-PROJ-2 |
 | 2.10 | FR-SEC-PROJ-7 |
 | 2.11 | FR-REG-2 |
-| 2.12 | FR-SEC-PROJ-6 |
+| 2.12 | FR-SEC-PROJ-6, FR-SEC-PROJ-10 |
 | 2.13 | FR-SEC-PROJ-5 |
-| 2.14 | FR-SEC-PROJ-8 (guidance only) |
+| 2.14 | FR-SEC-PROJ-8 (guidance only) — applied to the modal-level `bodies.role` |
 | 2.15 | FR-SEC-PROJ-4 |
 | 2.16 | FR-SEC-PROJ-9 |
+| 2.17–2.23 | FR-SEC-PROJ-1, FR-SEC-PROJ-11 |
+| 2.24 | FR-SEC-PROJ-12, NFR-SEC-2 |
+| 2.25 | FR-SEC-PROJ-1 — advisory; stated in help text, not enforced programmatically |
+| 2.26, 2.29 | FR-SEC-PROJ-10 |
+| 2.27, 2.28, 2.30, 2.31 | FR-SEC-PROJ-13, NFR-A11Y-1, NFR-A11Y-2 |
+| 2.32 | NFR-RESP-1, FR-SEC-PROJ-13 |
 | 3.1–3.4 | FR-SEC-SKILL-2, 3, 4 |
 | 3.5, 3.9, 3.13 | Editorial — help text only, not enforceable |
 | 3.6–3.8 | FR-SEC-SKILL-5, 8 |
@@ -525,18 +591,27 @@ Every business requirement maps to at least one software requirement, or is reco
 | 3.15 | FR-SEC-SKILL-7, NFR-A11Y-3 |
 | 3.16 | FR-CFG-2, FR-SEC-SKILL-8 |
 | 4.1–4.3 | FR-SEC-CON-1, 2 |
-| 5.1–5.4 | FR-SEC-EXP-1 |
+| 5.1–5.4 | FR-SEC-EXP-1, FR-SEC-EXP-2 |
 | 6.1–6.3 | FR-SEC-EDU-1 |
 | 7.1, 7.2 | FR-SEC-BLOG-1, FR-INT-8 |
 | 7.3 | FR-CFG-6 (advisory) |
-| 8.1–8.3 | FR-SEC-TEST-1 |
+| 8.1–8.3 | FR-SEC-TEST-1 — 8.3's LinkedIn sourcing is unspecified, see open question 9 |
 | 9.1–9.4 | FR-SEC-OSS-1, FR-INT-7 |
+| 9.5 | FR-SEC-OSS-3 |
+| 9.6, 9.7 | FR-SEC-OSS-2, 3, FR-INT-11 |
+| 9.8 | FR-SEC-OSS-4, NFR-A11Y-6 |
 | 10.1 | FR-SEC-SPK-1 |
 | 10.2 | FR-CFG-6 (advisory) |
 | 11.1–11.3 | FR-SEC-ACH-1 |
+| 11.4–11.9 | FR-SEC-ACH-2 … 7 |
+| 11a.1–11a.5 | FR-SEC-TRN-1 |
 | 12.1, 12.2 | FR-SEC-GAL-1 |
 | 13.1–13.4 | FR-INT-7 … 10 |
 | 13.5 | FR-INT-1, 3, 4, 5 |
+| 13.6 | FR-INT-11, NFR-SEC-4 |
+| 13.7 | FR-INT-12 |
+| 13.8, 13.9 | FR-INT-13, FR-SEC-ACH-3, NFR-SEC-4 |
+| 13.10 | FR-INT-14, FR-THM-6 |
 | 14.1, 14.2 | FR-THM-1 |
 | 14.3, 14.4 | FR-THM-4, 5 |
 | 15.1–15.4 | FR-PUB-1, 2, 3 |
@@ -547,10 +622,10 @@ Every business requirement maps to at least one software requirement, or is reco
 | 18.1 | FR-CFG-2 |
 | 18.2 | FR-CFG-1 |
 | 18.3 | NFR-RESP-1, 2 |
-| 18.4 | NFR-A11Y-1 … 4 |
+| 18.4 | NFR-A11Y-1 … 4, 6 |
 | 18.5 | FR-MED-4, 6, NFR-PERF-2 |
 | 18.6 | FR-CFG-7 |
-| 18.7 | Reinterpreted as tenant isolation — NFR-SEC-1 |
+| 18.7 | FR-REG-1, FR-CFG-7 — every declared field is editable through generated admin forms, with no developer or agency involvement |
 
 ---
 
@@ -577,7 +652,10 @@ Every business requirement maps to at least one software requirement, or is reco
 
 1. **Résumé hosting.** Requirement 1.4 offers résumé download as a CTA. Is the file uploaded to the platform (adding a PDF path to media handling), or linked externally? Currently specified as uploadable, at 10 MB.
 2. **Contact form.** Requirement 16.2 tracks a "contact form" goal, but no section in the source document defines one — §4 lists links only. Is a form in scope? If so it needs its own section type, spam protection, and an email delivery dependency.
-3. **Project detail routing.** FR-SEC-PROJ-6 permits either an expandable card or a dedicated page. A dedicated page is better for SEO but adds routes and sitemap entries. Which should v1 build?
+3. **Project detail routing — resolved (0.3).** The modal is chosen over the dedicated page. Clicking a card opens an in-page dialog holding the full case study; there is no `/{slug}/projects/{id}` route and no URL change. The cost is accepted: project detail is not deep-linkable and not separately crawlable, and the portfolio page remains the only indexable surface. In exchange the system carries no additional routes and no additional sitemap entries. FR-SEC-PROJ-6 is rewritten accordingly, FR-SEC-PROJ-10 and 13 specify the dialog's behaviour, and the now-unnecessary `GET /public/portfolios/:slug/projects/:projectId` endpoint is removed from §7.1 in the same revision.
 4. **Slug policy.** Are slugs first-come-first-served, or is there a reservation process for names matching well-known people or trademarks?
 5. **Public directory.** Should published portfolios be discoverable through a platform-level index, or reachable only by direct URL?
 6. **Section ordering freedom.** FR-CFG-3 allows arbitrary reordering, but requirement 6.3 states Education belongs below work and projects. Is the ordering fully free, or does the layout impose constraints the tenant cannot override?
+7. **Trainings vs. achievements.** `trainings` inherits the Achievements schema verbatim, including its `type` enum — certification / award / ranking / hackathon. That enum does not describe a training well; the natural values are course, workshop, bootcamp, programme, and business §11a.2 does not ask for a type at all. Three options: (a) two section types with divergent `type` enums; (b) two section types with `type` dropped from Trainings altogether; (c) one collapsed type in which `type` distinguishes a training from an achievement, at the cost of the separate heading and the independent enable toggle. Option (a) is specified for now, with the enum unchanged, pending a decision.
+8. **Certification overlap.** A certification is both an achievement (11.1) and the outcome of a training. Business §11a.4 states that a credential is listed once and never in both sections, but does not say how that is upheld: admin needs help text steering the tenant to one section or the other, or entries will be duplicated.
+9. **Testimonials from LinkedIn.** Requirement 8.3 says testimonials "can be pulled from LinkedIn", but 13.4 scopes the LinkedIn import to experience and education only, and FR-INT-10 follows 13.4. The two business requirements disagree with each other. Either 13.4 widens to cover recommendations — which changes the import's scope, its permission requirements, and depends on what LinkedIn actually exposes — or 8.3's clause is dropped and testimonials stay manual. Specified as manual for now, following 13.4. This one belongs to the business document rather than to this specification.

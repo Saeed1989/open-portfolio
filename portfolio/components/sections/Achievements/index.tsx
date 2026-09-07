@@ -4,6 +4,8 @@ import {
   REGISTRY,
   type AchievementItem,
   type AchievementsContent,
+  type FieldDescriptor,
+  type TrainingsContent,
 } from '@openportfolio/registry';
 import {
   Badge,
@@ -18,17 +20,28 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Achievements (business req 11, FR-SEC-ACH-1).
+ * Achievements (business req 11, FR-SEC-ACH-1) and Trainings (business §11a,
+ * FR-SEC-TRN-1) — one component, two section types.
+ *
+ * The two declare the same fields in the same order, so they get the same
+ * renderers and the same card. Nothing below names a section: the walk is
+ * driven by whichever descriptor `sectionType` selects, and the heading is
+ * that descriptor's own label. Adding the second type therefore cost one
+ * registry entry and one parameter, which is the whole of FR-REG-3.
  *
  * `type` is an enum in the registry, so the four values are fixed and their
  * display form is derived rather than stored — a tenant cannot invent a fifth
- * kind by typing one.
+ * kind by typing one. The enum reads oddly for a training; SRS open question 7
+ * records that and specifies option (a), the enum unchanged, for now.
  *
- * Credly badges are items in this same collection, told apart by `source` and
- * drawn as a group of their own. There is no second collection and no `credly`
- * section type: one flat array keeps the registry contract intact (FR-REG-3)
- * and lets an imported badge be edited, reordered and deleted exactly like a
- * hand-written entry.
+ * Credly is the one thing the two do not share. Badges are items in the
+ * achievements collection, told apart by `source` and drawn as a group of
+ * their own. There is no second collection and no `credly` section type: one
+ * flat array keeps the registry contract intact (FR-REG-3) and lets an
+ * imported badge be edited, reordered and deleted exactly like a hand-written
+ * entry. Trainings declares no badge field, so the badge treatment below is
+ * switched off for it by the registry rather than by a check on the section
+ * name — see `BADGE_FIELD`.
  *
  * Nothing here is fetched. A badge is stored as a UUID; the element below is
  * built by us from that UUID, and Credly's own script — loaded once for the
@@ -38,6 +51,33 @@ import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
  * path and no route from a tenant's paste box to executable markup
  * (FR-THM-6, NFR-SEC-2).
  */
+/**
+ * The section types this component serves.
+ *
+ * Both are collections of the same credential-shaped item, which is why one
+ * component covers them. It is not a general-purpose base class — a third type
+ * belongs here only if it declares the same fields.
+ */
+export type CredentialSectionType = 'achievements' | 'trainings';
+
+/**
+ * `AchievementItem` is the wider of the two item shapes: a training item is an
+ * achievement item minus three optional Credly fields it never sets, so it is
+ * assignable here and the renderers below simply find those fields absent.
+ */
+export type CredentialContent = AchievementsContent | TrainingsContent;
+
+/**
+ * The field whose presence in a descriptor turns the badge treatment on.
+ *
+ * Asking the registry rather than comparing the section type keeps the rule
+ * where the rest of this component's behaviour already lives: a section that
+ * declares no badge field has no badges, whatever it is called, and a payload
+ * that smuggles `source: 'credly'` into a trainings item cannot conjure a
+ * frame the descriptor never declared.
+ */
+const BADGE_FIELD = 'credlyBadgeId';
+
 const TYPE_LABELS: Record<AchievementItem['type'], string> = {
   certification: 'Certification',
   award: 'Award',
@@ -173,8 +213,14 @@ const WRAPPERS: RunWrappers = {
   ),
 };
 
-function Achievement({ item }: { item: AchievementItem }) {
-  const runs = fieldRuns(REGISTRY.achievements.itemFields, item, RENDERERS);
+interface ItemProps {
+  item: AchievementItem;
+  /** The descriptor's `itemFields`, so the walk cannot name a section. */
+  fields: readonly FieldDescriptor[];
+}
+
+function Credential({ item, fields }: ItemProps) {
+  const runs = fieldRuns(fields, item, RENDERERS);
 
   return (
     <Card as="li" padding="roomy" radius="lg" className="flex flex-col gap-10">
@@ -183,30 +229,46 @@ function Achievement({ item }: { item: AchievementItem }) {
   );
 }
 
-function CredlyBadge({ item }: { item: AchievementItem }) {
-  const runs = fieldRuns(
-    REGISTRY.achievements.itemFields,
-    item,
-    CREDLY_RENDERERS,
-  );
+function CredlyBadge({ item, fields }: ItemProps) {
+  const runs = fieldRuns(fields, item, CREDLY_RENDERERS);
 
   /* No wrappers: nothing but the frame is visible, so there is no run of
      grouped fields left to enclose. */
   return <Stack as="li">{renderRuns(runs)}</Stack>;
 }
 
-export function Achievements({ content }: { content: AchievementsContent }) {
-  const items = content.items ?? [];
-  const badges = items.filter((item) => item.source === 'credly');
-  const manual = items.filter((item) => item.source !== 'credly');
+/**
+ * The shared implementation. `sectionType` selects the descriptor, and the
+ * descriptor supplies the rest — heading, field order, and whether badges
+ * exist at all.
+ */
+export function CredentialSection({
+  sectionType,
+  content,
+}: {
+  sectionType: CredentialSectionType;
+  content: CredentialContent;
+}) {
+  const descriptor = REGISTRY[sectionType];
+  const fields: readonly FieldDescriptor[] = descriptor.itemFields;
+
+  const items: readonly AchievementItem[] = content.items ?? [];
+
+  const badged = fields.some((field) => field.key === BADGE_FIELD);
+  const badges = badged
+    ? items.filter((item) => item.source === 'credly')
+    : [];
+  const manual = badged
+    ? items.filter((item) => item.source !== 'credly')
+    : items;
 
   return (
-    <SectionShell id="achievements" heading={REGISTRY.achievements.label}>
+    <SectionShell id={sectionType} heading={descriptor.label}>
       <Stack gap="stack-lg">
         {manual.length > 0 ? (
           <Grid as="ul" tracks="cards" gap="grid-gap">
             {manual.map((item) => (
-              <Achievement key={item.id} item={item} />
+              <Credential key={item.id} item={item} fields={fields} />
             ))}
           </Grid>
         ) : null}
@@ -219,7 +281,7 @@ export function Achievements({ content }: { content: AchievementsContent }) {
 
             <Grid as="ul" tracks="groups" gap="grid-gap" alignStart>
               {badges.map((item) => (
-                <CredlyBadge key={item.id} item={item} />
+                <CredlyBadge key={item.id} item={item} fields={fields} />
               ))}
             </Grid>
 
@@ -232,4 +294,12 @@ export function Achievements({ content }: { content: AchievementsContent }) {
       </Stack>
     </SectionShell>
   );
+}
+
+/**
+ * The achievements entry point. It exists so the section registry maps a type
+ * to a component of its own name; the implementation is the shared one above.
+ */
+export function Achievements({ content }: { content: AchievementsContent }) {
+  return <CredentialSection sectionType="achievements" content={content} />;
 }

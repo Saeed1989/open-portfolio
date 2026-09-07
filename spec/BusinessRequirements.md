@@ -20,16 +20,40 @@ Priority: **Must** = launch blocker · **Should** = enable 2–3 at launch · **
 
 **2A — Per-project content**
 
+Project content is held at two depths. The **card-level** fields drive the card in the
+projects grid, which has to be scannable in about fifteen seconds. The **modal-level**
+fields drive the detail view that opens when that card is clicked (2.12). The two tiers are
+written and stored separately: the card is not a truncation of the modal, and the modal is
+not a repetition of the card. A short problem sentence on a card and a full business case in
+the modal are different pieces of writing, each written for where it appears.
+
+*Card-level fields — the scannable card*
+
 | ID | Requirement |
 |---|---|
 | 2.1 | Title |
-| 2.2 | Problem statement — the challenge the project addressed |
-| 2.3 | Solution — what was built and the approach taken to build it |
+| 2.2 | Problem statement — the challenge the project addressed, short enough to scan on the card |
+| 2.3 | Solution — what was built and the approach taken to build it, short enough to scan on the card |
 | 2.4 | Tech stack — languages, frameworks, databases, tools |
 | 2.5 | Impact / results — performance gains, users reached, time saved, quality improvements |
 | 2.6 | Role — what the owner specifically architected or built, stated explicitly on team projects |
 | 2.7 | At least one link to a working demo or source repository |
 | 2.8 | Screenshot or visual showing what it looks like or how it works |
+
+*Modal-level fields — the detail view*
+
+Numbering continues from the end of §2 rather than interleaving with the card fields, so
+that identifiers already in use stay stable.
+
+| ID | Requirement |
+|---|---|
+| 2.17 | Business case — rich text. The problem and the business context around it, shown in the modal. Distinct from 2.2, which is the short problem statement on the card |
+| 2.18 | Solution (full) — rich text. What was built and the approach taken, shown in the modal. Distinct from 2.3, which is the short solution on the card |
+| 2.19 | My designation — short text. The title or role the owner held on the engagement, e.g. "Lead front-end engineer" |
+| 2.20 | My role (full) — rich text. What the owner specifically architected or built, in the first person, naming the components owned. Distinct from 2.6, which is the short role on the card. The writing guidance in 2.14 applies to this field |
+| 2.21 | Tech stack I worked on — tag list. The subset of the stack the owner personally touched. Distinct from 2.4, which is the short stack line shown on the card |
+| 2.22 | Tools — tag list. Non-runtime tooling: editors, CI, observability, design tools. Orthogonal to the runtime stack |
+| 2.23 | Full tech stack — tag list. The complete stack of the project, including the parts the owner did not personally work on. A superset of 2.21 |
 
 **2B — Section behaviour**
 
@@ -38,16 +62,33 @@ Priority: **Must** = launch blocker · **Should** = enable 2–3 at launch · **
 | 2.9 | 3–5 projects, owner-ordered; the cap is enforced rather than advisory |
 | 2.10 | Filter by category — backend, frontend, data, DevOps, etc. |
 | 2.11 | Fields appear in the same order for every project, so projects can be scanned and compared |
-| 2.12 | Readable at two depths: a card scannable in ~15 seconds, with full detail on expand or a dedicated project page |
+| 2.12 | Readable at two depths: a card scannable in ~15 seconds, and the full detail in an in-page modal dialog that opens when the card is clicked. There is no dedicated project page, no URL change, and no deep link to a single project. The trade-off is accepted deliberately — project detail is neither deep-linkable nor separately crawlable, in exchange for no additional routes and no extra sitemap surface |
 
 **2C — Content rules**
 
 | ID | Requirement |
 |---|---|
 | 2.13 | Impact is stated as a measured number wherever one exists; where none does, state what changed rather than leaving 2.5 empty |
-| 2.14 | Role is stated in the first person and names the specific components owned — not "worked on" |
-| 2.15 | Confidential work: problem and approach are described without disclosing employer or client specifics, and the repo link may be omitted |
+| 2.14 | Role is stated in the first person and names the specific components owned — not "worked on". This is the writing standard for the modal-level "My role (full)" field (2.20), where the account is given at length; the card's short role (2.6) is a one-line summary of it |
+| 2.15 | Confidential work: problem and approach are described without disclosing employer or client specifics, and the repo link may be omitted. Where it is, the modal says so in place of the link rather than leaving a gap |
 | 2.16 | Demo links are verified on a recurring schedule; a dead demo is worse than none, and a broken one is replaced with a walkthrough video or removed |
+| 2.24 | The rich-text modal fields (2.17, 2.18, 2.20) carry a restricted set of markup only: paragraphs, bulleted and numbered lists, bold, italic, underline, and line breaks. No links, no images, no scripts, no styling. This bounds what a case study can look like as much as what it can do — the detail view reads as prose, not as a second web page pasted inside the first |
+| 2.25 | 2.21 is a subset of 2.23: anything listed as personally worked on also appears in the full stack. 2.22 is orthogonal to both — tooling is not part of the runtime stack and belongs in neither list. Keeping the subset relationship honest is the owner's judgement; the system does not check it |
+
+**2D — Modal interaction**
+
+The detail view is a dialog laid over the page, so how it behaves is part of what the visitor
+experiences, not an implementation detail left to the build.
+
+| ID | Requirement |
+|---|---|
+| 2.26 | The modal opens when a project card is clicked, and closes on the Escape key, on a click outside the dialog, or on its close button |
+| 2.27 | While the modal is open, keyboard focus stays inside it — Tab and Shift+Tab cycle only among the modal's own focusable elements |
+| 2.28 | On open, focus moves to the close button. On close, focus returns to the card that was clicked, so a keyboard visitor does not lose their place in the grid |
+| 2.29 | The page behind the modal does not scroll while it is open, and the visitor's place on it is restored on close |
+| 2.30 | The dialog announces itself as a modal dialog and is named by the project title |
+| 2.31 | The close button carries a spoken name of its own and a hit area of at least 44×44 px |
+| 2.32 | The modal is fully usable at 320 px width with no horizontal scrolling (see 18.3) |
 
 ### 3. Skills & Tech Stack — Must
 
@@ -166,6 +207,16 @@ Two tiers on one page: a short showcase, then the full breakdown.
 | 11.7 | Imported badges arrive unpublished. Deciding which are high-signal under 11.3 is a judgement the import cannot make, so the owner culls before publishing |
 | 11.8 | A badge renders as Credly's own embedded frame and shows the badge alone. Its name and issuer are carried alongside for screen readers, because the frame's contents cannot be read aloud |
 | 11.9 | A badge's current state is drawn by Credly, not by the platform. A badge that has expired shows as expired, and the owner cannot restyle or suppress that |
+
+### 11a. Training & Continuing Education — Could
+
+| ID | Requirement |
+|---|---|
+| 11a.1 | Courses, workshops, bootcamps, and structured programmes completed |
+| 11a.2 | Per entry: title, issuing body, completion date, and an optional link to the certificate, syllabus, or course page |
+| 11a.3 | Recent and role-relevant learning only — an entry earns its place by supporting the target role, not by having been completed |
+| 11a.4 | A given credential is listed once — as an achievement under 11.1 or as a training outcome here, never in both sections |
+| 11a.5 | Distinct from Education (§6): §6 covers formal qualifications, this covers continuing and self-directed learning |
 
 ### 12. Media Gallery — Could
 

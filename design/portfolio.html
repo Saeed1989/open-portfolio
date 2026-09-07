@@ -16,9 +16,15 @@ html{-webkit-text-size-adjust:100%}
 body{margin:0;overflow-x:hidden}
 a{color:#2f5bff}
 a:hover{color:#1f3fc4}
+[data-rt] p{margin:0 0 10px}
+[data-rt] p:last-child{margin-bottom:0}
+[data-rt] ul{margin:8px 0 0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:6px}
+[data-rt] li{padding-left:2px}
+[data-rt] strong{font-weight:600}
+[data-rt] u{text-underline-offset:3px}
 </style>
 </helmet>
-<div ref="{{ rootRef }}" style="--accent-on:#ffffff;--accent:#2f5bff;--accent-ink:#1b3ac2;--bg:#f7f6f3;--surface:#ffffff;--text:#14161a;--text-muted:#565d6d;--line:color-mix(in srgb, var(--text) 12%, transparent);--track:color-mix(in srgb, var(--text) 14%, var(--surface));background:var(--bg);color:var(--text);font-family:'Spline Sans',ui-sans-serif,system-ui,sans-serif;min-height:100%;overflow-x:hidden">
+<div data-dc-root="" style="--accent-on:#ffffff;--accent:#2f5bff;--accent-ink:#1b3ac2;--bg:#f7f6f3;--surface:#ffffff;--text:#14161a;--text-muted:#565d6d;--line:color-mix(in srgb, var(--text) 12%, transparent);--track:color-mix(in srgb, var(--text) 14%, var(--surface));background:var(--bg);color:var(--text);font-family:'Spline Sans',ui-sans-serif,system-ui,sans-serif;min-height:100%;overflow-x:hidden">
 
 <a href="#main" style="position:absolute;left:-9999px;top:0;z-index:20;background:var(--accent);color:var(--accent-on);padding:12px 18px;font:500 15px/1 'Spline Sans',sans-serif;border-radius:0 0 8px 0" style-focus="left:0">Skip to content</a>
 
@@ -70,7 +76,8 @@ a:hover{color:#1f3fc4}
     </nav>
     <ul style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:clamp(14px,2vw,22px);margin:0;padding:0;list-style:none">
       <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
-        <li style="display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:clamp(16px,2.2vw,22px);min-width:0">
+        <li style="display:flex;min-width:0">
+        <button type="button" onClick="{{ p.onOpen }}" aria-haspopup="dialog" style="appearance:none;text-align:left;font:inherit;color:inherit;cursor:pointer;flex:1 1 auto;display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:clamp(16px,2.2vw,22px);min-width:0;transition:border-color .15s,transform .15s" style-hover="border-color:var(--accent);transform:translateY(-2px)" style-focus="outline:2px solid var(--accent);outline-offset:3px">
           <div style="aspect-ratio:16/10;border-radius:8px;background:var(--track);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center">
             <span style="font:500 10.5px/1.4 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:0 16px">{{ p.shotLabel }}</span>
           </div>
@@ -93,28 +100,8 @@ a:hover{color:#1f3fc4}
               <dd style="margin:0;font:400 14px/1.5 'Space Grotesk',sans-serif;color:var(--text);overflow-wrap:break-word">{{ p.stack }}</dd>
             </div>
           </dl>
-          <details style="border-top:1px solid var(--line);padding-top:10px">
-            <summary style="list-style:none;cursor:pointer;display:flex;align-items:center;min-height:44px;font:500 14px/1.4 'Spline Sans',sans-serif;color:var(--accent-ink)">Solution and my role</summary>
-            <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:4px">
-              <div>
-                <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Solution</dt>
-                <p style="margin:0;font:400 15px/1.55 'Spline Sans',sans-serif;color:var(--text-muted);text-wrap:pretty">{{ p.solution }}</p>
-              </div>
-              <div>
-                <dt style="font:500 10.5px/1 'Space Grotesk',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">My role</dt>
-                <p style="margin:0;font:400 15px/1.55 'Spline Sans',sans-serif;color:var(--text-muted);text-wrap:pretty">{{ p.role }}</p>
-              </div>
-            </div>
-          </details>
-          <div style="display:flex;flex-wrap:wrap;gap:6px 18px;margin:auto 0 0;padding-top:4px">
-            <a href="{{ p.demo }}" style="display:inline-flex;align-items:center;min-height:44px;font:500 15px/1.4 'Spline Sans',sans-serif;color:var(--text);text-decoration:none;border-bottom:2px solid var(--accent)" style-hover="color:var(--accent-ink)" style-focus="outline:2px solid var(--accent);outline-offset:3px">Live demo</a>
-            <sc-if value="{{ p.hasRepo }}" hint-placeholder-val="{{ true }}">
-              <a href="{{ p.repo }}" style="display:inline-flex;align-items:center;min-height:44px;font:500 15px/1.4 'Spline Sans',sans-serif;color:var(--text);text-decoration:none;border-bottom:2px solid var(--accent)" style-hover="color:var(--accent-ink)" style-focus="outline:2px solid var(--accent);outline-offset:3px">Source</a>
-            </sc-if>
-            <sc-if value="{{ p.confidential }}" hint-placeholder-val="{{ false }}">
-              <span style="display:inline-flex;align-items:center;min-height:44px;font:400 14px/1.4 'Spline Sans',sans-serif;color:var(--text-muted)">Client work — source not public</span>
-            </sc-if>
-          </div>
+          <span style="display:flex;align-items:center;gap:8px;margin:auto 0 0;padding-top:12px;border-top:1px solid var(--line);font:500 15px/1.4 'Spline Sans',sans-serif;color:var(--accent-ink)">Read the case study <span aria-hidden="true">&rarr;</span></span>
+        </button>
         </li>
       </sc-for>
     </ul>
@@ -186,6 +173,61 @@ a:hover{color:#1f3fc4}
 
 </main>
 
+<sc-if value="{{ isOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:60;background:color-mix(in srgb, #05070a 62%, transparent);display:flex;align-items:center;justify-content:center;padding:clamp(8px,2.5vw,32px)">
+  <div role="dialog" aria-modal="true" aria-labelledby="case-h" data-dc-dialog="" onClick="{{ stop }}" style="background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:14px;width:min(100%,980px);height:min(96vh,1100px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(5,7,10,.4)">
+
+    <div style="flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:clamp(14px,2vw,20px) clamp(16px,3vw,32px);border-bottom:1px solid var(--line);background:var(--surface)">
+      <div style="min-width:0">
+        <p style="margin:0 0 6px;font:500 11px/1 'Space Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)">Case study · {{ active.cat }} · {{ active.year }}</p>
+        <h2 id="case-h" style="margin:0;font:600 clamp(1.25rem,3vw,1.9rem)/1.15 'Space Grotesk',sans-serif;letter-spacing:-.025em;overflow-wrap:break-word">{{ active.title }}</h2>
+      </div>
+      <button type="button" data-dc-close="" onClick="{{ closeModal }}" aria-label="Close case study" style="appearance:none;flex:0 0 auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font:400 22px/1 'Spline Sans',sans-serif;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;cursor:pointer" style-hover="border-color:var(--text)" style-focus="outline:2px solid var(--accent);outline-offset:3px"><span aria-hidden="true">&times;</span></button>
+    </div>
+
+    <div style="flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:clamp(16px,3vw,32px);display:flex;flex-direction:column;gap:clamp(20px,3vw,32px)">
+
+      <div style="aspect-ratio:16/9;border-radius:10px;background:var(--track);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center">
+        <span style="font:500 11px/1.4 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:0 20px">{{ active.shotLabel }}</span>
+      </div>
+
+      <p style="margin:0;max-width:62ch;font:500 clamp(1.05rem,2vw,1.3rem)/1.5 'Space Grotesk',sans-serif;letter-spacing:-.015em;color:var(--text);text-wrap:pretty">{{ active.impact }}</p>
+
+      <div style="display:flex;flex-direction:column;gap:clamp(22px,3vw,34px)">
+        <sc-for list="{{ active.sections }}" as="sec" hint-placeholder-count="3">
+          <section style="min-width:0;border-top:1px solid var(--line);padding-top:14px">
+            <h3 style="margin:0 0 10px;font:500 11px/1 'Space Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)">{{ sec.label }}</h3>
+            <div data-rt="" dangerouslySetInnerHTML="{{ sec.html }}" style="max-width:76ch;font:400 16px/1.7 'Spline Sans',sans-serif;color:var(--text);text-wrap:pretty;overflow-wrap:break-word"></div>
+          </section>
+        </sc-for>
+        <section style="min-width:0;border-top:1px solid var(--line);padding-top:14px">
+          <h3 style="margin:0 0 12px;font:500 11px/1 'Space Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)">Stack I worked on</h3>
+          <ul style="display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none">
+            <sc-for list="{{ active.stackList }}" as="t" hint-placeholder-count="4">
+              <li style="font:500 14px/1 'Space Grotesk',sans-serif;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:9px 13px">{{ t }}</li>
+            </sc-for>
+          </ul>
+        </section>
+      </div>
+
+      <div style="aspect-ratio:16/9;border-radius:10px;background:var(--track);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center">
+        <span style="font:500 11px/1.4 'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:0 20px">{{ active.shotLabel2 }}</span>
+      </div>
+    </div>
+
+    <div style="flex:0 0 auto;display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;padding:clamp(12px,2vw,18px) clamp(16px,3vw,32px);border-top:1px solid var(--line);background:var(--surface)">
+      <a href="{{ active.demo }}" style="display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:var(--accent);color:var(--accent-on);font:500 15px/1 'Spline Sans',sans-serif;text-decoration:none;border-radius:8px" style-hover="background:var(--accent-ink)" style-focus="outline:2px solid var(--text);outline-offset:3px">Live demo</a>
+      <sc-if value="{{ active.hasRepo }}" hint-placeholder-val="{{ true }}">
+        <a href="{{ active.repo }}" style="display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:var(--surface);color:var(--text);font:500 15px/1 'Spline Sans',sans-serif;text-decoration:none;border:1px solid var(--line);border-radius:8px" style-hover="border-color:var(--text)" style-focus="outline:2px solid var(--accent);outline-offset:3px">Source</a>
+      </sc-if>
+      <sc-if value="{{ active.confidential }}" hint-placeholder-val="{{ false }}">
+        <span style="font:400 14px/1.4 'Spline Sans',sans-serif;color:var(--text-muted)">Client work — source not public</span>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+
 <footer style="padding:28px clamp(18px,5vw,64px) 40px;max-width:1180px;margin:0 auto;border-top:1px solid var(--line)">
   <p style="margin:0;font:400 13.5px/1.5 'Spline Sans',sans-serif;color:var(--text-muted)">© 2026 Mira Okonkwo</p>
 </footer>
@@ -246,6 +288,34 @@ const SKILLS = [
   { name: "Technical writing", cat: "Practice", r: 8 },
   { name: "Mentoring", cat: "Practice", r: 7 }
 ];
+const BODIES = {
+  "Ledgerwork checkout": {
+    "business": "<p>A <strong>five-step checkout</strong> lost buyers at every hop, and the client-side bundle blocked first paint on mid-range Android. Support tickets clustered on the payment step, where a failed card silently reset the form.</p><ul><li>Median load <strong>2.4s</strong>, worst case over 6s on 3G</li><li>Drop-off of 31% between address and payment</li><li>No recovery path once a payment errored</li></ul>",
+    "solution": "<p>Rebuilt it as <strong>one server-rendered page</strong> with progressive enhancement, so the form works before any JavaScript runs. Payment state moved server-side, which made errors recoverable rather than destructive.</p><ul><li>Single POST target with per-field server validation</li><li>Hotwire frames for the address lookup, <em>optional</em> by design</li><li>Idempotent payment intents keyed to the cart</li></ul>",
+    "role": "<p>I <u>architected the render path</u> and the payment-state machine end to end, then paired with two engineers on the form components.</p><ul><li>Owned the performance budget and the regression gate in CI</li><li>Wrote the migration plan that let the old flow run in parallel for six weeks</li><li>Ran the rollout, including the <em>rollback</em> we needed on day two</li></ul>"
+  },
+  "Beacon design system": {
+    "business": "<p>Nine product teams shipped <strong>four incompatible button implementations</strong> and no shared token source. Every visual change meant nine tickets, and accessibility fixes landed in one product and nowhere else.</p><ul><li>No single source of truth for colour or spacing</li><li>UI review was the slowest stage in every release</li></ul>",
+    "solution": "<p>62 <em>framework-agnostic</em> components on one token pipeline, adopted incrementally with <strong>no migration freeze</strong>.</p><ul><li>Tokens compiled from one JSON source to CSS, iOS and Android</li><li>Components shipped as web components, usable from React and Vue</li><li>Visual regression suite gating every release</li></ul>",
+    "role": "<p>I owned the <u>token pipeline</u> and the release process, and wrote the contribution model the teams still use.</p><ul><li>Set the versioning and deprecation policy</li><li>Ran a weekly office hour for adopting teams</li></ul>"
+  },
+  "Freight ops console": {
+    "business": "<p>Dispatchers ran <strong>400 daily routes</strong> from a spreadsheet, on tablets that lose signal inside the yard. A lost connection meant re-entering an hour of assignments.</p><ul><li>Assignment took roughly <strong>6 minutes</strong> per load</li><li>No audit trail when two dispatchers edited the same route</li></ul>",
+    "solution": "<p>An <em>offline-first</em> console with a local write queue and conflict review, keyboard-first for one-handed use beside a truck.</p><ul><li>Writes queue locally and replay on reconnect</li><li>Conflicts surface as a side-by-side review, never a silent overwrite</li><li>Every action reachable without the touch keyboard</li></ul>",
+    "role": "<p>I built the <u>sync layer</u> and the conflict-resolution UI. The mapping integration was a colleague's work.</p><ul><li>Designed the write-queue schema and replay ordering</li><li>Shadowed two dispatch shifts before writing any code</li></ul>"
+  },
+  "Council records search": {
+    "business": "<p>A city of <strong>1.2M</strong> published two decades of minutes as unsearchable scanned PDFs. Residents and journalists had no way to find a decision without knowing its date.</p><ul><li>~31,000 documents, image-only, no text layer</li><li>Existing portal unusable with a screen reader</li></ul>",
+    "solution": "<p>Full-text search over an OCR pipeline, with result pages that work <em>in a screen reader</em> and on a <strong>2G connection</strong>.</p><ul><li>Tesseract pipeline with per-page confidence scoring</li><li>Postgres full-text ranking, tuned on real query logs</li><li>Server-rendered results, under 30KB per page</li></ul>",
+    "role": "<p>I designed the <u>index schema</u> and the search UI, and ran the accessibility testing sessions myself.</p><ul><li>Two rounds of moderated testing with local advocacy groups</li><li>Wrote the public documentation for the data export</li></ul>"
+  },
+  "Shift planner (retail client)": {
+    "business": "<p>Managers built weekly rotas for hourly staff across <strong>six separate forms</strong>, and overtime went unnoticed until payroll closed.</p><ul><li>Rota build took roughly <strong>2 hours</strong> per store</li><li>Overtime breaches found weeks after the fact</li></ul>",
+    "solution": "<p>One <em>editable weekly grid</em> with live cost and overtime totals, validated server-side against local labour rules.</p><ul><li>Totals recompute per cell edit, server-authoritative</li><li>Rule violations block save with a plain-language reason</li></ul>",
+    "role": "<p>I owned the <u>scheduling rules engine</u> and the cost calculations end to end.</p><ul><li>Encoded the labour rules with the client's compliance lead</li><li>Built the reconciliation report payroll now runs weekly</li></ul>"
+  }
+};
+
 const SKILL_CATS = ["Frontend", "Platform", "Database", "Practice"];
 const decorate = (s) => ({
   name: s.name, score: s.r + "/10", pct: s.r * 10 + "%",
@@ -270,14 +340,49 @@ const CHIP = {
 };
 
 class Component extends DCLogic {
-  state = { cat: "All" };
-  rootRef = React.createRef();
+  state = { cat: "All", openKey: null };
 
-  componentDidMount() { this.applyTheme(); }
-  componentDidUpdate() { this.applyTheme(); }
+  componentDidMount() {
+    this.applyTheme();
+    this.onKey = (e) => {
+      if (!this.state.openKey) return;
+      if (e.key === "Escape") { this.close(); return; }
+      if (e.key !== "Tab") return;
+      const dlg = document.querySelector("[data-dc-dialog]");
+      if (!dlg) return;
+      const nodes = Array.prototype.filter.call(
+        dlg.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+        n => n.offsetWidth > 0 || n.offsetHeight > 0
+      );
+      if (!nodes.length) return;
+      const first = nodes[0], last = nodes[nodes.length - 1];
+      const inside = dlg.contains(document.activeElement);
+      if (e.shiftKey && (document.activeElement === first || !inside)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !inside)) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", this.onKey, true);
+  }
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.onKey, true);
+    document.documentElement.style.overflow = "";
+  }
+  componentDidUpdate() {
+    this.applyTheme();
+    const open = !!this.state.openKey;
+    const was = !!this._wasOpen;
+    this._wasOpen = open;
+    document.documentElement.style.overflow = open ? "hidden" : "";
+    if (open && !was) {
+      const btn = document.querySelector("[data-dc-close]");
+      if (btn) btn.focus();
+    }
+    if (!open && was && this.lastTrigger) { this.lastTrigger.focus(); this.lastTrigger = null; }
+  }
+
+  close = () => this.setState({ openKey: null });
 
   applyTheme() {
-    const el = this.rootRef.current;
+    const el = document.querySelector("[data-dc-root]");
     if (!el) return;
     const vars = (this.props.theme ?? "light") === "dark" ? DARK : LIGHT;
     Object.keys(vars).forEach(k => el.style.setProperty(k, vars[k]));
@@ -290,22 +395,31 @@ class Component extends DCLogic {
     const shown = PROJECTS.slice(0, count);
     const cats = ["All"].concat(SKILL_CATS.concat(["Backend", "Data", "DevOps"])
       .filter((c, i, a) => a.indexOf(c) === i && shown.some(x => x.cat === c)));
-    const active = cats.includes(this.state.cat) ? this.state.cat : "All";
+    const activeCat = cats.includes(this.state.cat) ? this.state.cat : "All";
 
     const categories = cats.map(c => ({
-      label: c, href: "#projects", current: c === active ? "true" : undefined,
-      onClick: (e) => { e.preventDefault(); this.setState({ cat: c }); },
-      style: c === active
+      label: c, href: "#projects", current: c === activeCat ? "true" : undefined,
+      onClick: (e) => { e.preventDefault(); this.setState({ cat: c, openKey: null }); },
+      style: c === activeCat
         ? { ...CHIP, background: "var(--accent)", color: "var(--accent-on)", border: "1px solid var(--accent)" }
         : { ...CHIP, background: "var(--surface)", color: "var(--text)", border: "1px solid var(--line)" }
     }));
 
     const projects = shown
-      .filter(x => active === "All" || x.cat === active)
+      .filter(x => activeCat === "All" || x.cat === activeCat)
       .map(x => ({
         ...x, hasRepo: !!x.repo, confidential: !!x.confidential,
-        shotLabel: x.title + " — screenshot placeholder"
+        shotLabel: x.title + " — screenshot placeholder",
+        shotLabel2: x.title + " — second screenshot placeholder",
+        stackList: x.stack.split(" · "),
+        sections: [
+          { label: "Business case", html: { __html: (BODIES[x.title] || {}).business || "" } },
+          { label: "Solution", html: { __html: (BODIES[x.title] || {}).solution || "" } },
+          { label: "My role", html: { __html: (BODIES[x.title] || {}).role || "" } }
+        ],
+        onOpen: (e) => { this.lastTrigger = e.currentTarget; this.setState({ openKey: x.title }); }
       }));
+    const active = projects.find(x => x.title === this.state.openKey) || {};
     const skillsOn = p.showSkills ?? true;
     const prominentSkills = skillsOn ? SKILLS.filter(s => s.prom).map(decorate) : [];
     const skillGroups = skillsOn
@@ -331,10 +445,12 @@ class Component extends DCLogic {
     return {
       projects, categories, skillGroups, prominentSkills, contactLinks,
       hasProjects, hasSkills, hasContact, navItems,
-      rootRef: this.rootRef,
+      active, isOpen: !!active.title,
+      closeModal: this.close,
+      stop: (e) => e.stopPropagation(),
       showAvatar: p.showAvatar ?? true,
       projectCountLabel: projects.length + (projects.length === 1 ? " project" : " projects")
-        + (active === "All" ? "" : " in " + active)
+        + (activeCat === "All" ? "" : " in " + activeCat)
     };
   }
 }

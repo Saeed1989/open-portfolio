@@ -128,12 +128,21 @@
   --space-stack-sm: clamp(14px, 2vw, 20px);
   --space-stack-md: clamp(16px, 2.4vw, 24px);
   --space-stack-lg: clamp(24px, 3.5vw, 34px);
+  /* The case-study dialog. `overlay-pad` is the gap between the dialog and the
+     viewport edge; it bottoms out at 8px so the dialog still has room to
+     breathe at 320px. */
+  --space-overlay-pad: clamp(8px, 2.5vw, 32px);
+  --space-dialog-x: clamp(16px, 3vw, 32px);      /* header/body/footer inset */
+  --space-dialog-y: clamp(14px, 2vw, 20px);      /* header block padding */
+  --space-dialog-foot: clamp(12px, 2vw, 18px);   /* footer block padding */
+  --space-dialog-gap: clamp(20px, 3vw, 32px);    /* between body blocks */
 
   /* -- Radii -------------------------------------------------------------- */
   --radius-none: 0px;
   --radius-sm: 8px;    /* buttons, screenshot frame */
   --radius-md: 10px;   /* skill card */
   --radius-lg: 12px;   /* project card */
+  --radius-xl: 14px;   /* case-study dialog */
   --radius-pill: 99px; /* chips, progress bars */
   --radius-full: 999px;/* avatar */
 
@@ -144,10 +153,17 @@
   --ring-offset: 3px;
 
   /* -- Elevation ---------------------------------------------------------- */
-  /* The design uses no box-shadow at all — surfaces are separated by a 1px
+  /* The page uses no box-shadow at all — surfaces are separated by a 1px
      --border against --surface. --shadow-none exists so a primitive can state
-     that intent explicitly rather than omitting the property. */
+     that intent explicitly rather than omitting the property.
+     The case-study dialog is the one exception, and the only thing in the
+     design that leaves the page plane: it is lifted off a dimmed page, where a
+     hairline alone would not read as "in front". Both values below are the
+     overlay's, and nothing else may use them. */
   --shadow-none: none;
+  --shadow-overlay: 0 24px 64px rgb(5 7 10 / 0.4);
+  --overlay: color-mix(in srgb, #05070a 62%, transparent);
+  --z-overlay: 60;
 
   /* -- Sizes -------------------------------------------------------------- */
   --size-content: 1180px;      /* max page width */
@@ -159,12 +175,20 @@
   --track-skill: 300px;        /* prominent skill grid */
   --track-group: 280px;        /* skill category columns */
   --track-pair: 280px;         /* two-up split, e.g. contact */
+  /* The case-study dialog. Width and height are both capped *and* relative, so
+     the dialog is a panel on a desktop and very nearly the whole viewport on a
+     phone without a breakpoint deciding which (NFR-RESP-1). */
+  --size-dialog: 980px;
+  --size-dialog-h: 1100px;
+  --size-dialog-vh: 96vh;
 
   /* -- Measures (the design's `max-width: NNch` caps on running text) ------ */
   --measure-tagline: 34ch;
   --measure-bio: 56ch;
   --measure-legend: 52ch;
   --measure-intro: 44ch;
+  --measure-pull: 62ch;        /* the modal's impact pull-quote */
+  --measure-prose: 76ch;       /* a case-study body */
   --size-tap: 44px;            /* minimum interactive height */
   --size-tap-lg: 48px;         /* buttons, contact rows */
   --size-control: 40px;        /* filter chip height */
@@ -237,6 +261,66 @@
   summary::-webkit-details-marker {
     display: none;
   }
+}
+
+/* Momentum scrolling inside the dialog's body region. A no-op on current iOS,
+   which does this by default, and still needed by older WebKit — where the
+   alternative is a scroll region that stops dead on release. */
+.dialog-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* The three case-study bodies are the only rich text the system renders, and
+   the only markup on the page this stylesheet does not author. Their tags
+   arrive from storage, so they cannot carry a class and have to be styled by
+   element — which is why these rules exist at all rather than living as
+   Tailwind utilities on a component.
+
+   The selector list is closed on purpose. It is exactly FR-SEC-PROJ-12's
+   allowlist, so a tag outside that list has no styling here — a visible
+   signal, in review, that something reached the page which should not have. */
+.rich-text > * {
+  margin: 0;
+}
+
+.rich-text > * + * {
+  margin-top: var(--space-12);
+}
+
+.rich-text ul,
+.rich-text ol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-left: var(--space-20);
+}
+
+.rich-text ul {
+  list-style: disc;
+}
+
+.rich-text ol {
+  list-style: decimal;
+}
+
+.rich-text li::marker {
+  color: var(--text-muted);
+}
+
+.rich-text strong {
+  font-weight: var(--weight-semibold);
+}
+
+.rich-text em {
+  font-style: italic;
+}
+
+/* The design underlines inside a body for emphasis, and underlines a link
+   nowhere else. There are no links in here — the allowlist has no anchor — so
+   the two cannot be confused. */
+.rich-text u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* Credly's embed script replaces our placeholder element with an iframe of its

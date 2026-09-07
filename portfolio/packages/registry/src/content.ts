@@ -36,6 +36,35 @@ export interface HeroContent {
   readonly avatar?: ImageRef | null;
 }
 
+/**
+ * The three rich-text bodies behind a project's case-study modal
+ * (business 2.17, 2.18, 2.20).
+ *
+ * Stored as HTML, and rendered by injecting that HTML directly. FR-SEC-PROJ-12
+ * makes that safe by requiring an allowlist sanitiser to run at *write* time,
+ * so what is stored is already clean. That sanitiser belongs to the write path
+ * — the api — which does not exist in this repository yet, so nothing here
+ * enforces it. Until it does, treat these three strings as trusted input and
+ * do not point the portfolio at an unsanitised source.
+ */
+export interface ProjectBodies {
+  readonly business: string;
+  readonly solution: string;
+  readonly role: string;
+}
+
+/**
+ * A project, at both of the depths FR-SEC-PROJ-6 asks for.
+ *
+ * The first block is card-level: the fifteen-second read. The second is
+ * modal-level: the case study behind it. The two are stored separately and one
+ * is never derived from the other — the card is not a truncation of the modal
+ * (business §2A).
+ *
+ * Every modal-level field is optional here and required by the descriptor.
+ * A draft is allowed to be half-written; it is *publishing* that insists on
+ * all seven, which is what `validateProjectItem` in `publish.ts` checks.
+ */
 export interface ProjectItem {
   readonly id: string;
   readonly title: string;
@@ -51,6 +80,18 @@ export interface ProjectItem {
   readonly repoUrl?: string;
   /** FR-SEC-PROJ-4: suppresses the repo-link requirement, shows a note. */
   readonly confidential?: boolean;
+
+  /* -- Modal-level (business 2.17–2.23) ---------------------------------- */
+
+  readonly bodies?: ProjectBodies;
+  /** The title held on the engagement, e.g. "Lead front-end engineer". */
+  readonly designation?: string;
+  /** The subset of `fullStack` the tenant personally touched. */
+  readonly stackWorkedOn?: readonly string[];
+  /** Non-runtime tooling. Orthogonal to both stack lists, not a subset. */
+  readonly tools?: readonly string[];
+  /** The project's whole stack, including what the tenant did not work on. */
+  readonly fullStack?: readonly string[];
 }
 
 export interface ProjectsContent {
@@ -231,6 +272,30 @@ export interface AchievementItem {
   readonly verifyUrl?: string;
 }
 
+/**
+ * A completed course, workshop, bootcamp or structured programme
+ * (business §11a, FR-SEC-TRN-1).
+ *
+ * Field for field an achievement, minus the three Credly fields and minus the
+ * per-item publish flag that only an import needs. That is not a coincidence
+ * to be tidied away later: §11a.4 asks that a credential be listed once, as an
+ * achievement *or* as a training, which only works if the two carry the same
+ * information and differ in where the tenant files it.
+ *
+ * `type` reuses `AchievementType` deliberately. Certification / award /
+ * ranking / hackathon reads oddly for a training — SRS open question 7 records
+ * exactly that, along with the alternatives — and option (a), the enum
+ * unchanged, is what is specified today. It is not this section's to fix.
+ */
+export interface TrainingItem {
+  readonly id: string;
+  readonly title: string;
+  readonly issuer?: string;
+  readonly date?: string;
+  readonly type: AchievementType;
+  readonly url?: string;
+}
+
 export interface GalleryItem {
   readonly id: string;
   readonly image?: ImageRef | null;
@@ -258,6 +323,13 @@ export interface AchievementsContent {
    */
   readonly credlyUsername?: string;
 }
+/*
+ * No `credlyUsername` alongside `items`, unlike AchievementsContent. Trainings
+ * shares the field schema, not the import path: there is no badge import, no
+ * embed-code paste and no per-item publish state on this side (FR-SEC-ACH-2
+ * … 7 belong to `achievements` alone).
+ */
+export type TrainingsContent = Collection<TrainingItem>;
 export type GalleryContent = Collection<GalleryItem>;
 
 /** Maps a section type to the content object it carries. */
@@ -273,6 +345,7 @@ export interface SectionContentMap {
   readonly opensource: OpenSourceContent;
   readonly speaking: SpeakingContent;
   readonly achievements: AchievementsContent;
+  readonly trainings: TrainingsContent;
   readonly gallery: GalleryContent;
 }
 

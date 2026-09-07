@@ -38,6 +38,8 @@ const config: Config = {
       'text-muted': 'var(--text-muted)',
       border: 'var(--border)',
       track: 'var(--track)',
+      /* The dimmed page behind the case-study dialog. */
+      overlay: 'var(--overlay)',
     },
     fontFamily: {
       sans: 'var(--font-sans)',
@@ -134,6 +136,11 @@ const config: Config = {
       'stack-sm': 'var(--space-stack-sm)',
       'stack-md': 'var(--space-stack-md)',
       'stack-lg': 'var(--space-stack-lg)',
+      'overlay-pad': 'var(--space-overlay-pad)',
+      'dialog-x': 'var(--space-dialog-x)',
+      'dialog-y': 'var(--space-dialog-y)',
+      'dialog-foot': 'var(--space-dialog-foot)',
+      'dialog-gap': 'var(--space-dialog-gap)',
       tap: 'var(--size-tap)',
       'tap-lg': 'var(--size-tap-lg)',
       control: 'var(--size-control)',
@@ -152,6 +159,7 @@ const config: Config = {
       sm: 'var(--radius-sm)',
       md: 'var(--radius-md)',
       lg: 'var(--radius-lg)',
+      xl: 'var(--radius-xl)',
       pill: 'var(--radius-pill)',
       full: 'var(--radius-full)',
     },
@@ -168,6 +176,8 @@ const config: Config = {
     },
     boxShadow: {
       none: 'var(--shadow-none)',
+      /* The dialog only. Nothing else in the design leaves the page plane. */
+      overlay: 'var(--shadow-overlay)',
     },
     maxWidth: {
       content: 'var(--size-content)',
@@ -175,6 +185,9 @@ const config: Config = {
       bio: 'var(--measure-bio)',
       legend: 'var(--measure-legend)',
       intro: 'var(--measure-intro)',
+      pull: 'var(--measure-pull)',
+      prose: 'var(--measure-prose)',
+      dialog: 'var(--size-dialog)',
       full: '100%',
     },
     gridTemplateColumns: {
@@ -187,6 +200,14 @@ const config: Config = {
       aspectRatio: {
         square: '1',
         shot: '16 / 10',
+      },
+      /* The dialog shrinks to its content, and is capped three ways: by the
+         backdrop's padded box (`100%`), by the viewport, and absolutely. */
+      maxHeight: {
+        dialog: 'min(100%, var(--size-dialog-vh), var(--size-dialog-h))',
+      },
+      zIndex: {
+        overlay: 'var(--z-overlay)',
       },
       flexBasis: {
         /* The hero text column's `flex: 1 1 340px` wrap point. */

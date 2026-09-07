@@ -7,7 +7,7 @@ import type { TypedSectionInstance } from '@openportfolio/registry';
  * Development fixture only — nothing here is loaded by the public page, which
  * reads its sections from the API. The hero, projects, skills and contact
  * content is copied from the design's own data so the two can be held side by
- * side; the remaining eight sections are written in the same voice to exercise
+ * side; the remaining nine sections are written in the same voice to exercise
  * every registry field.
  */
 const SAMPLE_IMAGE = {
@@ -374,10 +374,41 @@ export const fixtureSections: TypedSectionInstance[] = [
     },
   },
 
+  /*
+   * Trainings, ordered directly after achievements the way the registry
+   * declares it (SRS §4.1). No `source` and no badge fields — the descriptor
+   * declares neither, so this section cannot draw a Credly frame however the
+   * payload is written.
+   */
+  {
+    type: 'trainings',
+    enabled: true,
+    order: 10,
+    content: {
+      items: [
+        {
+          id: 'tr1',
+          type: 'certification',
+          title: 'Distributed Systems for Practitioners',
+          issuer: 'Bradfield School of Computer Science',
+          date: '2025',
+          url: 'https://example.com/courses/distributed-systems',
+        },
+        {
+          id: 'tr2',
+          type: 'certification',
+          title: 'Accessibility for Front-End Engineers',
+          issuer: 'Deque University',
+          date: '2024',
+        },
+      ],
+    },
+  },
+
   {
     type: 'gallery',
     enabled: true,
-    order: 10,
+    order: 11,
     content: {
       items: [
         {
@@ -398,7 +429,7 @@ export const fixtureSections: TypedSectionInstance[] = [
   {
     type: 'contact',
     enabled: true,
-    order: 11,
+    order: 12,
     content: {
       intro:
         'Open to staff-level front-end roles and short platform engagements. Replies within two days.',
@@ -445,19 +476,19 @@ export const droppedSections: TypedSectionInstance[] = [
   {
     type: 'projects',
     enabled: false,
-    order: 12,
+    order: 13,
     content: { items: [{ id: 'x', title: 'Never rendered', problem: 'x', impact: 'x' }] },
   },
   {
     type: 'blog',
     enabled: true,
-    order: 13,
+    order: 14,
     content: { items: [] },
   },
   {
     type: 'gallery',
     enabled: true,
-    order: 14,
+    order: 15,
     content: { items: [{ id: 'g', caption: 'No image, no video.' }] },
   },
 ];

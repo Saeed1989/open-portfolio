@@ -14,6 +14,7 @@ import { Projects } from './Projects';
 import { Skills } from './Skills';
 import { Speaking } from './Speaking';
 import { Testimonials } from './Testimonials';
+import { Trainings } from './Trainings';
 
 /**
  * The dispatch table: one section type, one component (FR-REG-3).
@@ -64,5 +65,6 @@ export const sectionRegistry: Record<SectionType, SectionComponent> = {
   opensource: entry(OpenSource),
   speaking: entry(Speaking),
   achievements: entry(Achievements),
+  trainings: entry(Trainings),
   gallery: entry(Gallery),
 };

@@ -18,6 +18,9 @@ export type {
   DescriptionValueStyle,
 } from './DescriptionList';
 
+export { Dialog } from './Dialog';
+export type { DialogProps } from './Dialog';
+
 export { Disclosure } from './Disclosure';
 export type { DisclosureProps } from './Disclosure';
 
@@ -44,6 +47,9 @@ export type { PageSectionPadding, PageSectionProps } from './PageSection';
 
 export { ProgressBar } from './ProgressBar';
 export type { ProgressBarProps, ProgressBarSize } from './ProgressBar';
+
+export { RichText } from './RichText';
+export type { RichTextProps } from './RichText';
 
 export { SectionShell } from './SectionShell';
 export type { SectionShellProps } from './SectionShell';

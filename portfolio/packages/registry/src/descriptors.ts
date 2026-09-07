@@ -9,7 +9,7 @@ import {
 } from './empty';
 
 /**
- * The twelve section descriptors — the single source of truth (FR-REG-1).
+ * The thirteen section descriptors — the single source of truth (FR-REG-1).
  *
  * The order of each `fields` / `itemFields` array is the public render order
  * (FR-REG-2). It is not a hint: section components iterate these arrays and
@@ -116,6 +116,76 @@ export const REGISTRY = {
         kind: 'longtext',
         group: 'detail',
         help: 'First person, named components.',
+      },
+      /*
+       * The case study behind the card (FR-SEC-PROJ-1, business 2.17–2.23).
+       *
+       * This array is the modal's sub-section order, not just the admin form's:
+       * ProjectModal walks these same descriptors to draw its labelled regions,
+       * so the seven cannot be rendered in an order this file did not declare
+       * (FR-REG-2). Moving an entry here moves the section in the modal.
+       *
+       * `bodies.*` keys are dotted because the three rich-text bodies nest
+       * under one object; `FieldError.path` is already a dotted path, so a
+       * failure addresses the field the tenant sees.
+       */
+      {
+        key: 'bodies.business',
+        label: 'Business case',
+        kind: 'longtext',
+        required: true,
+        group: 'body',
+        help: 'Plain paragraphs and lists. No links or images.',
+      },
+      {
+        key: 'bodies.solution',
+        label: 'Solution',
+        kind: 'longtext',
+        required: true,
+        group: 'body',
+        help: 'Plain paragraphs and lists. No links or images.',
+      },
+      {
+        key: 'designation',
+        label: 'My designation',
+        kind: 'text',
+        required: true,
+        group: 'body',
+        help: 'The title you held on this engagement, e.g. "Lead front-end engineer".',
+      },
+      {
+        key: 'bodies.role',
+        label: 'My role',
+        kind: 'longtext',
+        required: true,
+        group: 'body',
+        /* FR-SEC-PROJ-8's guidance attaches here, to the long account — not to
+           the card's one-line `role` above. */
+        help: 'Plain paragraphs and lists. No links or images. First person, naming the components you owned — not "worked on".',
+      },
+      {
+        key: 'stackWorkedOn',
+        label: 'Tech stack I worked on',
+        kind: 'tags',
+        required: true,
+        group: 'body',
+        help: 'The part of the stack you personally touched. A subset of "Full tech stack".',
+      },
+      {
+        key: 'tools',
+        label: 'Tools',
+        kind: 'tags',
+        required: true,
+        group: 'body',
+        help: 'Non-runtime tooling — editors, CI, observability, design. Orthogonal to both stack lists, not a subset of either.',
+      },
+      {
+        key: 'fullStack',
+        label: 'Full tech stack',
+        kind: 'tags',
+        required: true,
+        group: 'body',
+        help: 'Everything the project runs on, including parts you did not work on. A superset of "Tech stack I worked on".',
       },
       { key: 'demoUrl', label: 'Live demo', kind: 'url', group: 'links' },
       { key: 'repoUrl', label: 'Source', kind: 'url', group: 'links' },
@@ -465,6 +535,75 @@ export const REGISTRY = {
         group: 'links',
       },
     ],
+    emptyCondition: (content) =>
+      collectionIsEmpty(
+        content,
+        (item) => isRecord(item) && hasText(item.title),
+      ),
+  },
+
+  /*
+   * Trainings (business §11a, FR-SEC-TRN-1) — the FR-REG-3 test case.
+   *
+   * This entry is the whole of the data-side change. It adds no field kind, no
+   * descriptor property, no content shape the api did not already store, and
+   * no branch in admin: the section is a collection of items whose fields are
+   * the ones `achievements` already declares, so every form widget, validator
+   * and persistence path it needs already exists and is already generic.
+   *
+   * Field for field identical to `achievements`, in the same declared order,
+   * minus the three Credly fields. Credly belongs to achievements alone
+   * (FR-SEC-ACH-2 … 7): no badge import, no embed-code paste, no
+   * `credlyUsername` beside `items`, and no per-item `published` flag — that
+   * flag exists in §5.2 because an import cannot judge which badges are
+   * high-signal, and nothing here is imported.
+   *
+   * `type` carries the achievements enum unchanged. Certification / award /
+   * ranking / hackathon does not describe a course well; SRS open question 7
+   * says so in as many words and lists the alternatives. Option (a) — two
+   * types, enum unchanged — is what is specified, so it is what is here.
+   */
+  trainings: {
+    type: 'trainings',
+    label: 'Training',
+    /*
+     * FR-CFG-6: the source document's guidance, surfaced in admin as advice.
+     * Both hints below are editorial judgements (11a.3, 11a.4) — the system
+     * cannot tell whether a course is role-relevant, or that the certification
+     * listed here is the same one listed under Achievements. Nothing validates
+     * them, and nothing blocks a publish over them.
+     */
+    description:
+      'Courses, workshops, bootcamps and structured programmes. Recent and role-relevant learning only — an entry earns its place by supporting the role you are aiming at, not by having been completed.',
+    priority: 'could',
+    businessRef: 'BR 11a',
+    cardinality: 'collection',
+    itemFields: [
+      {
+        key: 'type',
+        label: 'Type',
+        kind: 'enum',
+        options: ['certification', 'award', 'ranking', 'hackathon'],
+        group: 'meta',
+      },
+      { key: 'date', label: 'Completed', kind: 'date', group: 'meta' },
+      {
+        key: 'title',
+        label: 'Title',
+        kind: 'text',
+        required: true,
+        help: 'List a credential once — as an achievement or as a training, never in both sections.',
+      },
+      { key: 'issuer', label: 'Issuing body', kind: 'text' },
+      {
+        key: 'url',
+        label: 'Certificate or course page',
+        kind: 'url',
+        group: 'links',
+      },
+    ],
+    /* The same predicate as achievements: an item with no title draws nothing,
+       and a collection of nothing but those is an empty section (FR-CFG-2). */
     emptyCondition: (content) =>
       collectionIsEmpty(
         content,
