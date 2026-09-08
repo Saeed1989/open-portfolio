@@ -4,7 +4,7 @@ import { cn } from './cn';
 /**
  * An SVG wrapper.
  *
- * NOTE: design/portfolio.html contains no iconography at all — no SVG, no icon
+ * NOTE: spec/uiDesign/portfolio.html contains no iconography at all — no SVG, no icon
  * font, no glyphs. This primitive therefore establishes sizing, colour
  * inheritance and accessibility handling, but its visual language is not
  * derived from the approved design and should be reviewed before first use.

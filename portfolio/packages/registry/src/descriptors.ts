@@ -17,7 +17,7 @@ import {
  * order, and every item in a collection is laid out identically by
  * construction.
  *
- * Where the approved design (design/portfolio.html) fixes an order, the array
+ * Where the approved design (spec/uiDesign/portfolio.html) fixes an order, the array
  * below matches it — the design's project card reads screenshot, category,
  * year, title, then Problem, Impact and Stack.
  *

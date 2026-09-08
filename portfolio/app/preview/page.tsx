@@ -9,7 +9,7 @@ import {
 
 /**
  * Development aid. Renders SectionRenderer against a fixture portfolio so the
- * output can be held against design/portfolio.html.
+ * output can be held against spec/uiDesign/portfolio.html.
  *
  * `?view=hero` is the FR-CFG-2 check: one hero, plus a disabled section, an
  * enabled-but-empty section, and a section whose every item is empty. If the
