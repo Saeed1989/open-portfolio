@@ -11,6 +11,9 @@ import {
   Heading,
   Image,
   Stack,
+  Tag,
+  TagList,
+  TagListItem,
   Text,
 } from '@/components/ui';
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
@@ -83,6 +86,23 @@ const CARD_RENDERERS = {
         {item.stack.join(' · ')}
       </DescriptionListItem>
     ) : null,
+
+  /* The one-line versions, muted below Problem and Impact. Their long
+     counterparts are `bodies.solution` and `bodies.role` in the modal — these
+     two are the card's own summary, not a truncation of those. */
+  solution: (item: ProjectItem) =>
+    item.solution ? (
+      <DescriptionListItem label="Solution" tone="muted">
+        {item.solution}
+      </DescriptionListItem>
+    ) : null,
+
+  role: (item: ProjectItem) =>
+    item.role ? (
+      <DescriptionListItem label="My role" tone="muted">
+        {item.role}
+      </DescriptionListItem>
+    ) : null,
 };
 
 const CARD_WRAPPERS: RunWrappers = {
@@ -135,21 +155,84 @@ function ProjectCard({
   );
 }
 
-export function ProjectGallery({ items }: { items: readonly ProjectItem[] }) {
+/** The filter's resting state: every project, no category chosen. */
+const ALL = 'All';
+
+export interface ProjectGalleryProps {
+  items: readonly ProjectItem[];
+  /** Tenant-editable filter categories (FR-SEC-PROJ-7). */
+  categories?: readonly string[];
+}
+
+export function ProjectGallery({ items, categories }: ProjectGalleryProps) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [category, setCategory] = useState<string>(ALL);
   /* The card that opened the dialog. Captured from the click rather than read
      back from `document.activeElement`, which Safari does not set on a button
      click — see Dialog's `returnFocusTo`. */
   const triggerRef = useRef<HTMLElement | null>(null);
 
-  /* Derived, not stored: a project removed from the payload cannot leave a
-     stale copy of itself open. */
-  const open = items.find((item) => item.id === openId) ?? null;
+  /*
+   * Only categories some project actually uses. A tenant may leave a category
+   * configured after deleting the last project in it, and a filter that
+   * reliably yields nothing is worse than no filter — business req 18.1
+   * applied to a control rather than to a section.
+   */
+  const used = (categories ?? []).filter((name) =>
+    items.some((item) => item.category === name),
+  );
+  const active = used.includes(category) ? category : ALL;
+  const shown =
+    active === ALL ? items : items.filter((item) => item.category === active);
+
+  /* Derived, not stored: a project filtered out of view — or removed from the
+     payload — cannot leave a stale copy of itself open. */
+  const open = shown.find((item) => item.id === openId) ?? null;
 
   return (
     <>
+      {/* Filtering is client-side over data already rendered (FR-SEC-PROJ-7),
+          so no project leaves the initial HTML when a filter is applied. */}
+      {used.length > 0 ? (
+        <Stack
+          as="nav"
+          direction="row"
+          wrap
+          align="baseline"
+          justify="between"
+          gapX="24"
+          gapY="8"
+          label="Filter projects by category"
+          className="mb-filter-gap"
+        >
+          <TagList>
+            {[ALL, ...used].map((name) => (
+              <TagListItem key={name}>
+                <Tag
+                  variant={name === active ? 'selected' : 'neutral'}
+                  current={name === active}
+                  onClick={() => {
+                    setCategory(name);
+                    /* Refiltering with a case study open would leave the
+                       dialog showing a project no longer in the grid. */
+                    setOpenId(null);
+                  }}
+                >
+                  {name}
+                </Tag>
+              </TagListItem>
+            ))}
+          </TagList>
+
+          <Text variant="caption" tone="muted">
+            {shown.length} {shown.length === 1 ? 'project' : 'projects'}
+            {active === ALL ? '' : ` in ${active}`}
+          </Text>
+        </Stack>
+      ) : null}
+
       <Grid as="ul" tracks="cards" gap="grid-gap">
-        {items.map((item) => (
+        {shown.map((item) => (
           <ProjectCard
             key={item.id}
             item={item}
