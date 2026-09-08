@@ -5,7 +5,7 @@ import type { SpaceToken } from './Stack';
 /**
  * The design's auto-fit grid.
  *
- * Every grid in design/portfolio.html is
+ * Every grid in spec/uiDesign/portfolio.html is
  * `repeat(auto-fit, minmax(min(100%, X), 1fr))` — it never states a column
  * count, so the layout reflows purely on available width and needs no
  * breakpoint. The four `X` values live as `--track-*` tokens and are exposed
