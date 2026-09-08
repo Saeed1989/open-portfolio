@@ -10,8 +10,9 @@ served from `{slug}.site.com` using **one layout**, themed per tenant at runtime
 The authoritative requirements live one directory up, outside this repo:
 
 ```
-../spec/srs.md                   Software Requirements Specification
-../spec/BusinessRequirements.md  Source business requirements
+../spec/srs.md                    Software Requirements Specification
+../spec/BusinessRequirements.md   Source business requirements
+../spec/uiDesign/portfolio.html   Approved visual design — extract from, never copy
 ```
 
 `../spec` is outside the project root, so it is not readable by default. Add it
@@ -74,8 +75,6 @@ lib/
   theme.ts                token names, theme constants
 packages/
   registry/               framework-free descriptors, shared with api + admin
-design/
-  portfolio.html          approved visual design — extract from, never copy
 ```
 
 ---

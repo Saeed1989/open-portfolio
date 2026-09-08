@@ -2,7 +2,7 @@ import type { TypedSectionInstance } from '@openportfolio/registry';
 
 /**
  * A fully-populated portfolio, for comparing SectionRenderer's output against
- * design/portfolio.html.
+ * spec/uiDesign/portfolio.html.
  *
  * Development fixture only — nothing here is loaded by the public page, which
  * reads its sections from the API. The hero, projects, skills and contact
