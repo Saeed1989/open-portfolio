@@ -21,8 +21,10 @@ const VARIANT: Record<TagVariant, string> = {
 
 export interface TagProps {
   variant?: TagVariant;
-  /** Renders an anchor. Mutually exclusive with `onClick`-only usage. */
+  /** Renders an anchor. Mutually exclusive with `onClick`. */
   href?: string;
+  /** Renders a button. Mutually exclusive with `href`. */
+  onClick?: () => void;
   /** Marks the selected filter for assistive technology. */
   current?: boolean;
   className?: string;
@@ -32,26 +34,39 @@ export interface TagProps {
 export function Tag({
   variant = 'neutral',
   href,
+  onClick,
   current,
   className,
   children,
 }: TagProps) {
   const classes = cn(BASE, VARIANT[variant], className);
+  const ariaCurrent = current ? ('true' as const) : undefined;
 
   if (href) {
     return (
-      <a
-        href={href}
-        aria-current={current ? 'true' : undefined}
-        className={classes}
-      >
+      <a href={href} aria-current={ariaCurrent} className={classes}>
         {children}
       </a>
     );
   }
 
+  /* A filter that only changes local state is a button, not a link — there is
+     no destination to navigate to and nothing to open in a new tab. */
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-current={ariaCurrent}
+        className={cn(classes, 'cursor-pointer appearance-none')}
+      >
+        {children}
+      </button>
+    );
+  }
+
   return (
-    <span aria-current={current ? 'true' : undefined} className={classes}>
+    <span aria-current={ariaCurrent} className={classes}>
       {children}
     </span>
   );
