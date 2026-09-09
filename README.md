@@ -3,8 +3,6 @@
 A multi-tenant portfolio generator. Anyone signs in with GitHub or Google, configures their
 portfolio through an admin panel, and publishes it at `{slug}.site.com` — no code required.
 
-> **Status: specification only.** No implementation exists yet. `spec/` is the source of truth.
-
 ## Specs
 
 | File | Contents |
@@ -42,7 +40,3 @@ always comes from the session — never from a request parameter.
 - **Guardrails, not suggestions.** The 3–5 project cap, the 5–8 prominent-skill count, required
   alt text, and WCAG AA accent-colour contrast are enforced by the API, not advised in the UI.
 
-## Deferred from v1
-
-Custom domains, multiple layout templates, team accounts, and tenant-supplied CSS/JS — with
-reasoning in `spec/srs.md` §10.2. Six open questions are tracked in §10.3.
