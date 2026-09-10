@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from 'react';
-import type { FieldDescriptor } from '@openportfolio/registry';
+import type { FieldDescriptor } from '@portfolio/registry';
 
 /**
  * Field order comes from the registry, never from JSX order.

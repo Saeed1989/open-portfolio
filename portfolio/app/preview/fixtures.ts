@@ -1,4 +1,4 @@
-import type { TypedSectionInstance } from '@openportfolio/registry';
+import type { TypedSectionInstance } from '@portfolio/registry';
 
 /**
  * A fully-populated portfolio, for comparing SectionRenderer's output against

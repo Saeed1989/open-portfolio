@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type SkillItem,
   type SkillsContent,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Card,
   Grid,

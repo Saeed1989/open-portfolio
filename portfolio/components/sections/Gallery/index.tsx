@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type GalleryContent,
   type GalleryItem,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Card,
   Grid,

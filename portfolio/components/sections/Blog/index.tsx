@@ -1,4 +1,4 @@
-import { REGISTRY, type BlogContent, type BlogPost } from '@openportfolio/registry';
+import { REGISTRY, type BlogContent, type BlogPost } from '@portfolio/registry';
 import {
   Card,
   Grid,

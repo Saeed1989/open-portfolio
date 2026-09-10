@@ -1,4 +1,4 @@
-import type { GitHubEmbedCard } from '@openportfolio/registry';
+import type { GitHubEmbedCard } from '@portfolio/registry';
 
 /**
  * URLs for the GitHub stat cards.

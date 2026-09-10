@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import type { SectionType } from '@openportfolio/registry';
+import type { SectionType } from '@portfolio/registry';
 import type { PortfolioTheme } from '@/lib/theme';
 
 import { Achievements } from './Achievements';
@@ -19,7 +19,7 @@ import { Trainings } from './Trainings';
 /**
  * The dispatch table: one section type, one component (FR-REG-3).
  *
- * Adding a section type is a registry entry in `@openportfolio/registry` plus
+ * Adding a section type is a registry entry in `@portfolio/registry` plus
  * a component here. Nothing else in this app changes — SectionRenderer walks
  * whatever the payload contains and looks each type up in this map.
  */

@@ -3,7 +3,7 @@ import {
   type GitHubEmbedCard,
   type OpenSourceContent,
   type OpenSourceContribution,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Card,
   DescriptionList,

@@ -2,15 +2,14 @@
   "name": "@openportfolio/portfolio",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit && npm run typecheck --workspace @openportfolio/registry"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@openportfolio/registry": "*",
+    "@portfolio/registry": "file:../packages/registry",
     "next": "15.5.25",
     "react": "19.1.1",
     "react-dom": "19.1.1"

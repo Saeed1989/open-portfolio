@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type SpeakingContent,
   type SpeakingItem,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Badge,
   Card,

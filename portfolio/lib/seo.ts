@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { REGISTRY, type HeroContent } from '@openportfolio/registry';
+import { REGISTRY, type HeroContent } from '@portfolio/registry';
 import type { PortfolioPayload } from './api';
 
 /**

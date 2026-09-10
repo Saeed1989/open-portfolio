@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { SECTION_TYPES, type SectionInstance } from '@openportfolio/registry';
+import { SECTION_TYPES, type SectionInstance } from '@portfolio/registry';
 import type { PortfolioTheme } from './theme';
 
 /**

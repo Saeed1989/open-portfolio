@@ -1,4 +1,4 @@
-import { REGISTRY, type Cta, type HeroContent } from '@openportfolio/registry';
+import { REGISTRY, type Cta, type HeroContent } from '@portfolio/registry';
 import {
   Avatar,
   Button,

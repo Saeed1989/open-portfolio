@@ -6,7 +6,7 @@ import {
   type AchievementsContent,
   type FieldDescriptor,
   type TrainingsContent,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Badge,
   Card,
