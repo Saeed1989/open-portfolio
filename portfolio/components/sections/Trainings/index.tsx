@@ -1,4 +1,4 @@
-import type { TrainingsContent } from '@openportfolio/registry';
+import type { TrainingsContent } from '@portfolio/registry';
 
 import { CredentialSection } from '../Achievements';
 

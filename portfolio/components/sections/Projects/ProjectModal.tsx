@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode, RefObject } from 'react';
-import { REGISTRY, type ProjectItem } from '@openportfolio/registry';
+import { REGISTRY, type ProjectItem } from '@portfolio/registry';
 import {
   Button,
   Dialog,

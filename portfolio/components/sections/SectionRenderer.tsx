@@ -4,7 +4,7 @@ import {
   SECTION_TYPES,
   type SectionInstance,
   type SectionType,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 
 import type { PortfolioTheme } from '@/lib/theme';
 import { sectionRegistry } from './registry';

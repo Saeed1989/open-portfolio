@@ -8,7 +8,7 @@
  * moment they land, and the tenant owns them from then on. A page render never
  * reaches this module (FR-INT-1, NFR-PERF-3).
  *
- * Kept apart from credly.ts on purpose. That module is imported by the section
+ * Kept apart from parse.ts on purpose. That module is imported by the section
  * descriptors and therefore travels into the portfolio build; this one is
  * imported by nothing but the api, so the render path never carries an HTTP
  * client it has no use for.
@@ -20,9 +20,9 @@
  * message, not a 500.
  */
 
-import type { AchievementItem } from './content';
-import type { FieldError } from './types';
-import { CREDLY_ORIGIN } from './credly';
+import type { AchievementItem } from '../content';
+import type { FieldError } from '../types';
+import { CREDLY_ORIGIN } from './parse';
 
 const DEFAULT_TIMEOUT_MS = 10000;
 

@@ -1,4 +1,4 @@
-import { REGISTRY, type ProjectsContent } from '@openportfolio/registry';
+import { REGISTRY, type ProjectsContent } from '@portfolio/registry';
 import { SectionShell } from '@/components/ui';
 import { ProjectGallery } from './ProjectGallery';
 

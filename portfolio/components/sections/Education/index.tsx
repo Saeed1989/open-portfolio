@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type EducationContent,
   type EducationItem,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Card,
   DescriptionList,

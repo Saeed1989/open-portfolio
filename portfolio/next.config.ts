@@ -93,7 +93,6 @@ function contentSecurityPolicy(): string {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@openportfolio/registry'],
 
   async headers() {
     return [

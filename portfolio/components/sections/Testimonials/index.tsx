@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type Testimonial,
   type TestimonialsContent,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Avatar,
   Card,

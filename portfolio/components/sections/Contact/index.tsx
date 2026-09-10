@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type ContactContent,
   type ContactLink,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Grid,
   Heading,

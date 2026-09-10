@@ -2,7 +2,7 @@ import {
   REGISTRY,
   type ExperienceContent,
   type ExperienceItem,
-} from '@openportfolio/registry';
+} from '@portfolio/registry';
 import {
   Card,
   Disclosure,
