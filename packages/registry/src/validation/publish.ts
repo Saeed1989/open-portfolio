@@ -21,8 +21,8 @@
  * restate them.
  */
 
-import type { FieldError } from './types';
-import { hasItems, hasText, isRecord } from './empty';
+import type { FieldError } from '../types';
+import { hasItems, hasText, isRecord } from '../empty';
 
 /**
  * The seven, in the order the descriptor declares them, paired with the label
