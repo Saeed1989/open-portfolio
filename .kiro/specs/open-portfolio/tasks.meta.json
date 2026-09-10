@@ -1,0 +1,534 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Configure workspace monorepo structure": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888981819
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788889004697
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788889113270
+      }
+    ],
+    "2. Provision shared environment configuration": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888981961
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788889125473
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788889488137
+      }
+    ],
+    "3. Set up MongoDB connection module (shared utility)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888982150
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788889494173
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893313850
+      }
+    ],
+    "4. Bootstrap NestJS application (`api/`)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888982438
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893325971
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893710327
+      }
+    ],
+    "5. Implement credential encryption service": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888982579
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893723566
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788897803959
+      }
+    ],
+    "6. Implement rich-text sanitiser": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888982710
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893730066
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788897804493
+      }
+    ],
+    "7. Implement GitHub OAuth strategy and Google OAuth strategy": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888982821
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788897819374
+      }
+    ],
+    "8. Implement @Tenant() decorator and tenant isolation": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888982943
+      }
+    ],
+    "9. Implement portfolio service (draft/publish lifecycle and section CRUD)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983054
+      }
+    ],
+    "10. Implement registry validation pipe": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983188
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893730503
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788897805165
+      }
+    ],
+    "11. Implement theme service (WCAG AA contrast check)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983312
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893731417
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788897805924
+      }
+    ],
+    "12.1. Implement unpublish": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983587
+      }
+    ],
+    "13. Implement media service (signed S3 URLs and WebP derivatives)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983737
+      }
+    ],
+    "14. Implement SSRF validation utility": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983867
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788893731895
+      },
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788897806254
+      }
+    ],
+    "15. Implement public API surface": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888983986
+      }
+    ],
+    "16. Implement admin API surface": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888984130
+      }
+    ],
+    "17. Implement Credly import service": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888984271
+      }
+    ],
+    "18. Implement integration connection management": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888984462
+      }
+    ],
+    "19. Implement internal revalidation controller": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888984687
+      }
+    ],
+    "20. Implement OG image generation": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888984844
+      }
+    ],
+    "21. Implement slug 301-redirect lookup for slug history": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985000
+      }
+    ],
+    "22. Implement analytics configuration storage": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985144
+      }
+    ],
+    "23. Bootstrap Next.js admin application (`admin/`)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985278
+      }
+    ],
+    "24. Implement OAuth sign-in page and session middleware": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985412
+      }
+    ],
+    "25. Implement onboarding flow": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985543
+      }
+    ],
+    "26. Build registry-driven form engine": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985683
+      }
+    ],
+    "27. Build rich text editor widget": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985809
+      }
+    ],
+    "28. Build image upload widget": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888985943
+      }
+    ],
+    "29. Implement dashboard — section list with enable/disable and drag-reorder": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888986148
+      }
+    ],
+    "30. Implement section editors": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888986424
+      }
+    ],
+    "31. Implement theme and SEO editors": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888986548
+      }
+    ],
+    "32. Implement live draft preview": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888986682
+      }
+    ],
+    "33. Implement Credly import UI": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888986805
+      }
+    ],
+    "34. Implement publish/unpublish UI with field-level errors": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888986942
+      }
+    ],
+    "35. Implement integration management page": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888987071
+      }
+    ],
+    "36. Remove `USE_FIXTURES` branch from production builds": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888987257
+      }
+    ],
+    "37. Verify ISR cache invalidation end-to-end": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888987582
+      }
+    ],
+    "38. Implement branded 404 page": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888987722
+      }
+    ],
+    "39. Implement sitemap.xml and robots.txt": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888987877
+      }
+    ],
+    "40. Implement analytics script injection": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988011
+      }
+    ],
+    "41. Verify Content Security Policy headers": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988146
+      }
+    ],
+    "42. Bootstrap sync worker project (`sync-worker/`)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988280
+      }
+    ],
+    "43. Implement scheduled job runner with exponential backoff": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988430
+      }
+    ],
+    "44. Implement GitHub sync job": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988577
+      }
+    ],
+    "45. Implement RSS sync job": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988708
+      }
+    ],
+    "46. Implement link health check job": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888988896
+      }
+    ],
+    "47. Implement integration cache merge strategy": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888989198
+      }
+    ],
+    "48. Set up Vitest test infrastructure": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888989326
+      }
+    ],
+    "49. Property test 1 — Reserved slug labels always rejected": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888989488
+      }
+    ],
+    "50. Property test 2 — Host-header slug extraction handles all inputs": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888989637
+      }
+    ],
+    "51. Property test 3 — Credly badge ID extraction is a partial function": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888989780
+      }
+    ],
+    "52. Property test 4 — Rich-text sanitisation removes all disallowed content": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888989916
+      }
+    ],
+    "53. Property test 5 — Public DTO never leaks internal fields": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888990025
+      }
+    ],
+    "54. Property test 6 — Publish collects all field errors at once": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888990153
+      }
+    ],
+    "55. Property test 7 — Cross-tenant isolation holds for all admin endpoints": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888990384
+      }
+    ],
+    "56. Property test 8 — SSRF validation rejects all private address targets": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888990646
+      }
+    ],
+    "57. Property test 9 — Accent colour validation always offers a compliant alternative": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888990776
+      }
+    ],
+    "58. Property test 10 — Registry field order is invariant across collection items": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888990909
+      }
+    ],
+    "59. Property test 11 — Skill numeric rating is always present as text in rendered output": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888991035
+      }
+    ],
+    "60. Cross-tenant isolation integration test suite": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888991184
+      }
+    ],
+    "61. Performance verification": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888991348
+      }
+    ],
+    "62. Accessibility audit (WCAG 2.1 AA)": [
+      {
+        "executionId": "d4face71-9271-425d-b383-a71c94f197e7",
+        "chatSessionId": "sess_546c061a-950a-43d2-89c6-2ddca94abe9f",
+        "timestamp": 1788888991521
+      }
+    ]
+  }
+}

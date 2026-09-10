@@ -1,4 +1,4 @@
-# Requirements Document — open-portfolio
+﻿# Requirements Document
 
 ## Introduction
 
@@ -75,7 +75,7 @@ feature ships, it ships this way or not at all.
 
 ---
 
-### Requirement 1.1 — Section registry as single source of truth
+### Requirement 1: Section registry as single source of truth
 
 **User Story:** As a developer, I want the section registry to be the authoritative
 definition of every section type so that admin forms, API validation, and portfolio
@@ -114,7 +114,7 @@ rendering all derive from the same schema without duplication.
 
 ---
 
-### Requirement 1.2 — Tenant data model
+### Requirement 2: Tenant data model
 
 **User Story:** As a system operator, I want tenant accounts, portfolio documents, and
 supporting collections to be modelled so that content is cleanly isolated per tenant
@@ -154,7 +154,7 @@ and the draft/publish split is enforced at the data layer.
 
 ---
 
-### Requirement 1.3 — Draft / publish lifecycle model
+### Requirement 3: Draft / publish lifecycle model
 
 **User Story:** As a tenant, I want a draft/publish split so that I can leave content
 half-written without it appearing on my live portfolio.
@@ -186,7 +186,7 @@ half-written without it appearing on my live portfolio.
 
 ---
 
-### Requirement 2.1 — Authentication and account creation
+### Requirement 4: Authentication and account creation
 
 **User Story:** As a visitor, I want to sign in with GitHub or Google so that I can
 create and manage my portfolio without storing a password.
@@ -217,7 +217,7 @@ create and manage my portfolio without storing a password.
 
 ---
 
-### Requirement 2.2 — Public API surface
+### Requirement 5: Public API surface
 
 **User Story:** As a visitor, I want the portfolio page to load with complete content
 in the initial HTML without making client-side API calls so that the page is fast and
@@ -249,7 +249,7 @@ fully crawlable.
 
 ---
 
-### Requirement 2.3 — Admin API surface
+### Requirement 6: Admin API surface
 
 **User Story:** As a tenant, I want a fully authenticated admin API so that I can read
 and write my portfolio content without any risk of accessing or modifying another
@@ -287,7 +287,7 @@ tenant's data.
 
 ---
 
-### Requirement 2.4 — Tenant isolation
+### Requirement 7: Tenant isolation
 
 **User Story:** As a tenant, I want absolute certainty that I cannot read or write
 another tenant's data, and that no other tenant can access mine.
@@ -307,7 +307,7 @@ another tenant's data, and that no other tenant can access mine.
 
 ---
 
-### Requirement 2.5 — Section content validation
+### Requirement 8: Section content validation
 
 **User Story:** As a tenant, I want the API to enforce the business rules for each
 section type so that my portfolio always meets the content standards without relying
@@ -339,7 +339,7 @@ on me to remember them.
 
 ---
 
-### Requirement 2.6 — Media handling
+### Requirement 9: Media handling
 
 **User Story:** As a tenant, I want to upload images through a signed URL so that my
 browser uploads directly to object storage, and the API never handles raw file bytes.
@@ -370,7 +370,7 @@ browser uploads directly to object storage, and the API never handles raw file b
 
 ---
 
-### Requirement 2.7 — Theme and SEO configuration
+### Requirement 10: Theme and SEO configuration
 
 **User Story:** As a tenant, I want to configure my portfolio's accent colour, font,
 and light/dark preference, with the system enforcing colour contrast automatically so
@@ -400,7 +400,7 @@ I cannot accidentally publish an inaccessible theme.
 
 ---
 
-### Requirement 2.8 — Analytics configuration
+### Requirement 11: Analytics configuration
 
 **User Story:** As a tenant, I want to configure my own analytics provider so that I
 can track portfolio visits without the platform injecting its own tracking.
@@ -419,7 +419,7 @@ can track portfolio visits without the platform injecting its own tracking.
 
 ---
 
-### Requirement 3.1 — Admin panel structure and access
+### Requirement 12: Admin panel structure and access
 
 **User Story:** As a tenant, I want a secure admin panel at `admin.site.com` where I
 can edit, preview, and publish my portfolio without touching any code.
@@ -441,7 +441,7 @@ can edit, preview, and publish my portfolio without touching any code.
 
 ---
 
-### Requirement 3.2 — Registry-driven editing forms
+### Requirement 13: Registry-driven editing forms
 
 **User Story:** As a developer, I want admin forms to be generated from the registry
 descriptors so that adding a new section type requires only a registry entry and a
@@ -467,7 +467,7 @@ portfolio component, with no admin form code written by hand.
 
 ---
 
-### Requirement 3.3 — Section management
+### Requirement 14: Section management
 
 **User Story:** As a tenant, I want to enable, disable, and reorder sections
 independently so that my portfolio only shows the sections I choose.
@@ -488,7 +488,7 @@ independently so that my portfolio only shows the sections I choose.
 
 ---
 
-### Requirement 3.4 — Live preview
+### Requirement 15: Live preview
 
 **User Story:** As a tenant, I want to preview my draft portfolio in admin using the
 same components that the public site uses so that what I see before publishing matches
@@ -504,7 +504,7 @@ what visitors will see.
 
 ---
 
-### Requirement 3.5 — Content authoring efficiency
+### Requirement 16: Content authoring efficiency
 
 **User Story:** As a tenant, I want adding or editing a project to take under 10
 minutes so that keeping my portfolio current is not a significant time investment.
@@ -527,7 +527,7 @@ minutes so that keeping my portfolio current is not a significant time investmen
 
 ---
 
-### Requirement 4.1 — Multi-tenant routing and slug resolution
+### Requirement 17: Multi-tenant routing and slug resolution
 
 **User Story:** As a visitor, I want to reach any published portfolio at its subdomain
 so that each tenant's portfolio has a clean, distinct address.
@@ -551,7 +551,7 @@ so that each tenant's portfolio has a clean, distinct address.
 
 ---
 
-### Requirement 4.2 — Server-side rendering and cache
+### Requirement 18: Server-side rendering and cache
 
 **User Story:** As a visitor, I want the portfolio page to deliver complete HTML in
 the first response so that it loads fast and is fully indexed by search engines.
@@ -580,7 +580,7 @@ the first response so that it loads fast and is fully indexed by search engines.
 
 ---
 
-### Requirement 4.3 — Section rendering
+### Requirement 19: Section rendering
 
 **User Story:** As a visitor, I want every portfolio section to render correctly at
 any screen width with all fields in consistent order so that I can scan and compare
@@ -604,7 +604,7 @@ content efficiently.
 
 ---
 
-### Requirement 4.4 — Projects section and modal
+### Requirement 20: Projects section and modal
 
 **User Story:** As a visitor, I want to scan project cards quickly and then open a
 full case study in a focused dialog so that I can get just the depth I want without
@@ -645,7 +645,7 @@ navigating away from the portfolio.
 
 ---
 
-### Requirement 4.5 — Skills section
+### Requirement 21: Skills section
 
 **User Story:** As a visitor, I want to see a tenant's strongest skills at a glance
 and then explore the full breakdown by category so that I can quickly assess fit.
@@ -676,7 +676,7 @@ and then explore the full breakdown by category so that I can quickly assess fit
 
 ---
 
-### Requirement 4.6 — Contact section
+### Requirement 22: Contact section
 
 **User Story:** As a visitor, I want to find the tenant's contact links without having
 to search for them, with the email address protected from scrapers.
@@ -694,7 +694,7 @@ to search for them, with the email address protected from scrapers.
 
 ---
 
-### Requirement 4.7 — Open source section
+### Requirement 23: Open source section
 
 **User Story:** As a visitor, I want to see a tenant's open-source activity including
 real figures and optional stat cards so that I can verify claimed contributions.
@@ -722,7 +722,7 @@ real figures and optional stat cards so that I can verify claimed contributions.
 
 ---
 
-### Requirement 4.8 — Achievements section and Credly badges
+### Requirement 24: Achievements section and Credly badges
 
 **User Story:** As a visitor, I want to see a tenant's certifications, awards, and
 Credly badges in one unified list so that credentials are presented consistently
@@ -751,7 +751,7 @@ alongside each other.
 
 ---
 
-### Requirement 5.1 — Integration architecture and fallback
+### Requirement 25: Integration architecture and fallback
 
 **User Story:** As a visitor, I want the portfolio page to render reliably regardless
 of whether any third-party integration is healthy so that a failing external service
@@ -779,7 +779,7 @@ never breaks the page.
 
 ---
 
-### Requirement 5.2 — GitHub integration
+### Requirement 26: GitHub integration
 
 **User Story:** As a tenant, I want GitHub repository links and profile statistics to
 sync automatically so that my portfolio reflects current activity without manual updates.
@@ -798,7 +798,7 @@ sync automatically so that my portfolio reflects current activity without manual
 
 ---
 
-### Requirement 5.3 — RSS integration
+### Requirement 27: RSS integration
 
 **User Story:** As a tenant, I want my blog posts to sync automatically from an RSS
 feed so that new posts appear on my portfolio without manual entry.
@@ -815,7 +815,7 @@ feed so that new posts appear on my portfolio without manual entry.
 
 ---
 
-### Requirement 5.4 — GitHub stat cards (browser-embedded)
+### Requirement 28: GitHub stat cards (browser-embedded)
 
 **User Story:** As a tenant, I want to display GitHub stat cards on my portfolio
 without the platform storing any credential or running any refresh job for them.
@@ -841,7 +841,7 @@ without the platform storing any credential or running any refresh job for them.
 
 ---
 
-### Requirement 5.5 — Credly badge integration
+### Requirement 29: Credly badge integration
 
 **User Story:** As a tenant, I want to add Credly badges individually or by bulk
 import, with imported badges arriving unpublished so that I can curate before anything
@@ -868,7 +868,7 @@ goes live.
 
 ---
 
-### Requirement 5.6 — Demo link health checking
+### Requirement 30: Demo link health checking
 
 **User Story:** As a tenant, I want to be notified when a project demo or repo link
 breaks so that visitors never encounter a dead link.
@@ -890,7 +890,7 @@ breaks so that visitors never encounter a dead link.
 
 ---
 
-### Requirement 6.1 — Performance
+### Requirement 31: Performance
 
 **User Story:** As a visitor, I want the portfolio to load quickly and remain stable
 during layout so that I get a good reading experience on any connection.
@@ -919,7 +919,7 @@ during layout so that I get a good reading experience on any connection.
 
 ---
 
-### Requirement 6.2 — Security
+### Requirement 32: Security
 
 **User Story:** As a system operator, I want the platform to enforce strict security
 boundaries so that tenants cannot harm each other or inject malicious content into
@@ -950,7 +950,7 @@ visitor browsers.
 
 ---
 
-### Requirement 6.3 — Accessibility (WCAG 2.1 AA)
+### Requirement 33: Accessibility (WCAG 2.1 AA)
 
 **User Story:** As a visitor using assistive technology, I want the portfolio to be
 fully keyboard-navigable and correctly described so that I can access all content
@@ -983,7 +983,7 @@ without visual perception.
 
 ---
 
-### Requirement 6.4 — Responsiveness
+### Requirement 34: Responsiveness
 
 **User Story:** As a visitor on a mobile device, I want the portfolio to be fully
 usable at narrow widths so that I can read and navigate all content without horizontal
@@ -1002,7 +1002,7 @@ scrolling.
 
 ---
 
-### Requirement 6.5 — Availability and operations
+### Requirement 35: Availability and operations
 
 **User Story:** As a visitor, I want cached portfolio pages to remain available even
 when the API or database is down so that an infrastructure incident does not take

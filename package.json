@@ -1,0 +1,14 @@
+{
+  "name": "openportfolio",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "api",
+    "admin",
+    "sync-worker",
+    "portfolio/packages/registry"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
