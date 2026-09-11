@@ -1,11 +1,7 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.4 (draft) · **Date** 11 September 2026
+**Version** 0.5 (draft) · **Date** 11 September 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
-
-*Changelog — 0.4 records how the registry is packaged and settles which side of the save/publish line each registry rule falls on. §2.1 gains a paragraph recording `packages/registry` as a fourth workspace — a shared library rather than a deployable, compiled to dual ESM/CJS with three entrypoints for descriptors, validation, and the rich-text sanitiser configuration, so that every app consumes prebuilt output rather than package source. FR-REG-3 is qualified to match: a registry change reaches the consuming apps by rebuild, and none of them requires a code change. FR-REG-4 now specifies its mechanism rather than only its intent — a single integer `REGISTRY_VERSION`, incremented by hand on a field addition, a field removal, or a change to a field's `required` flag, and not for a label or help-text change — and stays at Should. The new FR-REG-8 enforces `required` at publish rather than at save, so that a draft write validates shape, type, and enumeration only and a half-written section can be saved as §2.4 intends; FR-SEC-PROJ-2 and FR-SEC-SKILL-3 are reconciled against it, the project maximum remaining a save-time rejection while the project minimum and both prominent-skill bounds are stated as publish-time checks. FR-REG-8 originates in this specification rather than in the business document, as the draft/publish model of §2.4 does, and so has no row in §9. FR-SEC-PROJ-12 and the note under §8.2 now locate the rich-text allowlist: one constant exported by the registry package and applied by `api` at write time, which a rich-text field added in any section type imports rather than declaring its own — the condition on which §8.2's promise of inheritance depends.*
-
-*Changelog — 0.3 settles how a project is read at depth. FR-SEC-PROJ-6 is rewritten to commit the two-depth rendering to an in-page modal dialog rather than a dedicated `/{slug}/projects/{id}` route, which resolves open question 3 and accepts its trade-off: project detail is neither deep-linkable nor separately crawlable. The `projects` content schema gains seven modal-level fields alongside the existing card-level ones — three rich-text bodies, a designation, and three tag lists — extending FR-SEC-PROJ-1 and declared as required for publish by the new FR-SEC-PROJ-11; §4.1 is unchanged, since the schema grows but the cardinality and priority do not. The new FR-SEC-PROJ-10 specifies modal open, close, and scroll lock. The new FR-SEC-PROJ-12 specifies the write-time allowlist for the three rich-text bodies, which are the first rich-text fields in the system and so are the first concrete instance of NFR-SEC-2; the new FR-SEC-PROJ-13 specifies the modal's focus contract, the first focus-trapped overlay in the system and the first concrete instance of NFR-A11Y-1 and NFR-A11Y-2 for an overlay. §7.1 drops the dedicated project-detail endpoint, which the modal makes unnecessary — detail now travels in the portfolio payload. Business §2 is restructured in the same revision into card-level fields, modal-level fields (2.17–2.23), two new content rules (2.24, 2.25), and a new §2D on modal interaction (2.26–2.32); §9 maps all of them. 0.2 adds the `trainings` section type (§4.1, FR-SEC-TRN-1), ordered immediately after `achievements` and sourced from business §11a; see open question 7 for the unresolved `type` enum it inherits from Achievements. 0.2 also specifies the GitHub stat cards and Credly badges added to the business document as 9.5–9.8, 11.4–11.9 and 13.6–13.10 (§6.4.6, §6.6), which introduce the first third-party resources the visitor's browser fetches during a page view and amend §2.2, FR-INT-1, NFR-PERF-3 and NFR-SEC-4 accordingly. That same business revision promoted §11 from Could to Should, so `achievements` and FR-SEC-ACH-1 … 7 are re-prioritised to match, FR-INT-11 … 13 are corrected to Must against 13.6, 13.7 and 13.9, and §1.4 now states both how a Must requirement attaches to an optional section and which requirements this specification scopes below their section's blanket rating. Two v0.1 defects are corrected in passing: FR-SEC-OSS-1 listed the tenant's star total among the headline stats, which 9.5 forbids, and omitted two of the four figures 9.1 names; and 18.7 was mapped to tenant isolation rather than to the self-service authoring it actually describes.*
 
 ---
 
@@ -72,11 +68,11 @@ Priority follows the source document: **Must** = launch blocker, **Should** = v1
 | `db` | MongoDB | Internal | — |
 | `storage` | S3-compatible object store | CDN-fronted | Public read, signed write |
 
-A fourth workspace, `packages/registry`, is a shared library rather than a deployable. It compiles to dual ESM/CJS with three entrypoints — descriptors, validation, and the rich-text sanitiser configuration — so that `api` (CJS, built with `tsc`) and the two Next.js apps consume prebuilt output rather than package source. It imports no framework, no ORM, and no React, and reads no environment: descriptors are data and validators are pure functions. Presentation belonging to a section type — icons, components, styling — lives in the consuming app, keyed by the descriptor's identifier.
+A fourth workspace, `packages/registry`, is a shared library rather than a deployable. It compiles to dual ESM/CJS with four entrypoints — descriptors, validation, the rich-text sanitiser configuration, and the render-tree builder (FR-REG-9) — so that `api` (CJS, built with `tsc`) and the two Next.js apps consume prebuilt output rather than package source. It imports no framework, no ORM, and no React, and reads no environment: descriptors are data, and validators and the builder are pure functions. Presentation belonging to a section type — icons, components, styling — lives in the consuming app, keyed by the descriptor's identifier.
 
-A single API server hosts **two logically separate surfaces**:
+A single API server hosts **two logically separate surfaces**. **The admin surface and the public surface are two NestJS modules inside the one `api` deployable, not two services.** They share a process, a database connection pool, and a release, so neither can be deployed, scaled, or restarted without the other. That cost is accepted because the public surface sits behind the ISR cache (§2.2) and sees little traffic of its own, so a separate service would buy little.
 
-- **Public surface** (`/public/*`) — unauthenticated, read-only, returns published content only. Tenant is resolved from the requested slug. Never returns draft content, disabled sections, integration credentials, analytics configuration, or any tenant's email address.
+- **Public surface** (`/public/*`) — unauthenticated, read-only, returns published content only. Tenant is resolved from the requested slug. Returns public-safe configuration — theme, SEO, the analytics measurement id or Plausible domain, and the ordered list of sections to render — because each of those is visible in the rendered page's source whether the API returns it or not. Never returns draft content, disabled sections, integration credentials, sync status or `lastError`, a tenant's user id, or any tenant's account email address — the address held in `users`, as distinct from a contact address the tenant chooses to publish in `contact`, which is content. That configuration never leaves the admin surface.
 - **Admin surface** (`/admin/*`) — session-authenticated, read/write. Tenant is resolved from the session, never from a request parameter.
 
 The two surfaces use separate controllers, separate guards, and separate response DTOs. No DTO is shared between them.
@@ -87,10 +83,10 @@ The two surfaces use separate controllers, separate guards, and separate respons
 2. `portfolio` middleware reads the `Host` header, extracts `alice`, rejects reserved labels.
 3. If a valid ISR cache entry exists for that slug, it is served. No API call, no database read.
 4. Otherwise `portfolio` calls `GET /public/portfolios/alice` server-side.
-5. `api` loads the published document, strips disabled sections, and returns a render-ready payload including any cached integration data.
-6. `portfolio` renders the layout, iterating the ordered section array and dispatching each entry to the component registered for its type.
+5. `api` performs one find on `portfolios`, keyed by the slug and projecting `published.config` and `published.data`, and serialises the result through the public DTO as the two-part payload of §7.1: `config` — theme, SEO, public-safe analytics, and the ordered list of sections to render — and `data`, each section's content keyed by its type. Both halves were resolved at publish (§2.3), so nothing is stripped, evaluated, or joined per request.
+6. `portfolio` applies `config.theme`, `config.seo`, and `config.analytics`, then renders the layout by iterating `config.sections` in order and dispatching each entry to the component registered for its type, with `data[type]` as its content.
 
-**The server contacts no third-party API during a page render.** Integration data it renders comes only from the cache written by the background sync job (§6.6).
+**The server contacts no third-party API during a page render.** Integration data it renders comes only from the copy folded into the published tree at the last successful sync or publish (§2.3, FR-INT-15), which the render reads as part of its one find.
 
 Two features are deliberate exceptions, and they sit on the *client* side of that line. GitHub stat cards and Credly badges are stored as URLs, so the visitor's browser requests them directly from those services after the HTML has been sent *(13.6, 13.9)*. The render itself still makes no external call and caches nothing, which is precisely why neither can go stale; the price is that a slow, rate-limited, or absent third party is visible to the visitor. §6.4.6 specifies the behaviour, FR-INT-11 and FR-INT-13 the transport, and NFR-SEC-4 the content-security-policy consequence.
 
@@ -98,9 +94,17 @@ Two features are deliberate exceptions, and they sit on the *client* side of tha
 
 1. Tenant clicks Publish in `admin`.
 2. `api` validates the draft against the section registry. Validation failures block the publish and are reported per field.
-3. The draft is copied to the published document; `publishedAt` and `version` are set.
-4. `api` calls the `portfolio` app's on-demand revalidation endpoint for that slug, using a shared secret.
-5. The next public request repopulates the cache.
+3. `api` passes the draft, with each connected provider's payload from `integrationCache`, to the registry's builder (FR-REG-9). The builder removes sections with `enabled: false` and items with `published: false` (§5.2).
+4. It merges each synced payload into the section it feeds, beneath the tenant's manual values, which win (FR-INT-4). A payload marked `stale` is merged like any other: it is the last good payload, which FR-INT-3 already serves.
+5. It removes every section whose merged content satisfies its `emptyCondition` (FR-CFG-2). Emptiness is judged after the merge, so a section the tenant left empty but a sync has filled survives, and a section with neither is removed (FR-INT-5).
+6. It emits the survivors as `config.sections` — `{ type, order }`, in ascending order — with their content in `data`, keyed by type, and copies `theme`, `seo`, and `analytics` when configured into `config`. If no section survives, the publish is refused (FR-CFG-4).
+7. In one write, the builder's output is stored as `published.config` and `published.data`, and the draft as it stood after step 3 as `published.source`; `publishedAt` is set and `version` incremented.
+8. `api` calls the `portfolio` app's on-demand revalidation endpoint for that slug, using a shared secret.
+9. The next public request repopulates the cache.
+
+Everything the public read used to compute per request is decided here, once — the move FR-PUB-3 already makes for the OG image, which is generated at publish rather than per view. The tree written in step 7 is final: a render reads it and does nothing further to it.
+
+Steps 3 to 8 also run with no tenant involved, whenever a sync brings a changed payload (FR-INT-15). The builder then starts from `published.source` rather than from the draft, step 3 has nothing left to remove, and step 7 rewrites `config` and `data` only, so a sync refreshes the integration data on the live page without publishing any edit the tenant has not. The price is that the sync worker now writes the document the public surface reads, and triggers regenerations of the public page, where before it wrote only a collection of its own.
 
 ### 2.4 Draft / publish model
 
@@ -136,7 +140,7 @@ Each section type is declared once, in a registry shared across all three deploy
 
 **FR-REG-1 (Must)** — The registry is the single source of truth. `admin` generates its editing forms from it, `api` validates writes against it, `portfolio` uses it to determine field render order.
 
-**FR-REG-2 (Must)** — Field order in the registry determines display order on the public page, identically for every item in a collection. This satisfies business req 2.11 structurally rather than by convention.
+**FR-REG-2 (Must)** — Field order in the registry determines display order on the public page, identically for every item in a collection. This satisfies business req 2.11 structurally rather than by convention. Section order is not the registry's to decide: the renderer iterates `config.sections` (§7.1) for the order of sections, looks up each one's content in `data` by its type, and lays that content out in registry field order.
 
 **FR-REG-3 (Must)** — Adding a new section type requires a registry entry plus one React component in `portfolio`. It must not require changes to `admin`, to the API's persistence layer, or to the database schema; registry changes propagate to the consuming apps by rebuild, and no consuming app requires a code change.
 
@@ -176,6 +180,8 @@ A tenant selects a preset once during onboarding. It only sets initial state; ev
 
 **FR-REG-8 (Must)** — A field descriptor's `required` flag is enforced at publish, not at save. Draft writes validate shape, type, and enumeration only, so a tenant may save incomplete content per §2.4. `validateForPublish` additionally enforces `required`, collection `min` and `max`, and cross-field rules, and reports every failure at once per FR-PUB-6.
 
+**FR-REG-9 (Must)** — The registry package exports a pure builder that takes a content tree in draft shape, with the synced payload of each connected provider, and returns the render shape `{ config, data }` of §7.1. It removes sections with `enabled: false` and items with `published: false`; merges each synced payload beneath the tenant's manual values (FR-INT-4); removes every section whose merged content satisfies its descriptor's `emptyCondition`; and emits the survivors as `config.sections`, in ascending `order`, with their content under `data` keyed by type. It is the only code that produces the shape. `api` calls it at publish and at each fold of synced data (§2.3, FR-INT-15), and `admin` calls it for the live preview (FR-CFG-5) — one function deciding for all three, so the preview cannot show a section the published page omits. It is generic over descriptors: a section type added under FR-REG-3 needs no change to it.
+
 ---
 
 ## 5. Data model
@@ -197,20 +203,28 @@ Unique compound index on `(provider, providerId)`. Unique index on `email`.
 _id, userId (unique), slug (unique, lowercase),
 status ('unpublished'|'published'|'suspended'),
 registryVersion, presetId,
-draft:     { sections: [...], theme: {...}, seo: {...} },
-published: { sections: [...], theme: {...}, seo: {...} } | null,
+draft:     { sections: [...], theme: {...}, seo: {...}, analytics: {...} | null },
+published: { config: {...}, data: {...}, source: {...} } | null,
 publishedAt, version, createdAt, updatedAt
 ```
 
-Each entry in `sections`:
+Each entry in `draft.sections`:
 
 ```
 { type, enabled: bool, order: int, content: <type-specific object> }
 ```
 
-**Imported items carry their own publish state.** A Credly badge arrives from import unpublished and is promoted by the tenant *(11.7)*, so an achievements item additionally carries `published: bool`, independent of the portfolio-level draft/published trees. An unpublished item stays in `draft` and is simply not copied into `published`. This is the only per-item publish flag in the model; it exists because the import cannot judge which badges are high-signal.
+`analytics` is `{ provider ('plausible'|'ga'), id }`, where `id` is the Plausible domain or the Google Analytics measurement id, and is null until the tenant configures one. It sits in the content tree beside `theme` and `seo` because, like them, it reaches the public page only through a publish.
 
-**Document size.** Media is referenced by asset id, never embedded, and integration payloads live in a separate collection, so a realistic portfolio stays under 200 KB against MongoDB's 16 MB limit. Both content trees together are still an order of magnitude below the cap.
+**The published tree is stored in the shape it is served in.** `published.config` and `published.data` are the two halves of the render payload (§7.1), written by the registry's builder (FR-REG-9) at publish and at each fold of synced data (§2.3). The public read projects those two fields and serialises them; it transforms nothing. The alternative was to store `published` in draft shape and have the public DTO assemble `config` and `data` on the way out. That keeps one shape for both trees, but puts the stripping, the `emptyCondition` evaluation, and the integration join back on the request path — the work §2.2 exists to keep off it. The served shape is stored because that is what makes the read trivial.
+
+Its cost is that the served shape cannot be rebuilt from itself. A fold of synced data has to know which values were the tenant's, so that manual values still win (FR-INT-4), and which sections were enabled but empty at publish, so that a sync which gives one content can bring it back; the build discards both. `published.source` keeps them: the draft's enabled sections as they stood at publish, with unpublished items already removed and no synced value merged in, together with the theme, SEO, and analytics published beside them. The sync worker rebuilds from `source` rather than from `draft`, because `draft` may hold edits the tenant has not published. `source` is never served, and the public read excludes it by projection.
+
+`version` is incremented by every write to `published`, whether publish or fold; `publishedAt` changes only on publish.
+
+**Imported items carry their own publish state.** A Credly badge arrives from import unpublished and is promoted by the tenant *(11.7)*, so an achievements item additionally carries `published: bool`, independent of the portfolio-level draft/published trees. An unpublished item stays in `draft`; the builder removes it, so it reaches neither half of `published` nor its `source`. This is the only per-item publish flag in the model; it exists because the import cannot judge which badges are high-signal.
+
+**Document size.** Media is referenced by asset id, never embedded, so a realistic content tree stays under 200 KB against MongoDB's 16 MB limit. The document holds three trees' worth of content — the draft, the published tree's served halves, and its `source` — and the served halves also carry folded integration payloads, whose unmerged originals still live in `integrationCache`: a GitHub statistics block and at most ten RSS posts (FR-INT-8). All of it together remains more than an order of magnitude below the cap.
 
 **FR-DAT-1 (Must)** — `slug` is unique across all tenants and validated against a reserved list: `www`, `api`, `admin`, `app`, `mail`, `static`, `cdn`, `assets`, `status`, `blog`, `help`, `support`, `docs`, plus any label matching the operator's infrastructure hostnames.
 
@@ -242,7 +256,9 @@ GitHub stat cards and Credly badges deliberately have **no** row in this collect
 _id, portfolioId, provider, payload, fetchedAt, expiresAt, stale: bool
 ```
 
-Read by the public surface during render. Written only by the sync worker.
+Written only by the sync worker, and no longer read by the public surface: a payload reaches the page folded into the published tree (FR-INT-15), and a render reads nothing here.
+
+It is kept rather than retired because the published tree holds each payload only merged beneath the tenant's manual values, and a merge cannot be undone — a publish needs the unmerged payload to merge against a newly edited draft. Three readers remain. Publish folds the cached payload into the tree it builds (§2.3). The admin surface shows staleness from `fetchedAt` and `stale`, and returns the payload as input to the preview (FR-CFG-5). The sync worker uses it as its working set: the last good payload, left in place when a sync fails (FR-INT-3), and the baseline a new fetch is compared against, so that an unchanged payload is never folded.
 
 ### 5.6 `linkHealth`
 
@@ -282,7 +298,7 @@ _id, portfolioId, userId, action, targetPath, timestamp, ipHash
 | FR-TEN-2 | Must | Tenant identity for public requests derives solely from the `Host` header. |
 | FR-TEN-3 | Must | An unknown, unpublished, or suspended slug returns a branded 404 with `noindex`. It must not disclose whether the slug is registered. |
 | FR-TEN-4 | Must | Every admin data access is scoped by the portfolio id resolved from the session. A portfolio id supplied in a request body or path is ignored, never trusted. |
-| FR-TEN-5 | Must | The public surface returns only `published` content, with `enabled: false` sections removed server-side before serialisation. |
+| FR-TEN-5 | Must | The public surface returns only `published` content. Sections with `enabled: false` are removed when the published tree is built — at publish, by the registry's builder (FR-REG-9) — not at request time, so the stored tree never holds one and the public surface has nothing to strip before serialisation. A disabled section appears in neither `config.sections` nor `data`. |
 | FR-TEN-6 | Could | Custom domain support — deferred, see §10.2. |
 
 ### 6.3 Portfolio and section configuration — `FR-CFG`
@@ -290,10 +306,10 @@ _id, portfolioId, userId, action, targetPath, timestamp, ipHash
 | ID | Priority | Requirement |
 |---|---|---|
 | FR-CFG-1 | Must | Every section can be enabled or disabled independently. *(18.2)* |
-| FR-CFG-2 | Must | A section that is enabled but whose content satisfies its `emptyCondition` is omitted from the rendered page entirely. No headings, no empty state. *(18.1)* |
+| FR-CFG-2 | Must | A section that is enabled but whose content satisfies its `emptyCondition` is omitted from the rendered page entirely. No headings, no empty state. The condition is evaluated when the published tree is built — at publish and at each fold of synced data (§2.3) — against the section's content after unpublished items are removed and synced values merged, and never at request time. An empty section is absent from both `config.sections` and `data`, so the renderer never meets one. *(18.1)* |
 | FR-CFG-3 | Must | Sections are reorderable by drag or explicit ordinal; the order persists and drives render order. |
 | FR-CFG-4 | Must | Publishing requires at least one enabled non-empty section. The `hero` section is enabled by default but remains toggleable — the source document's "Must" is read as *the system must support it*, not *the tenant must use it*. |
-| FR-CFG-5 | Should | Admin displays a live preview of the draft, rendered by the same components as the public page. |
+| FR-CFG-5 | Should | Admin displays a live preview of the draft, rendered by the same components as the public page and fed the same `{ config, data }` shape (§7.1). The shape is assembled in the `admin` app itself, by the registry package's builder (FR-REG-9), from the draft tree being edited and the cached integration payloads the admin surface returns with each connection's status. The preview therefore updates as the tenant types, with no round trip to `api`, and shows what a publish would produce. This keeps §2.1's rule: the builder is a pure function, not a DTO, and neither surface serialises the other's response — admin receives the draft through its own DTO and builds locally, and the public surface serialises the stored tree through its own. The preview never injects the analytics script, so a tenant's own editing does not register as visits. |
 | FR-CFG-6 | Should | Admin surfaces the source document's guidance inline — e.g. enable Blog only with five or more posts *(7.3)*, enable Speaking only with active community involvement *(10.2)* — as advisory hints, not hard blocks. |
 | FR-CFG-7 | Must | Adding or editing a project takes under 10 minutes through the admin forms and requires no layout decisions by the tenant. *(18.6)* |
 
@@ -407,7 +423,7 @@ Business requirement 13.5 is the strongest constraint in the source document and
 |---|---|---|
 | FR-INT-1 | Must | The server calls no third-party API during a public page render; all external data it renders is read from `integrationCache`. Embedded cards and badges (FR-INT-11, FR-INT-13) are fetched by the visitor's browser after the response is sent, and are not part of the render. *(13.5)* |
 | FR-INT-2 | Must | A scheduled worker refreshes each connection on its own interval — GitHub every 6 hours, RSS every 3 hours — with exponential backoff on failure. |
-| FR-INT-3 | Must | On sync failure the previous cached payload continues to serve and is marked `stale`. The public page renders identically; staleness is visible only in admin. *(13.5)* |
+| FR-INT-3 | Must | On sync failure nothing is written to `portfolios`. The copy of the payload folded into the published tree at the last successful sync or publish continues to serve unchanged, and the `integrationCache` entry is marked `stale`. The public page renders identically, since the published tree carries no staleness; staleness is visible only in admin, which reads it from `integrationCache`. *(13.5)* |
 | FR-INT-4 | Must | Every integration-backed field is also manually editable. Manual values take precedence over synced values when both exist. *(13.5)* |
 | FR-INT-5 | Must | Where neither synced nor manual data exists, the affected section is hidden by the standard empty rule rather than rendered broken. *(13.5, 18.1)* |
 | FR-INT-6 | Must | Integration credentials are encrypted at rest and are never included in any public API response. |
@@ -419,6 +435,7 @@ Business requirement 13.5 is the strongest constraint in the source document and
 | FR-INT-12 | Must | A card that fails to load is removed from the layout rather than left as a broken image. With every card absent, the section still renders from the tenant's typed figures and profile link. *(13.7)* |
 | FR-INT-13 | Must | Credly badges are stored as identifiers and requested by the visitor's browser from Credly. The platform holds no account connection and no stored credential, and runs no refresh job. *(13.9)* |
 | FR-INT-14 | Must | Only the badge identifier is extracted from a pasted Credly embed code. The pasted markup itself is never stored and never re-injected into a page. *(13.10)* |
+| FR-INT-15 | Must | A successful sync whose payload differs from the cached one writes it to `integrationCache` and then folds it into the published tree: `published.config` and `published.data` are rebuilt by the registry's builder (FR-REG-9) from `published.source` and every provider's current cached payload, and the slug is revalidated as on publish (§2.3). The fold never reads `draft`, so it cannot publish an edit the tenant has not. It is a single update conditional on the `version` it read, retried on a mismatch, so it cannot overwrite a publish or another fold that landed while it ran. A portfolio with no published tree is not written; its next publish folds the payload in. An unchanged payload writes nothing to `portfolios` and revalidates nothing. |
 
 FR-INT-11 and FR-INT-13 are not exceptions to FR-INT-1 so much as a different category. FR-INT-1 constrains what the *server* does while assembling a response; a card or badge URL is inert content within that response, resolved later by the browser. Nothing is fetched, so nothing is cached, so FR-INT-2 and FR-INT-3 have nothing to act on — which is why these two carry no staleness story at all. What they carry instead is a visitor-visible failure mode, handled by FR-INT-12 and FR-SEC-OSS-4.
 
@@ -450,9 +467,9 @@ FR-INT-11 and FR-INT-13 are not exceptions to FR-INT-1 so much as a different ca
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-ANL-1 | Should | A tenant supplies their own Plausible domain or Google Analytics measurement id; the script is injected only when configured. *(16.1)* |
+| FR-ANL-1 | Should | A tenant supplies their own Plausible domain or Google Analytics measurement id. It is stored in the content tree (§5.2) and published as `config.analytics`, the only analytics configuration the public surface returns; `portfolio` injects the script only when that key is present. The id is public-safe under §2.1 — the injected script carries it in the page source of every view. *(16.1)* |
 | FR-ANL-2 | Should | Goal events fire on résumé download, contact link click, and GitHub link click. *(16.2)* |
-| FR-ANL-3 | Must | No analytics script loads when the tenant has not configured one. The platform does not inject its own tracking into tenant pages. |
+| FR-ANL-3 | Must | No analytics script loads when the tenant has not configured one: an unconfigured tenant's published `config` carries no `analytics` key, and `portfolio` injects nothing in its absence. The platform does not inject its own tracking into tenant pages. |
 
 ---
 
@@ -465,9 +482,34 @@ GET  /public/portfolios/:slug            → render payload for a published port
 GET  /public/portfolios/:slug/sitemap.xml
 ```
 
-Project detail is delivered inside the portfolio payload, modal-level fields included, and is not served by an endpoint of its own. The modal opens over content the page already holds (FR-SEC-PROJ-6), so a per-project route would add a surface that nothing requests.
+The render payload is two top-level objects and nothing else:
 
-**FR-API-1 (Must)** — Public responses are assembled from dedicated DTOs that omit every internal field: user id, email, draft content, disabled sections, integration credentials, sync status, analytics ids.
+```
+{
+  config: {
+    theme:     { ... },                  // FR-THM-1, FR-THM-5
+    seo:       { ... },                  // FR-PUB-1, FR-PUB-3 — title, description, keywords, OG image
+    analytics: { provider, id },         // FR-ANL-1 — absent when the tenant has configured none
+    sections:  [ { type, order }, ... ]  // enabled, non-empty sections only, in ascending order
+  },
+  data: {
+    hero:      { ... },                  // a single-cardinality type: one object
+    projects:  [ ... ],                  // a collection type: its items, in order
+    skills:    [ ... ],
+    ...                                  // one key per entry in config.sections, and no other
+  }
+}
+```
+
+`config` is everything that decides whether and how content appears, and every value in it is public-safe in §2.1's sense: theme, SEO, and the analytics id all appear in the rendered page's source whether or not the API returns them. `data` is content only — no `enabled` flag, no section `order`, nothing the renderer consults to decide whether to draw a section, which `config.sections` has already decided. A disabled or empty section is absent from both halves. A key in `data` with no matching entry in `config.sections`, or the reverse, is a defect in the builder (FR-REG-9), not a state the renderer handles.
+
+Keying `data` by type relies on a portfolio holding at most one section of each type, which the admin routes of §7.2 already assume by addressing a section as `:type`. A second instance of one type — two galleries, say — would need a key other than its type, and this shape would change with it.
+
+Both halves are stored in this shape (§5.2), so the endpoint's work is one find on `portfolios` and a serialisation through the public DTO.
+
+Project detail is delivered inside `data.projects`, modal-level fields included, and is not served by an endpoint of its own. The modal opens over content the page already holds (FR-SEC-PROJ-6), so a per-project route would add a surface that nothing requests.
+
+**FR-API-1 (Must)** — Public responses are assembled from dedicated DTOs that admit the public-safe configuration of §2.1 — theme, SEO, the analytics measurement id or Plausible domain, and the section list — alongside published content, and omit every internal field: user id, account email, draft content, `published.source`, disabled sections, integration credentials, sync status, `lastError`. The DTO admits the two halves of §7.1 and nothing else; the content inside `data` is bounded by the fields the registry declares, since draft writes are validated against them (FR-API-4) and the builder adds none.
 
 **FR-API-2 (Must)** — Public endpoints are rate-limited per IP and cached at the edge with a short TTL.
 
@@ -517,7 +559,7 @@ POST /internal/revalidate      → shared-secret auth, called by api → portfol
 |---|---|---|
 | NFR-PERF-1 | Must | A cached public page responds in under 200 ms at the edge; an uncached render completes in under 800 ms at p95. |
 | NFR-PERF-2 | Must | Largest Contentful Paint under 2.5 s on a 4G connection; Cumulative Layout Shift under 0.1. |
-| NFR-PERF-3 | Must | A public page render performs at most one database read and zero server-side external HTTP calls. Cards and badges are fetched by the visitor's browser, are excluded from render timing, and are lazy-loaded with reserved dimensions so they cannot spend NFR-PERF-2's layout-shift budget. |
+| NFR-PERF-3 | Must | A public page render performs at most one database read and zero server-side external HTTP calls: no read when the page is served from cache, and on an uncached render exactly one — a single find on `portfolios` keyed by slug. This holds by construction rather than by effort: the published tree is stored in the shape it is served in (§5.2), so there is nothing else to read and nothing to compute. Cards and badges are fetched by the visitor's browser, are excluded from render timing, and are lazy-loaded with reserved dimensions so they cannot spend NFR-PERF-2's layout-shift budget. |
 | NFR-PERF-4 | Should | The system sustains 500 concurrent public page views without degradation. |
 
 ### 8.2 Security and isolation — `NFR-SEC`
