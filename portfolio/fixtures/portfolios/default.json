@@ -1,7 +1,7 @@
 {
-  "slug": "default",
-  "publishedAt": "2026-08-14T09:20:00.000Z",
-  "version": 7,
+  "slug": "saeed",
+  "publishedAt": "2026-09-06T00:00:00.000Z",
+  "version": 1,
   "theme": {
     "accent": "#2f5bff",
     "accentInk": "#1b3ac2",
@@ -10,12 +10,10 @@
     "fontPairing": "grotesk-spline"
   },
   "seo": {
-    "title": "Mira Okonkwo — Full-stack engineer",
-    "description": "Eight years across checkout, dispatch and internal tooling. I build server-rendered products that stay fast under real traffic.",
-    "keywords": ["full-stack engineer", "performance", "design systems", "Lagos"],
-    "ogImageUrl": "/styleguide-sample.svg",
-    "ogImageAlt": "Mira Okonkwo — full-stack engineer",
-    "twitterHandle": "@miraok"
+    "title": "MD. Saeed Sharman — Technical Project Manager",
+    "description": "Twelve years in IT, from software engineer to Technical Project Manager. Four years on enterprise systems in Japan, and three-plus managing delivery for USA and Singapore-based companies.",
+    "keywords": ["technical project manager", "technical business analyst", "agile delivery", "enterprise systems"],
+    "ogImageAlt": "MD. Saeed Sharman — Technical Project Manager"
   },
   "sections": [
     {
@@ -23,20 +21,15 @@
       "enabled": true,
       "order": 0,
       "content": {
-        "name": "Mira Okonkwo",
-        "title": "Full-stack engineer · Lagos / remote",
-        "tagline": "I build server-rendered products that stay fast under real traffic.",
-        "bio": "Eight years across checkout, dispatch and internal tooling. I work close to the render path — measuring before rewriting, and shipping the smallest change that moves the number. Currently leading the front-end platform team at Ledgerwork.",
+        "name": "MD. Saeed Sharman",
+        "title": "Technical Project Manager / Technical Business Analyst",
+        "tagline": "I bridge business and technical teams, and deliver enterprise systems end to end.",
+        "bio": "Over twelve years in the IT industry, starting as a software engineer and evolving into a Technical Project Manager. Four years of professional experience in Japan working on enterprise systems, three-plus years managing projects for USA and Singapore-based companies, and currently leading development of a Unified Logistics Platform.",
         "ctas": [
-          { "kind": "resume", "label": "Download résumé", "href": "/styleguide-sample.svg" },
-          { "kind": "schedule", "label": "Schedule a chat", "href": "#contact" }
+          { "kind": "resume", "label": "Download résumé", "href": "TODO" },
+          { "kind": "schedule", "label": "Get in touch", "href": "#contact" }
         ],
-        "avatar": {
-          "src": "/styleguide-sample.svg",
-          "alt": "Mira Okonkwo",
-          "width": 320,
-          "height": 200
-        }
+        "avatar": null
       }
     },
     {
@@ -44,147 +37,112 @@
       "enabled": true,
       "order": 1,
       "content": {
-        "categories": ["Frontend", "Backend", "Data", "DevOps"],
+        "categories": ["Logistics", "Fintech", "Real estate", "Data"],
         "items": [
           {
-            "id": "ledgerwork-checkout",
-            "title": "Ledgerwork checkout",
-            "category": "Frontend",
-            "year": "2025",
-            "screenshot": {
-              "src": "/styleguide-sample.svg",
-              "alt": "The Ledgerwork checkout, mid-payment.",
-              "width": 320,
-              "height": 200
-            },
-            "problem": "A five-step checkout lost buyers at every hop, and the client-side bundle blocked first paint on mid-range Android.",
-            "solution": "Rebuilt it as one server-rendered page with progressive enhancement, so the form works before any JavaScript runs.",
-            "impact": "Completion up 14 points; median load 2.4s to 880ms.",
-            "role": "I architected the render path and the payment-state machine, and paired with two engineers on the form components.",
-            "stack": ["Rails", "Hotwire", "Stripe", "Postgres"],
-            "demoUrl": "https://example.com/ledgerwork",
-            "repoUrl": "https://example.com/ledgerwork-source",
+            "id": "unified-logistics-platform",
+            "title": "Unified Logistics Platform",
+            "category": "Logistics",
+            "screenshot": null,
+            "problem": "Sales order processing, warehouse operations and delivery management ran as three disconnected processes, with conflicting workflows across departments.",
+            "solution": "A unified platform integrating web and mobile applications with a centralized database, giving every department one view of the same order.",
+            "impact": "Real-time visibility of orders, inventory and last-mile delivery, and manual coordination between teams largely removed.",
+            "role": "Project Manager with end-to-end ownership of scope, roadmap and delivery.",
+            "stack": ["React", "Flutter", "Laravel", "MySQL"],
+            "demoUrl": "TODO",
             "bodies": {
-              "business": "<p>A <strong>five-step checkout</strong> lost buyers at every hop, and the client-side bundle blocked first paint on mid-range Android. Support tickets clustered on the payment step, where a failed card silently reset the form.</p><ul><li>Median load <strong>2.4s</strong>, worst case over 6s on 3G</li><li>Drop-off of 31% between address and payment</li><li>No recovery path once a payment errored</li></ul>",
-              "solution": "<p>Rebuilt it as <strong>one server-rendered page</strong> with progressive enhancement, so the form works before any JavaScript runs. Payment state moved server-side, which made errors recoverable rather than destructive.</p><ul><li>Single POST target with per-field server validation</li><li>Hotwire frames for the address lookup, <em>optional</em> by design</li><li>Idempotent payment intents keyed to the cart</li></ul>",
-              "role": "<p>I <u>architected the render path</u> and the payment-state machine end to end, then paired with two engineers on the form components.</p><ul><li>Owned the performance budget and the regression gate in CI</li><li>Wrote the migration plan that let the old flow run in parallel for six weeks</li><li>Ran the rollout, including the <em>rollback</em> we needed on day two</li></ul>"
+              "business": "<p>Sales order processing, warehouse operations and delivery management ran as three disconnected processes. Each department had built its own way of working, and every handoff between them was manual.</p><ul><li>No real-time visibility of orders, inventory or last-mile delivery</li><li>Conflicting workflows across the sales, warehouse and delivery teams</li><li>Coordination between departments done by hand at every step</li></ul>",
+              "solution": "<p>A unified logistics system integrating web and mobile applications with a centralized database, so every department works from one view of the same order.</p><ul><li>Ran stakeholder alignment sessions across all three departments</li><li>Standardized the conflicting workflows into one agreed process</li><li>Designed a unified system architecture around that process</li></ul><p>The outcome was <strong>improved collaboration</strong> between departments and higher adoption of the system itself.</p>",
+              "role": "<p>I owned this project end to end as <strong>Project Manager</strong>, from scope through rollout.</p><ul><li>Owned project scope, roadmap and delivery</li><li>Gathered and prioritized requirements from the sales, warehouse and delivery teams</li><li>Defined the user journeys and workflows</li><li>Led Agile teams across development, QA, UI/UX and infrastructure</li><li>Coordinated system design decisions with the technical leads</li><li>Managed UAT, training and rollout</li></ul>"
             },
-            "designation": "Lead front-end engineer",
-            "stackWorkedOn": ["Rails", "Hotwire", "Stripe"],
-            "tools": ["GitHub Actions", "Datadog", "Figma", "k6"],
-            "fullStack": ["Rails", "Hotwire", "Stripe", "Postgres", "Redis", "Sidekiq"]
+            "designation": "Project Manager (End-to-End Ownership)",
+            "stackWorkedOn": ["REVIEW — see notes"],
+            "tools": ["TODO — add the tools you used"],
+            "fullStack": ["React", "Flutter", "Laravel", "MySQL", "REST APIs", "Microservices"]
           },
           {
-            "id": "beacon-design-system",
-            "title": "Beacon design system",
-            "category": "Frontend",
-            "year": "2024",
-            "screenshot": {
-              "src": "/styleguide-sample.svg",
-              "alt": "The Beacon component catalogue.",
-              "width": 320,
-              "height": 200
-            },
-            "problem": "Nine product teams shipped four incompatible button implementations and no shared token source.",
-            "solution": "62 framework-agnostic components on one token pipeline, adopted incrementally with no migration freeze.",
-            "impact": "Adopted by all nine teams in seven months; UI review time down by half.",
-            "role": "I owned the token pipeline and the release process, and wrote the contribution model the teams still use.",
-            "stack": ["TypeScript", "Lit", "Style Dictionary"],
-            "demoUrl": "https://example.com/beacon",
-            "repoUrl": "https://example.com/beacon-source",
+            "id": "digital-payment-system",
+            "title": "Digital Payment System for a Self-Service Platform",
+            "category": "Fintech",
+            "screenshot": null,
+            "problem": "A self-service SaaS platform had no way to take payment, so it could not turn its users into subscribers.",
+            "solution": "A payment gateway module integrated into the platform, letting users subscribe and pay online.",
+            "impact": "Approximately 20% increase in revenue, and the platform became a revenue-generating product.",
+            "role": "Technical Project Manager and feature owner, from business requirements through delivery.",
+            "stack": ["Stripe", "Node.js", "React"],
+            "demoUrl": "TODO",
             "bodies": {
-              "business": "<p>Nine product teams shipped <strong>four incompatible button implementations</strong> and no shared token source. Every visual change meant nine tickets, and accessibility fixes landed in one product and nowhere else.</p><ul><li>No single source of truth for colour or spacing</li><li>UI review was the slowest stage in every release</li></ul>",
-              "solution": "<p>62 <em>framework-agnostic</em> components on one token pipeline, adopted incrementally with <strong>no migration freeze</strong>.</p><ul><li>Tokens compiled from one JSON source to CSS, iOS and Android</li><li>Components shipped as web components, usable from React and Vue</li><li>Visual regression suite gating every release</li></ul>",
-              "role": "<p>I owned the <u>token pipeline</u> and the release process, and wrote the contribution model the teams still use.</p><ul><li>Set the versioning and deprecation policy</li><li>Ran a weekly office hour for adopting teams</li></ul>"
+              "business": "<p>A self-service SaaS platform had no way to take money. Users could sign themselves up but not subscribe, which capped the product short of being a business.</p><ul><li>No online payment path, so no self-service revenue</li><li>Friction in the subscription process</li><li>Security and reliability both non-negotiable for anything handling payment</li></ul>",
+              "solution": "<p>A payment gateway module integrated into the platform, turning it into a <strong>revenue-generating product</strong> with a seamless digital payment experience.</p><ul><li>Translated business needs into clear technical specifications</li><li>Coordinated closely with the development team through delivery</li><li>Reduced friction in the subscription process</li></ul><p>The result was a reliable, user-friendly payment flow and roughly <strong>20% more revenue</strong>.</p>",
+              "role": "<p>I acted as <strong>Technical Project Manager and feature owner</strong> for the payment work.</p><ul><li>Communicated with stakeholders to define the business requirements</li><li>Created the functional specification documents</li><li>Planned and managed the Agile sprints</li><li>Defined tasks for the development and QA teams</li><li>Led feature delivery</li><li>Ran training for the marketing team</li></ul>"
             },
-            "designation": "Design systems lead",
-            "stackWorkedOn": ["TypeScript", "Lit", "Style Dictionary"],
-            "tools": ["Chromatic", "Storybook", "Changesets", "Figma"],
-            "fullStack": ["TypeScript", "Lit", "Style Dictionary", "Sass", "Rollup", "Swift", "Kotlin"]
+            "designation": "Technical Project Manager / Feature Owner",
+            "stackWorkedOn": ["REVIEW — see notes"],
+            "tools": ["TODO — add the tools you used"],
+            "fullStack": ["Stripe", "Node.js", "Express.js", "React", "JavaScript"]
           },
           {
-            "id": "freight-ops-console",
-            "title": "Freight ops console",
-            "category": "DevOps",
-            "year": "2023",
-            "screenshot": {
-              "src": "/styleguide-sample.svg",
-              "alt": "The dispatch console on a tablet.",
-              "width": 320,
-              "height": 200
-            },
-            "problem": "Dispatchers ran 400 daily routes from a spreadsheet, on tablets that lose signal inside the yard.",
-            "solution": "Offline-first console with a local write queue and conflict review, keyboard-first for one-handed use.",
-            "impact": "Route assignment down from 6 minutes to 40 seconds per load.",
-            "role": "I built the sync layer and the conflict-resolution UI; the mapping integration was a colleague's.",
-            "stack": ["React", "IndexedDB", "Mapbox"],
-            "demoUrl": "https://example.com/freight",
-            "repoUrl": "https://example.com/freight-source",
+            "id": "realtime-3d-digital-twin",
+            "title": "Real-Time 3D Digital Twin for Real Estate",
+            "category": "Real estate",
+            "screenshot": null,
+            "problem": "Prospective buyers had to visit properties in person, and delivering a real-time 3D experience over the web normally demands high-end hardware.",
+            "solution": "Digital twins of real estate buildings, explored through an interactive web experience built on pixel streaming.",
+            "impact": "Remote property showcasing with no need for high-end user hardware, reducing physical visits and improving engagement.",
+            "role": "Technical Project Manager, owning client communication, requirements and delivery.",
+            "stack": ["Unreal Engine", "WebRTC", "Node.js", "React"],
+            "demoUrl": "TODO",
             "bodies": {
-              "business": "<p>Dispatchers ran <strong>400 daily routes</strong> from a spreadsheet, on tablets that lose signal inside the yard. A lost connection meant re-entering an hour of assignments.</p><ul><li>Assignment took roughly <strong>6 minutes</strong> per load</li><li>No audit trail when two dispatchers edited the same route</li></ul>",
-              "solution": "<p>An <em>offline-first</em> console with a local write queue and conflict review, keyboard-first for one-handed use beside a truck.</p><ul><li>Writes queue locally and replay on reconnect</li><li>Conflicts surface as a side-by-side review, never a silent overwrite</li><li>Every action reachable without the touch keyboard</li></ul>",
-              "role": "<p>I built the <u>sync layer</u> and the conflict-resolution UI. The mapping integration was a colleague's work.</p><ul><li>Designed the write-queue schema and replay ordering</li><li>Shadowed two dispatch shifts before writing any code</li></ul>"
+              "business": "<p>Showing a property meant getting people to it. Remote viewing existed, but a real-time 3D walkthrough of a building normally asks the viewer for hardware they do not have.</p><ul><li>Physical visits required to evaluate a property</li><li>High-quality 3D environments too heavy for an ordinary machine</li><li>Delivering that experience over the web was the open technical question</li></ul>",
+              "solution": "<p>A real-time 3D platform that builds <em>digital twins</em> of real estate buildings and lets people explore them from a browser, using <strong>pixel streaming</strong> so the rendering happens server-side.</p><ul><li>Implemented a pixel streaming architecture</li><li>Coordinated system performance optimization across the team</li><li>Delivered a scalable real-time 3D solution</li></ul><p>The result was smooth real-time interaction and a property accessible to anyone with a browser.</p>",
+              "role": "<p>I ran this as <strong>Technical Project Manager</strong>, between the client and the delivery team.</p><ul><li>Managed client communication and requirement definition</li><li>Documented the functional requirements</li><li>Planned and managed the Agile sprints</li><li>Coordinated tasks for the development and QA teams</li><li>Led the feature delivery process</li></ul>"
             },
-            "designation": "Senior engineer, offline platform",
-            "stackWorkedOn": ["React", "IndexedDB", "TypeScript"],
-            "tools": ["Playwright", "Sentry", "Vite", "BrowserStack"],
-            "fullStack": ["React", "IndexedDB", "TypeScript", "Mapbox", "Node.js", "Postgres"]
+            "designation": "Technical Project Manager",
+            "stackWorkedOn": ["REVIEW — see notes"],
+            "tools": ["TODO — add the tools you used"],
+            "fullStack": ["Unreal Engine", "Pixel Streaming", "WebRTC", "Node.js", "Express.js", "React"]
           },
           {
-            "id": "council-records-search",
-            "title": "Council records search",
-            "category": "Data",
-            "year": "2022",
-            "screenshot": {
-              "src": "/styleguide-sample.svg",
-              "alt": "A search result page of council minutes.",
-              "width": 320,
-              "height": 200
-            },
-            "problem": "A city of 1.2M published two decades of minutes as unsearchable scanned PDFs.",
-            "solution": "Full-text search over an OCR pipeline, with result pages that work in a screen reader and on a 2G connection.",
-            "impact": "31,000 documents indexed; tested end to end with two local advocacy groups.",
-            "role": "I designed the index schema and the search UI, and ran the accessibility testing sessions.",
-            "stack": ["Django", "Postgres FTS", "Tesseract"],
-            "demoUrl": "https://example.com/council",
-            "repoUrl": "https://example.com/council-source",
-            "bodies": {
-              "business": "<p>A city of <strong>1.2M</strong> published two decades of minutes as unsearchable scanned PDFs. Residents and journalists had no way to find a decision without knowing its date.</p><ul><li>~31,000 documents, image-only, no text layer</li><li>Existing portal unusable with a screen reader</li></ul>",
-              "solution": "<p>Full-text search over an OCR pipeline, with result pages that work <em>in a screen reader</em> and on a <strong>2G connection</strong>.</p><ul><li>Tesseract pipeline with per-page confidence scoring</li><li>Postgres full-text ranking, tuned on real query logs</li><li>Server-rendered results, under 30KB per page</li></ul>",
-              "role": "<p>I designed the <u>index schema</u> and the search UI, and ran the accessibility testing sessions myself.</p><ul><li>Two rounds of moderated testing with local advocacy groups</li><li>Wrote the public documentation for the data export</li></ul>"
-            },
-            "designation": "Engineer and accessibility lead",
-            "stackWorkedOn": ["Django", "Postgres FTS", "Tesseract"],
-            "tools": ["axe", "NVDA", "pytest", "Docker"],
-            "fullStack": ["Django", "Postgres FTS", "Tesseract", "Celery", "Redis", "nginx"]
-          },
-          {
-            "id": "shift-planner",
-            "title": "Shift planner (retail client)",
-            "category": "Backend",
-            "year": "2021",
-            "screenshot": {
-              "src": "/styleguide-sample.svg",
-              "alt": "The weekly rota grid.",
-              "width": 320,
-              "height": 200
-            },
-            "problem": "Managers built weekly rotas for hourly staff across six separate forms, and overtime went unnoticed until payroll.",
-            "solution": "One editable weekly grid with live cost and overtime totals, validated server-side against local labour rules.",
-            "impact": "Rota build time cut from ~2 hours to 25 minutes per store.",
-            "role": "I owned the scheduling rules engine and the cost calculations end to end.",
-            "stack": ["Vue", "Go", "Postgres"],
-            "demoUrl": "https://example.com/shift-planner",
+            "id": "epos-system-japan",
+            "title": "ePOS System",
+            "category": "Fintech",
+            "screenshot": null,
+            "problem": "A web-based point-of-sale system in Japan handles high-value financial transactions for hundreds of daily users, where any instability is a direct business risk.",
+            "solution": "Feature development and production hardening of the SPA inside a distributed enterprise platform.",
+            "impact": "Reduced production issues, with improved reliability and user trust in a critical financial system.",
+            "role": "Front-end engineer on the team: features, requirement analysis, production investigation and mentoring.",
+            "stack": ["Angular", "TypeScript", "NgRx", "RxJS"],
             "confidential": true,
             "bodies": {
-              "business": "<p>Managers built weekly rotas for hourly staff across <strong>six separate forms</strong>, and overtime went unnoticed until payroll closed.</p><ul><li>Rota build took roughly <strong>2 hours</strong> per store</li><li>Overtime breaches found weeks after the fact</li></ul>",
-              "solution": "<p>One <em>editable weekly grid</em> with live cost and overtime totals, validated server-side against local labour rules.</p><ul><li>Totals recompute per cell edit, server-authoritative</li><li>Rule violations block save with a plain-language reason</li></ul>",
-              "role": "<p>I owned the <u>scheduling rules engine</u> and the cost calculations end to end.</p><ul><li>Encoded the labour rules with the client's compliance lead</li><li>Built the reconciliation report payroll now runs weekly</li></ul>"
+              "business": "<p>A web-based ePOS system used in Japan for managing <strong>high-value financial transactions</strong>. It forms part of a distributed enterprise platform and is used daily by hundreds of people.</p><ul><li>High reliability and accuracy required of every transaction</li><li>Instability in a financial system costs trust, not just time</li><li>Production issues needed diagnosis without disrupting daily operations</li></ul>",
+              "solution": "<p>Sustained feature delivery alongside production hardening, keeping a critical system stable while it continued to change.</p><ul><li>Performed root cause analysis on production issues</li><li>Collaborated closely with the QA and backend teams</li><li>Supported continuous delivery without compromising quality</li></ul><p>The outcome was <strong>fewer production issues</strong> and improved reliability for financial operations.</p>",
+              "role": "<p>I worked as a <strong>front-end engineer</strong> and team contributor on the single-page application.</p><ul><li>Developed new features for the SPA</li><li>Performed requirement analysis and approach design</li><li>Investigated and fixed production issues</li><li>Mentored junior team members</li></ul>"
             },
-            "designation": "Backend lead",
-            "stackWorkedOn": ["Go", "Postgres"],
-            "tools": ["GitLab CI", "Grafana", "Testcontainers"],
-            "fullStack": ["Vue", "Go", "Postgres", "RabbitMQ", "Terraform"]
+            "designation": "Frontend Engineer / Team Contributor",
+            "stackWorkedOn": ["Angular", "TypeScript", "NgRx", "RxJS"],
+            "tools": ["TODO — add the tools you used"],
+            "fullStack": ["Angular", "TypeScript", "NgRx", "RxJS", "HTML", "CSS", "Bootstrap"]
+          },
+          {
+            "id": "data-visualization-app",
+            "title": "Data Visualization Web Application",
+            "category": "Data",
+            "screenshot": null,
+            "problem": "Large volumes of data had to be made explorable on both desktop and mobile, without the interface slowing to a crawl.",
+            "solution": "A structured web application for filtering and analysing data, sitting inside a larger cloud-based architecture.",
+            "impact": "Improved data accessibility and usability, enabling faster decision-making from the same data.",
+            "role": "Front-end developer across teams: UI components, API integration and test specifications.",
+            "stack": ["Angular", "TypeScript", "AWS"],
+            "confidential": true,
+            "bodies": {
+              "business": "<p>A large volume of data existed but was not usable. It needed to be presented in a structured, readable way, on desktop and on mobile, as part of a larger cloud-based architecture.</p><ul><li>Data too voluminous to browse without filtering</li><li>Both desktop and mobile interfaces to support</li><li>Rendering large datasets efficiently was the core constraint</li></ul>",
+              "solution": "<p>A web application that presents data in a structured, user-friendly way and lets people filter and analyse it directly.</p><ul><li>Optimized data fetching and rendering for large datasets</li><li>Built reusable UI components across the interface</li><li>Ensured quality through structured unit and integration testing</li></ul><p>The result was a smooth, efficient experience and <strong>faster decision-making</strong> from data that had been sitting unread.</p>",
+              "role": "<p>I worked as a <strong>front-end developer</strong> contributing across teams.</p><ul><li>Developed the UI components and layouts</li><li>Integrated APIs and handled data processing</li><li>Created a mock UI for client validation</li><li>Prepared the test specifications and reports</li><li>Performed unit and integration testing</li></ul>"
+            },
+            "designation": "Frontend Developer (Cross-Team Contributor)",
+            "stackWorkedOn": ["Angular", "TypeScript", "HTML", "CSS"],
+            "tools": ["Jasmine", "Karma"],
+            "fullStack": ["Angular", "TypeScript", "HTML", "CSS", "AWS", "Jasmine", "Karma"]
           }
         ]
       }
@@ -194,317 +152,70 @@
       "enabled": true,
       "order": 2,
       "content": {
-        "legend": "Rated out of 10: 9–10 I have designed and debugged it in production, 7–8 I work in it daily, 5–6 I am actively learning it.",
-        "categories": ["Frontend", "Platform", "Database", "Practice", "Tooling"],
+        "legend": "Rated out of 10: 9–10 I have owned and debugged it in production, 7–8 I work in it regularly, 5–6 I am actively building on it.",
+        "categories": ["Delivery & analysis", "Frontend", "Backend", "Cloud & data", "Quality"],
         "items": [
-          { "id": "s1", "name": "TypeScript", "category": "Frontend", "rating": 9, "prominent": true },
-          { "id": "s2", "name": "React", "category": "Frontend", "rating": 9, "prominent": true },
-          { "id": "s3", "name": "CSS architecture", "category": "Frontend", "rating": 9, "prominent": true },
-          { "id": "s4", "name": "Server-rendered HTML", "category": "Frontend", "rating": 8 },
-          { "id": "s5", "name": "Vue", "category": "Frontend", "rating": 7 },
-          { "id": "s6", "name": "Lit / web components", "category": "Frontend", "rating": 7 },
-          { "id": "s7", "name": "Design systems", "category": "Platform", "rating": 9, "prominent": true },
-          { "id": "s8", "name": "Build & release tooling", "category": "Platform", "rating": 8, "prominent": true },
-          { "id": "s9", "name": "Performance budgets", "category": "Platform", "rating": 8, "prominent": true },
-          { "id": "s10", "name": "Node.js", "category": "Platform", "rating": 7 },
-          { "id": "s11", "name": "Edge runtimes", "category": "Platform", "rating": 6 },
-          { "id": "s12", "name": "PostgreSQL", "category": "Database", "rating": 7 },
-          { "id": "s13", "name": "Redis", "category": "Database", "rating": 6 },
-          { "id": "s14", "name": "WCAG 2.1 AA audits", "category": "Practice", "rating": 9 },
-          { "id": "s15", "name": "Testing strategy", "category": "Practice", "rating": 8 },
-          { "id": "s16", "name": "Technical writing", "category": "Practice", "rating": 8 },
-          { "id": "s17", "name": "Mentoring", "category": "Practice", "rating": 7 }
-        ]
-      }
-    },
-    {
-      "type": "experience",
-      "enabled": true,
-      "order": 3,
-      "content": {
-        "items": [
-          {
-            "id": "e1",
-            "company": "Ledgerwork",
-            "title": "Staff engineer, front-end platform",
-            "startDate": "2022",
-            "description": "Lead the platform team behind checkout and the internal component library.",
-            "accomplishments": [
-              "Cut median checkout load from 2.4s to 880ms across nine markets.",
-              "Introduced a performance budget enforced in CI, not in review.",
-              "Mentored four engineers through their first platform-wide migration."
-            ]
-          },
-          {
-            "id": "e2",
-            "company": "Northwind Logistics",
-            "title": "Senior engineer",
-            "startDate": "2019",
-            "endDate": "2022",
-            "description": "Built the dispatch tooling used daily by 200 yard staff on unreliable connections.",
-            "accomplishments": [
-              "Designed the offline write queue and its conflict-review UI.",
-              "Took the console from a 6-minute to a 40-second route assignment."
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "type": "education",
-      "enabled": true,
-      "order": 4,
-      "content": {
-        "items": [
-          {
-            "id": "ed1",
-            "degree": "BSc Computer Science",
-            "institution": "University of Lagos",
-            "graduated": "2017",
-            "gpa": "First class",
-            "coursework": ["Distributed systems", "Compilers", "Human-computer interaction"],
-            "scholarships": ["Faculty merit scholarship"],
-            "honours": ["Dean's list, three years"]
-          }
-        ]
-      }
-    },
-    {
-      "type": "opensource",
-      "enabled": true,
-      "order": 5,
-      "content": {
-        "profileUrl": "https://example.com/github/miraok",
-        "stats": { "repos": 34, "commitsLastYear": 1120, "pullRequests": 214, "contributions": 1240 },
-        "githubUsername": "miraok",
-        "embedCards": ["stats", "languages"],
-        "contributions": [
-          {
-            "id": "oss1",
-            "name": "style-dictionary",
-            "description": "Token transform for CSS custom properties with theme scoping.",
-            "impact": "Shipped in 4.2; used by the Beacon pipeline.",
-            "url": "https://example.com/oss/style-dictionary"
-          },
-          {
-            "id": "oss2",
-            "name": "axe-core",
-            "description": "Rule for progressbar elements missing an accessible value.",
-            "impact": "Catches the failure mode this portfolio guards against.",
-            "url": "https://example.com/oss/axe-core"
-          }
-        ]
-      }
-    },
-    {
-      "type": "blog",
-      "enabled": true,
-      "order": 6,
-      "content": {
-        "items": [
-          {
-            "id": "b1",
-            "title": "Measuring before rewriting",
-            "date": "2025",
-            "summary": "How a checkout rewrite started with three weeks of field data and no code.",
-            "url": "https://example.com/writing/measuring-first"
-          },
-          {
-            "id": "b2",
-            "title": "The token pipeline nobody has to think about",
-            "date": "2024",
-            "summary": "Nine teams, one source of truth, and the release process that kept it honest.",
-            "url": "https://example.com/writing/token-pipeline"
-          }
-        ]
-      }
-    },
-    {
-      "type": "speaking",
-      "enabled": true,
-      "order": 7,
-      "content": {
-        "items": [
-          {
-            "id": "sp1",
-            "event": "RenderConf",
-            "date": "2025",
-            "title": "Progressive enhancement pays for itself",
-            "url": "https://example.com/talks/progressive-enhancement"
-          },
-          {
-            "id": "sp2",
-            "event": "Lagos JS",
-            "date": "2024",
-            "title": "Performance budgets in CI",
-            "url": "https://example.com/talks/budgets"
-          }
-        ]
-      }
-    },
-    {
-      "type": "testimonials",
-      "enabled": true,
-      "order": 8,
-      "content": {
-        "items": [
-          {
-            "id": "t1",
-            "quote": "Mira rewrote the part of our system everyone was afraid of, and the deploy was uneventful. That is the whole compliment.",
-            "name": "Adaeze Nwosu",
-            "role": "VP Engineering",
-            "company": "Ledgerwork",
-            "photo": {
-              "src": "/styleguide-sample.svg",
-              "alt": "Adaeze Nwosu",
-              "width": 320,
-              "height": 200
-            }
-          },
-          {
-            "id": "t2",
-            "quote": "She left the dispatch team with documentation they still use two years later, which says more than the launch did.",
-            "name": "Tomas Bergstrom",
-            "role": "Head of Operations",
-            "company": "Northwind Logistics"
-          }
-        ]
-      }
-    },
-    {
-      "type": "achievements",
-      "enabled": true,
-      "order": 9,
-      "content": {
-        "items": [
-          {
-            "id": "a1",
-            "type": "certification",
-            "title": "IAAP Web Accessibility Specialist",
-            "issuer": "IAAP",
-            "date": "2024",
-            "url": "https://example.com/certs/was"
-          },
-          {
-            "id": "a2",
-            "type": "award",
-            "title": "Engineering award for platform impact",
-            "issuer": "Ledgerwork",
-            "date": "2023"
-          },
-          {
-            "_note": "The two badge ids below are REAL public Credly badges, and they belong to other people. They are here because Credly answers an unknown badge id with HTTP 200 and an empty body, so an invented id renders a silent blank frame and proves nothing. Swap in your own ids; the surrounding title and issuer are the tenant's own text and must be edited to match.",
-            "id": "credly-8e5bf237-ba22-4682-be1b-bc96a9bd39c3",
-            "type": "certification",
-            "source": "credly",
-            "title": "AWS Certified Cloud Practitioner",
-            "issuer": "Amazon Web Services Training and Certification",
-            "date": "2025",
-            "credlyBadgeId": "8e5bf237-ba22-4682-be1b-bc96a9bd39c3",
-            "verifyUrl": "https://www.credly.com/badges/8e5bf237-ba22-4682-be1b-bc96a9bd39c3"
-          },
-          {
-            "id": "credly-e3ef1c7d-9c7f-4c53-97cd-e1dc75d243da",
-            "type": "certification",
-            "source": "credly",
-            "title": "AWS Certified Solutions Architect – Associate",
-            "issuer": "Amazon Web Services Training and Certification",
-            "date": "2024",
-            "credlyBadgeId": "e3ef1c7d-9c7f-4c53-97cd-e1dc75d243da",
-            "verifyUrl": "https://www.credly.com/badges/e3ef1c7d-9c7f-4c53-97cd-e1dc75d243da"
-          }
-        ],
-        "credlyUsername": "mira-okonkwo"
-      }
-    },
-    {
-      "type": "trainings",
-      "enabled": true,
-      "order": 10,
-      "content": {
-        "items": [
-          {
-            "id": "tr1",
-            "type": "certification",
-            "title": "Distributed Systems for Practitioners",
-            "issuer": "Bradfield School of Computer Science",
-            "date": "2025",
-            "url": "https://example.com/courses/distributed-systems"
-          },
-          {
-            "id": "tr2",
-            "type": "certification",
-            "title": "Accessibility for Front-End Engineers",
-            "issuer": "Deque University",
-            "date": "2024"
-          }
-        ]
-      }
-    },
-    {
-      "type": "gallery",
-      "enabled": true,
-      "order": 11,
-      "content": {
-        "items": [
-          {
-            "id": "g1",
-            "image": {
-              "src": "/styleguide-sample.svg",
-              "alt": "The checkout render path, drawn on a whiteboard.",
-              "width": 320,
-              "height": 200
-            },
-            "caption": "The render path, before any of it was code."
-          },
-          {
-            "id": "g2",
-            "image": {
-              "src": "/styleguide-sample.svg",
-              "alt": "The dispatch console running in the yard.",
-              "width": 320,
-              "height": 200
-            },
-            "caption": "The console in the yard, offline by design.",
-            "videoUrl": "https://example.com/video/dispatch"
-          }
+          { "id": "sk1", "name": "End-to-end project delivery", "category": "Delivery & analysis", "rating": 9, "prominent": true },
+          { "id": "sk2", "name": "Stakeholder communication", "category": "Delivery & analysis", "rating": 9, "prominent": true },
+          { "id": "sk3", "name": "Requirement analysis", "category": "Delivery & analysis", "rating": 9, "prominent": true },
+          { "id": "sk4", "name": "Agile / Scrum execution", "category": "Delivery & analysis", "rating": 9, "prominent": true },
+          { "id": "sk5", "name": "Functional documentation", "category": "Delivery & analysis", "rating": 8 },
+          { "id": "sk6", "name": "User journey & workflow design", "category": "Delivery & analysis", "rating": 8 },
+          { "id": "sk7", "name": "UAT, training & rollout", "category": "Delivery & analysis", "rating": 8 },
+          { "id": "sk8", "name": "Angular", "category": "Frontend", "rating": 8, "prominent": true },
+          { "id": "sk9", "name": "TypeScript", "category": "Frontend", "rating": 8, "prominent": true },
+          { "id": "sk10", "name": "React", "category": "Frontend", "rating": 7, "prominent": true },
+          { "id": "sk11", "name": "NgRx / RxJS", "category": "Frontend", "rating": 7 },
+          { "id": "sk12", "name": "JavaScript", "category": "Frontend", "rating": 8 },
+          { "id": "sk13", "name": "HTML & CSS", "category": "Frontend", "rating": 8 },
+          { "id": "sk14", "name": "Flutter", "category": "Frontend", "rating": 6 },
+          { "id": "sk15", "name": "Node.js / Express.js", "category": "Backend", "rating": 7 },
+          { "id": "sk16", "name": "REST API design", "category": "Backend", "rating": 7 },
+          { "id": "sk17", "name": "Laravel", "category": "Backend", "rating": 6 },
+          { "id": "sk18", "name": "Microservices", "category": "Backend", "rating": 6 },
+          { "id": "sk19", "name": "Stripe integration", "category": "Backend", "rating": 6 },
+          { "id": "sk20", "name": "MySQL", "category": "Cloud & data", "rating": 7 },
+          { "id": "sk21", "name": "AWS", "category": "Cloud & data", "rating": 6 },
+          { "id": "sk22", "name": "Root cause analysis", "category": "Quality", "rating": 8 },
+          { "id": "sk23", "name": "Unit & integration testing", "category": "Quality", "rating": 7 },
+          { "id": "sk24", "name": "Test specification & reporting", "category": "Quality", "rating": 7 }
         ]
       }
     },
     {
       "type": "contact",
       "enabled": true,
-      "order": 12,
+      "order": 3,
       "content": {
-        "intro": "Open to staff-level front-end roles and short platform engagements. Replies within two days.",
+        "intro": "I bring technical expertise, project management experience and business understanding together. With experience in Japan and with global teams, I focus on delivering solutions that create real business impact while keeping stakeholders and technical teams aligned.",
         "email": {
           "label": "Email",
-          "value": "mira@okonkwo.dev",
-          "href": "mailto:mira@okonkwo.dev",
+          "value": "TODO — your email address",
+          "href": "mailto:TODO",
           "visible": true
         },
         "github": {
           "label": "GitHub",
-          "value": "github.com/miraok",
-          "href": "https://example.com/github/miraok",
+          "value": "TODO — your GitHub",
+          "href": "TODO",
           "visible": true
         },
         "linkedin": {
           "label": "LinkedIn",
-          "value": "linkedin.com/in/miraokonkwo",
-          "href": "https://example.com/in/miraokonkwo",
+          "value": "TODO — your LinkedIn",
+          "href": "TODO",
           "visible": true
         },
         "x": {
           "label": "X",
-          "value": "@miraok",
-          "href": "https://example.com/x/miraok",
-          "visible": true
+          "value": "TODO",
+          "href": "TODO",
+          "visible": false
         },
         "site": {
           "label": "Personal site",
-          "value": "okonkwo.dev",
-          "href": "https://example.com/okonkwo.dev",
+          "value": "TODO",
+          "href": "TODO",
           "visible": false
         }
       }
