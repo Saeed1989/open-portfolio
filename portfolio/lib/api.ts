@@ -1,7 +1,12 @@
 import { cache } from 'react';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { SECTION_TYPES, type SectionInstance } from '@portfolio/registry';
+import {
+  REGISTRY,
+  SECTION_TYPES,
+  type SectionInstance,
+  type SectionType,
+} from '@portfolio/registry';
 import type { PortfolioTheme } from './theme';
 
 /**
@@ -204,6 +209,29 @@ async function fromFixtures(slug: string): Promise<PortfolioPayload | null> {
  * `assertPayload`, so both sources land on one validator and one error
  * vocabulary.
  */
+/**
+ * A collection's content, whichever of the two encodings it arrives in.
+ *
+ * §7.1 as first written encoded a collection as a bare array of its items,
+ * which has nowhere to put the section-level fields its descriptor declares.
+ * The builder now emits the content object verbatim, but any tree published
+ * before that change still holds the array, so both shapes reach this client.
+ * An array for a collection type is rewrapped as `{ items }`.
+ *
+ * This recovers the items and nothing else. `skills.legend`,
+ * `projects.categories` and `achievements.credlyUsername` were discarded by
+ * the old builder at publish time — they are absent from the payload, not
+ * merely reshaped, so no mapping can bring them back. Republishing the tenant
+ * against the current builder is what restores them.
+ *
+ * An unknown type falls through untouched; assertPayload rejects it by name.
+ */
+function collectionContent(type: string, value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  const descriptor = REGISTRY[type as SectionType];
+  return descriptor?.cardinality === 'collection' ? { items: value } : value;
+}
+
 function fromRenderPayload(
   raw: unknown,
   slug: string,
@@ -243,7 +271,7 @@ function fromRenderPayload(
       type: ref.type,
       enabled: true,
       order: ref.order,
-      content: data[type],
+      content: collectionContent(type, data[type]),
     };
   });
 
