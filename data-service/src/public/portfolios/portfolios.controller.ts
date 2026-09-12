@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  NotImplementedException,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import {
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -32,6 +26,6 @@ export class PortfoliosController {
   @ApiParam({ name: 'slug', example: 'alice' })
   @ApiOkResponse({ type: RenderPayloadDto })
   getRenderPayload(@Param('slug') slug: string): Promise<RenderPayloadDto> {
-    throw new NotImplementedException();
+    return this.portfolios.getRenderPayload(slug);
   }
 }
