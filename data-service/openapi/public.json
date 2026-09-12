@@ -1,0 +1,253 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/public/portfolios/{slug}": {
+      "get": {
+        "operationId": "PortfoliosController_getRenderPayload",
+        "summary": "Render payload for a published portfolio (FR-TEN-5)",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "alice",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RenderPayloadDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown, unpublished or suspended slug, indistinguishably."
+          }
+        },
+        "tags": [
+          "portfolios"
+        ]
+      }
+    },
+    "/public/portfolios/{slug}/sitemap.xml": {
+      "get": {
+        "operationId": "SitemapController_getSitemap",
+        "summary": "Sitemap for a published portfolio (FR-PUB-5)",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "alice",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "sitemap.xml",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown, unpublished or suspended slug, indistinguishably."
+          }
+        },
+        "tags": [
+          "sitemap"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Portfolio API — public",
+    "description": "Unauthenticated and read-only. Published content only, resolved by slug (SRS §7.1).",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3001"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "PublicThemeDto": {
+        "type": "object",
+        "properties": {
+          "accent": {
+            "type": "string",
+            "example": "#2f5bff"
+          },
+          "accentInk": {
+            "type": "string",
+            "example": "#1b3ac2"
+          },
+          "accentOn": {
+            "type": "string",
+            "example": "#ffffff"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark",
+              "system"
+            ],
+            "example": "system"
+          },
+          "fontPairing": {
+            "type": "string",
+            "example": "grotesk-spline"
+          }
+        }
+      },
+      "PublicSeoDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Mira Okonkwo — Full-stack engineer"
+          },
+          "description": {
+            "type": "string",
+            "example": "I build fast, accessible web products."
+          },
+          "keywords": {
+            "example": [
+              "full-stack engineer",
+              "performance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ogImageUrl": {
+            "type": "string",
+            "example": "https://cdn.site.com/og/alice.png"
+          }
+        }
+      },
+      "PublicAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "plausible",
+              "ga"
+            ],
+            "example": "plausible"
+          },
+          "id": {
+            "type": "string",
+            "example": "alice.site.com"
+          }
+        },
+        "required": [
+          "provider",
+          "id"
+        ]
+      },
+      "PublicSectionRefDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "hero",
+              "projects",
+              "skills",
+              "contact",
+              "experience",
+              "education",
+              "blog",
+              "testimonials",
+              "opensource",
+              "speaking",
+              "achievements",
+              "trainings",
+              "gallery"
+            ],
+            "example": "projects"
+          },
+          "order": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "type",
+          "order"
+        ]
+      },
+      "PublicConfigDto": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "$ref": "#/components/schemas/PublicThemeDto"
+          },
+          "seo": {
+            "$ref": "#/components/schemas/PublicSeoDto"
+          },
+          "analytics": {
+            "description": "Absent when the tenant has configured none (FR-ANL-3).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PublicAnalyticsDto"
+              }
+            ]
+          },
+          "sections": {
+            "description": "Enabled, non-empty sections only, in ascending order.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicSectionRefDto"
+            }
+          }
+        },
+        "required": [
+          "theme",
+          "seo",
+          "sections"
+        ]
+      },
+      "RenderPayloadDto": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/PublicConfigDto"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Section content keyed by type — one key per entry in config.sections, and no other. Each value is shaped by the registry.",
+            "example": {
+              "hero": {},
+              "projects": []
+            }
+          }
+        },
+        "required": [
+          "config",
+          "data"
+        ]
+      }
+    }
+  }
+}

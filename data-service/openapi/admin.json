@@ -1,0 +1,1412 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/admin/me": {
+      "get": {
+        "operationId": "PortfolioController_getMe",
+        "summary": "Account behind the current session (FR-AUTH-3)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio": {
+      "get": {
+        "operationId": "PortfolioController_getDraft",
+        "summary": "Full draft of the session's portfolio (FR-TEN-4)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminPortfolioDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/theme": {
+      "patch": {
+        "operationId": "PortfolioController_updateTheme",
+        "summary": "Update the draft theme (FR-THM-1)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminThemeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminPortfolioDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/seo": {
+      "patch": {
+        "operationId": "PortfolioController_updateSeo",
+        "summary": "Update the draft SEO fields (FR-PUB-1)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminSeoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminPortfolioDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/slug": {
+      "patch": {
+        "operationId": "PortfolioController_updateSlug",
+        "summary": "Change the portfolio slug (FR-DAT-1)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSlugDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminPortfolioDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/sections": {
+      "get": {
+        "operationId": "SectionsController_list",
+        "summary": "List the draft sections (FR-CFG-1)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminSectionDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/sections/{type}": {
+      "patch": {
+        "operationId": "SectionsController_update",
+        "summary": "Toggle, reorder, or replace a section's content (FR-CFG-3)",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "hero",
+                "projects",
+                "skills",
+                "contact",
+                "experience",
+                "education",
+                "blog",
+                "testimonials",
+                "opensource",
+                "speaking",
+                "achievements",
+                "trainings",
+                "gallery"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSectionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/sections/{type}/items": {
+      "post": {
+        "operationId": "SectionsController_addItem",
+        "summary": "Add an item to a collection section (FR-API-4)",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "hero",
+                "projects",
+                "skills",
+                "contact",
+                "experience",
+                "education",
+                "blog",
+                "testimonials",
+                "opensource",
+                "speaking",
+                "achievements",
+                "trainings",
+                "gallery"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "One item, shaped by the registry's itemFields for :type.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSectionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/portfolio/sections/{type}/items/{itemId}": {
+      "patch": {
+        "operationId": "SectionsController_updateItem",
+        "summary": "Update an item in a collection section (FR-API-4)",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "hero",
+                "projects",
+                "skills",
+                "contact",
+                "experience",
+                "education",
+                "blog",
+                "testimonials",
+                "opensource",
+                "speaking",
+                "achievements",
+                "trainings",
+                "gallery"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "66e1f0c2a1b2c3d4e5f60718",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "One item, shaped by the registry's itemFields for :type.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSectionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "SectionsController_removeItem",
+        "summary": "Remove an item from a collection section (FR-API-4)",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "hero",
+                "projects",
+                "skills",
+                "contact",
+                "experience",
+                "education",
+                "blog",
+                "testimonials",
+                "opensource",
+                "speaking",
+                "achievements",
+                "trainings",
+                "gallery"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "66e1f0c2a1b2c3d4e5f60718",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed."
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/media/upload-url": {
+      "post": {
+        "operationId": "MediaController_createUploadUrl",
+        "summary": "Issue a signed upload URL (FR-MED-1)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUploadUrlDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUrlDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "media"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/media/{id}": {
+      "delete": {
+        "operationId": "MediaController_remove",
+        "summary": "Delete a media asset of the session's portfolio (FR-TEN-4)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "66e1f0c2a1b2c3d4e5f60718",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "media"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/integrations": {
+      "get": {
+        "operationId": "IntegrationsController_list",
+        "summary": "List connections with status and cached payload (FR-INT-3)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IntegrationDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "integrations"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/integrations/credly/import": {
+      "post": {
+        "operationId": "IntegrationsController_importCredly",
+        "summary": "Populate achievements from a public Credly profile (FR-INT-13)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredlyImportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSectionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "integrations"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/integrations/credly/badge": {
+      "post": {
+        "operationId": "IntegrationsController_addCredlyBadge",
+        "summary": "Add one badge from a pasted Credly embed code (FR-INT-14)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredlyBadgeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSectionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "integrations"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/integrations/{provider}": {
+      "post": {
+        "operationId": "IntegrationsController_connect",
+        "summary": "Connect an integration provider (FR-INT-2)",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "github",
+                "rss",
+                "x",
+                "linkedin"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectIntegrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "integrations"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "IntegrationsController_disconnect",
+        "summary": "Disconnect an integration provider (FR-INT-6)",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "github",
+                "rss",
+                "x",
+                "linkedin"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Disconnected."
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "integrations"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/integrations/{provider}/sync": {
+      "post": {
+        "operationId": "IntegrationsController_requestSync",
+        "summary": "Request a manual refresh (FR-INT-2)",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "github",
+                "rss",
+                "x",
+                "linkedin"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Refresh handed to the sync worker."
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "integrations"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/publish": {
+      "post": {
+        "operationId": "PublishController_publish",
+        "summary": "Validate and publish the draft (FR-PUB-6)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "publish"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/unpublish": {
+      "post": {
+        "operationId": "PublishController_unpublish",
+        "summary": "Return the subdomain to the 404 state (FR-PUB-8)",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Unpublished."
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "publish"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/link-health": {
+      "get": {
+        "operationId": "LinkHealthController_list",
+        "summary": "Link check results (FR-SEC-PROJ-9)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinkHealthDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No valid session."
+          }
+        },
+        "tags": [
+          "link-health"
+        ],
+        "security": [
+          {
+            "cookie": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Portfolio API — admin",
+    "description": "Session-authenticated. Reads and writes the draft of the session's portfolio (SRS §7.2).",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3001"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session"
+      }
+    },
+    "schemas": {
+      "MeDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "github",
+              "google"
+            ],
+            "example": "github"
+          },
+          "email": {
+            "type": "string",
+            "example": "alice@example.com"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Alice Doe"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://avatars.githubusercontent.com/u/1"
+          }
+        },
+        "required": [
+          "provider",
+          "email",
+          "displayName"
+        ]
+      },
+      "AdminSectionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "hero",
+              "projects",
+              "skills",
+              "contact",
+              "experience",
+              "education",
+              "blog",
+              "testimonials",
+              "opensource",
+              "speaking",
+              "achievements",
+              "trainings",
+              "gallery"
+            ],
+            "example": "projects"
+          },
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "order": {
+            "type": "number",
+            "example": 1
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Shaped by the registry's descriptor for `type`.",
+            "example": {
+              "items": []
+            }
+          }
+        },
+        "required": [
+          "type",
+          "enabled",
+          "order",
+          "content"
+        ]
+      },
+      "AdminThemeDto": {
+        "type": "object",
+        "properties": {
+          "accent": {
+            "type": "string",
+            "example": "#2f5bff"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark",
+              "system"
+            ],
+            "example": "system"
+          },
+          "fontPairing": {
+            "type": "string",
+            "example": "grotesk-spline"
+          }
+        }
+      },
+      "AdminSeoDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Alice Doe — Full-stack engineer"
+          },
+          "description": {
+            "type": "string",
+            "example": "I build fast, accessible web products."
+          },
+          "keywords": {
+            "example": [
+              "full-stack engineer",
+              "performance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ogImageAssetId": {
+            "type": "string",
+            "description": "Media asset id of an uploaded OG image.",
+            "example": "66e1f0c2a1b2c3d4e5f60718"
+          }
+        }
+      },
+      "AdminAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "plausible",
+              "ga"
+            ],
+            "example": "plausible"
+          },
+          "id": {
+            "type": "string",
+            "example": "alice.site.com"
+          }
+        },
+        "required": [
+          "provider",
+          "id"
+        ]
+      },
+      "DraftDto": {
+        "type": "object",
+        "properties": {
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminSectionDto"
+            }
+          },
+          "theme": {
+            "$ref": "#/components/schemas/AdminThemeDto"
+          },
+          "seo": {
+            "$ref": "#/components/schemas/AdminSeoDto"
+          },
+          "analytics": {
+            "nullable": true,
+            "description": "Null until the tenant configures one.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminAnalyticsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "sections",
+          "theme",
+          "seo",
+          "analytics"
+        ]
+      },
+      "AdminPortfolioDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "alice"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unpublished",
+              "published",
+              "suspended"
+            ],
+            "example": "unpublished"
+          },
+          "registryVersion": {
+            "type": "number",
+            "example": 2
+          },
+          "presetId": {
+            "type": "string",
+            "example": "developer"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/DraftDto"
+          },
+          "publishedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "example": "2026-09-01T10:00:00.000Z"
+          },
+          "version": {
+            "type": "number",
+            "example": 3
+          }
+        },
+        "required": [
+          "slug",
+          "status",
+          "registryVersion",
+          "draft",
+          "version"
+        ]
+      },
+      "UpdateSlugDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "alice"
+          }
+        },
+        "required": [
+          "slug"
+        ]
+      },
+      "UpdateSectionDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "order": {
+            "type": "number",
+            "example": 2
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Replacement content, shaped by the registry's descriptor for :type.",
+            "example": {
+              "items": []
+            }
+          }
+        }
+      },
+      "CreateUploadUrlDto": {
+        "type": "object",
+        "properties": {
+          "mimeType": {
+            "type": "string",
+            "example": "image/png"
+          },
+          "bytes": {
+            "type": "number",
+            "example": 482133
+          },
+          "altText": {
+            "type": "string",
+            "description": "Required at upload time (FR-MED-5).",
+            "example": "Screenshot of the dashboard"
+          }
+        },
+        "required": [
+          "mimeType",
+          "bytes",
+          "altText"
+        ]
+      },
+      "UploadUrlDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "example": "66e1f0c2a1b2c3d4e5f60718"
+          },
+          "uploadUrl": {
+            "type": "string",
+            "description": "Short-lived; the browser uploads directly to it (FR-MED-1).",
+            "example": "https://storage.site.com/uploads/abc?signature=xyz"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-01T10:05:00.000Z"
+          }
+        },
+        "required": [
+          "assetId",
+          "uploadUrl",
+          "expiresAt"
+        ]
+      },
+      "IntegrationCacheDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {}
+          },
+          "fetchedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-01T06:00:00.000Z"
+          },
+          "stale": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "payload",
+          "fetchedAt",
+          "stale"
+        ]
+      },
+      "IntegrationDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "github",
+              "rss",
+              "x",
+              "linkedin"
+            ],
+            "example": "github"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {
+              "username": "alice"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "failing",
+              "revoked"
+            ],
+            "example": "ok"
+          },
+          "lastSyncAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "example": "2026-09-01T06:00:00.000Z"
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          },
+          "consecutiveFailures": {
+            "type": "number",
+            "example": 0
+          },
+          "cache": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IntegrationCacheDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "provider",
+          "config",
+          "status",
+          "consecutiveFailures",
+          "cache"
+        ]
+      },
+      "CredlyImportDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Public Credly profile username.",
+            "example": "alice-doe"
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "CredlyBadgeDto": {
+        "type": "object",
+        "properties": {
+          "embedCode": {
+            "type": "string",
+            "description": "Pasted Credly embed code. Only the badge identifier is kept; the markup is never stored (FR-INT-14).",
+            "example": "<div data-share-badge-id=\"8f0e4a2c-1b3d-4e5f-9a6b-7c8d9e0f1a2b\"></div>"
+          }
+        },
+        "required": [
+          "embedCode"
+        ]
+      },
+      "ConnectIntegrationDto": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Per provider: `{ username }`, `{ feedUrl }`, ... (§5.4).",
+            "example": {
+              "feedUrl": "https://alice.dev/rss.xml"
+            }
+          }
+        },
+        "required": [
+          "config"
+        ]
+      },
+      "PublishResultDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "example": 4
+          },
+          "publishedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-01T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "version",
+          "publishedAt"
+        ]
+      },
+      "LinkHealthDto": {
+        "type": "object",
+        "properties": {
+          "sectionType": {
+            "type": "string",
+            "enum": [
+              "hero",
+              "projects",
+              "skills",
+              "contact",
+              "experience",
+              "education",
+              "blog",
+              "testimonials",
+              "opensource",
+              "speaking",
+              "achievements",
+              "trainings",
+              "gallery"
+            ],
+            "example": "projects"
+          },
+          "itemId": {
+            "type": "string",
+            "example": "66e1f0c2a1b2c3d4e5f60718"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://demo.alice.dev"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "broken",
+              "unchecked"
+            ],
+            "example": "ok"
+          },
+          "statusCode": {
+            "type": "number",
+            "example": 200
+          },
+          "lastCheckedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-01T03:00:00.000Z"
+          },
+          "consecutiveFailures": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "sectionType",
+          "itemId",
+          "url",
+          "state",
+          "consecutiveFailures"
+        ]
+      }
+    }
+  }
+}

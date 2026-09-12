@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    /* node16 emits CommonJS here (package.json has no "type") and honours the
+       registry's exports map, resolving its `require` build and .d.cts types. */
+    "module": "node16",
+    "moduleResolution": "node16",
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    "types": ["node"],
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}
