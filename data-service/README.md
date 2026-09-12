@@ -43,11 +43,18 @@ rather than a second copy. Nothing in there may call `Date.now()`,
 | `carol` | draft only | Publicly 404s (§2.4). Deliberately incomplete, so publish validation has something to fail on. |
 | `dave` | suspended | FR-TEN-3. Has a complete published tree that must still 404. |
 
-It targets `MONGODB_URI`, falling back to `mongodb://localhost:27017/portfolio`.
-The script reads the environment directly and does **not** load `.env` — it is a
-plain Node script, not a Nest process — so pass the variable inline if yours
-differs. Media documents point at a placeholder host; no bytes are uploaded and
-no storage is touched.
+It targets `MONGODB_URI` and has **no default**: both scripts load `.env`
+through Node's own `--env-file`, so the seed goes wherever the service goes, and
+an unset variable fails the run rather than quietly filling a local database
+nobody meant to use. Pass the variable inline to target anything else.
+
+`seed:reset` **drops** the seven collections before writing. Against a shared or
+hosted cluster that deletes whatever else is in that database, so check which
+database `MONGODB_URI` resolves to before running it — a `mongodb+srv://` URI
+with no path resolves to `test`, not to a database named after the cluster.
+
+Media documents point at a placeholder host; no bytes are uploaded and no
+storage is touched.
 
 **Retention and TTL indexes.** None are created. §5 is silent on expiry for
 every collection except `slugHistory`, whose 90 days a TTL index cannot

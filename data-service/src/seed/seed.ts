@@ -36,12 +36,12 @@ import { TENANTS } from './tenants';
  *   npm run seed         upsert; safe to run repeatedly
  *   npm run seed:reset   drop the seven collections, then seed
  *
- * `MONGODB_URI` overrides the target. It is read straight from the
- * environment: this is a script rather than a Nest process, so nothing here
- * loads `.env`. Export it, or pass it inline, if yours is not the default.
+ * `MONGODB_URI` is required and is not defaulted: seeding the wrong database
+ * because a variable was missing is worse than not seeding at all, and a
+ * silent fallback to localhost would do exactly that against a developer who
+ * had pointed the service at a cluster. The npm scripts load `.env` through
+ * Node's own `--env-file`, so the seed targets whatever the service targets.
  */
-
-const DEFAULT_URI = 'mongodb://localhost:27017/portfolio';
 
 /** Registered here rather than through Nest DI — this is a plain script. */
 const MODELS = {
@@ -114,11 +114,19 @@ async function seedTenant(tenant: SeedTenant): Promise<void> {
 
 async function main(): Promise<void> {
   const reset = process.argv.includes('--reset');
-  const uri = process.env.MONGODB_URI ?? DEFAULT_URI;
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error(
+      'MONGODB_URI is not set. The npm scripts read it from .env; ' +
+        'pass it inline to target anything else.',
+    );
+  }
 
   await mongoose.connect(uri);
   const name = mongoose.connection.name;
-  console.log(`${reset ? 'reset + seed' : 'seed'} -> ${uri} (db: ${name})`);
+  /* Credentials belong in .env, not in a terminal scrollback or a CI log. */
+  const shown = uri.replace(/\/\/[^@]*@/, '//***@');
+  console.log(`${reset ? 'reset + seed' : 'seed'} -> ${shown} (db: ${name})`);
 
   if (reset) {
     for (const model of Object.values(MODELS)) {
