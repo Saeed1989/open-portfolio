@@ -10,10 +10,10 @@
     "fontPairing": "grotesk-spline"
   },
   "seo": {
-    "title": "MD. Saeed Sharman — Technical Project Manager",
-    "description": "Twelve years in IT, from software engineer to Technical Project Manager. Four years on enterprise systems in Japan, and three-plus managing delivery for USA and Singapore-based companies.",
-    "keywords": ["technical project manager", "technical business analyst", "agile delivery", "enterprise systems"],
-    "ogImageAlt": "MD. Saeed Sharman — Technical Project Manager"
+    "title": "MD. Saeed Sharman — Full Stack Developer",
+    "description": "Full-stack engineer with 12+ years across frontend, backend, and embedded systems, delivering SaaS and fintech platforms for clients in Japan, the US, Singapore, and Bangladesh. Currently building Openfolio, a multi-tenant SaaS platform.",
+    "keywords": ["technical project manager", "technical business analyst", "agile delivery", "enterprise systems", "full stack developer"],
+    "ogImageAlt": "MD. Saeed Sharman — Full Stack Developer"
   },
   "sections": [
     {
@@ -22,14 +22,21 @@
       "order": 0,
       "content": {
         "name": "MD. Saeed Sharman",
-        "title": "Technical Project Manager / Technical Business Analyst",
+        "title": "Technical Manager - Full Stack Developer",
         "tagline": "I bridge business and technical teams, and deliver enterprise systems end to end.",
-        "bio": "Over twelve years in the IT industry, starting as a software engineer and evolving into a Technical Project Manager. Four years of professional experience in Japan working on enterprise systems, three-plus years managing projects for USA and Singapore-based companies, and currently leading development of a Unified Logistics Platform.",
+        "bio": "Full-stack engineer with 12+ years of hands-on experience across frontend (Angular, React, TypeScript), backend (Node.js, Express, NestJS, Spring Boot), and embedded systems (C/C++), delivered across SaaS and fintech platforms for clients in Japan, the US, Singapore, and Bangladesh. Comfortable owning a feature end-to-end — architecture, API design, UI implementation, and deployment on AWS/Azure/GCP. Currently building Openfolio, a multi-tenant SaaS platform on NestJS, Next.js, and MongoDB.",
         "ctas": [
-          { "kind": "resume", "label": "Download résumé", "href": "TODO" },
+          { "kind": "resume", "label": "Download resume", "href": "https://drive.google.com/file/d/11vt7gmJrXVbk3X8tJv9-FB6qBctBXYws/view?usp=sharing" },
+          { "kind": "url", "label": "Read my blog", "href": "https://medium.com/@saeed.sharman" },
+          { "kind": "url", "label": "GitHub", "href": "https://github.com/Saeed1989" },
           { "kind": "schedule", "label": "Get in touch", "href": "#contact" }
         ],
-        "avatar": null
+        "avatar": {
+          "src": "/avatar.jpg",
+          "alt": "MD. Saeed Sharman",
+          "width": 360,
+          "height": 360
+        }
       }
     },
     {
@@ -153,29 +160,39 @@
       "order": 2,
       "content": {
         "legend": "Rated out of 10: 9–10 I have owned and debugged it in production, 7–8 I work in it regularly, 5–6 I am actively building on it.",
-        "categories": ["Delivery & analysis", "Frontend", "Backend", "Cloud & data", "Quality"],
+        "categories": ["Delivery & analysis", "Frontend", "Backend", "Cloud", "Quality"],
         "items": [
           { "id": "sk1", "name": "End-to-end project delivery", "category": "Delivery & analysis", "rating": 9, "prominent": true },
-          { "id": "sk2", "name": "Stakeholder communication", "category": "Delivery & analysis", "rating": 9, "prominent": true },
-          { "id": "sk3", "name": "Requirement analysis", "category": "Delivery & analysis", "rating": 9, "prominent": true },
-          { "id": "sk4", "name": "Agile / Scrum execution", "category": "Delivery & analysis", "rating": 9, "prominent": true },
-          { "id": "sk5", "name": "Functional documentation", "category": "Delivery & analysis", "rating": 8 },
-          { "id": "sk6", "name": "User journey & workflow design", "category": "Delivery & analysis", "rating": 8 },
-          { "id": "sk7", "name": "UAT, training & rollout", "category": "Delivery & analysis", "rating": 8 },
-          { "id": "sk8", "name": "Angular", "category": "Frontend", "rating": 8, "prominent": true },
+          { "id": "sk2", "name": "Stakeholder communication", "category": "Delivery & analysis", "rating": 8, "prominent": true },
+          { "id": "sk3", "name": "Requirement analysis", "category": "Delivery & analysis", "rating": 8, "prominent": true },
+          { "id": "sk4", "name": "Agile / Scrum execution", "category": "Delivery & analysis", "rating": 8, "prominent": true },
+          { "id": "sk5", "name": "Functional documentation", "category": "Delivery & analysis", "rating": 7 },
+          { "id": "sk7", "name": "UAT, training & rollout", "category": "Delivery & analysis", "rating": 7 },
+          { "id": "sk8", "name": "Angular", "category": "Frontend", "rating": 7 },
           { "id": "sk9", "name": "TypeScript", "category": "Frontend", "rating": 8, "prominent": true },
           { "id": "sk10", "name": "React", "category": "Frontend", "rating": 7, "prominent": true },
-          { "id": "sk11", "name": "NgRx / RxJS", "category": "Frontend", "rating": 7 },
-          { "id": "sk12", "name": "JavaScript", "category": "Frontend", "rating": 8 },
-          { "id": "sk13", "name": "HTML & CSS", "category": "Frontend", "rating": 8 },
-          { "id": "sk14", "name": "Flutter", "category": "Frontend", "rating": 6 },
-          { "id": "sk15", "name": "Node.js / Express.js", "category": "Backend", "rating": 7 },
+          { "id": "sk11", "name": "NgRx / RxJS", "category": "Frontend", "rating": 6 },
+          { "id": "sk12", "name": "JavaScript", "category": "Frontend", "rating": 8, "prominent": true },
+          { "id": "sk13", "name": "HTML & CSS", "category": "Frontend", "rating": 7 },
+          { "id": "sk14", "name": "Flutter", "category": "Frontend", "rating": 3 },
+          { "id": "sk27", "name": "Next.js", "category": "Frontend", "rating": 7 },
+          { "id": "sk28", "name": "TypeScript", "category": "Backend", "rating": 8 },
+          { "id": "sk29", "name": "JavaScript", "category": "Backend", "rating": 8 },
+          { "id": "sk15", "name": "Node.js", "category": "Backend", "rating": 7 },
+          { "id": "sk25", "name": "Express.js", "category": "Backend", "rating": 7 },
+          { "id": "sk26", "name": "NestJS", "category": "Backend", "rating": 8, "prominent": true },
           { "id": "sk16", "name": "REST API design", "category": "Backend", "rating": 7 },
+          { "id": "sk20", "name": "MySQL", "category": "Backend", "rating": 7 },
+          { "id": "sk30", "name": "MongoDB", "category": "Backend", "rating": 6 },
+          { "id": "sk31", "name": "Spring Boot", "category": "Backend", "rating": 5 },
+          { "id": "sk32", "name": "Java", "category": "Backend", "rating": 5 },
           { "id": "sk17", "name": "Laravel", "category": "Backend", "rating": 6 },
           { "id": "sk18", "name": "Microservices", "category": "Backend", "rating": 6 },
           { "id": "sk19", "name": "Stripe integration", "category": "Backend", "rating": 6 },
-          { "id": "sk20", "name": "MySQL", "category": "Cloud & data", "rating": 7 },
-          { "id": "sk21", "name": "AWS", "category": "Cloud & data", "rating": 6 },
+          { "id": "sk21", "name": "AWS", "category": "Cloud", "rating": 6 },
+          { "id": "sk33", "name": "Azure", "category": "Cloud", "rating": 5 },
+          { "id": "sk34", "name": "GCP", "category": "Cloud", "rating": 4 },
+          { "id": "sk35", "name": "Firebase", "category": "Cloud", "rating": 4 },
           { "id": "sk22", "name": "Root cause analysis", "category": "Quality", "rating": 8 },
           { "id": "sk23", "name": "Unit & integration testing", "category": "Quality", "rating": 7 },
           { "id": "sk24", "name": "Test specification & reporting", "category": "Quality", "rating": 7 }
@@ -187,30 +204,30 @@
       "enabled": true,
       "order": 3,
       "content": {
-        "intro": "I bring technical expertise, project management experience and business understanding together. With experience in Japan and with global teams, I focus on delivering solutions that create real business impact while keeping stakeholders and technical teams aligned.",
+        "intro": "Always happy to connect — reach out below.",
         "email": {
           "label": "Email",
-          "value": "TODO — your email address",
-          "href": "mailto:TODO",
+          "value": "saeed.sharman@gmail.com",
+          "href": "mailto:saeed.sharman@gmail.com",
           "visible": true
         },
         "github": {
           "label": "GitHub",
-          "value": "TODO — your GitHub",
-          "href": "TODO",
+          "value": "Saeed1989",
+          "href": "https://github.com/Saeed1989",
           "visible": true
         },
         "linkedin": {
           "label": "LinkedIn",
-          "value": "TODO — your LinkedIn",
-          "href": "TODO",
+          "value": "saeed-sharman",
+          "href": "https://www.linkedin.com/in/saeed-sharman/",
           "visible": true
         },
         "x": {
           "label": "X",
-          "value": "TODO",
-          "href": "TODO",
-          "visible": false
+          "value": "SaeedSharman",
+          "href": "https://x.com/SaeedSharman",
+          "visible": true
         },
         "site": {
           "label": "Personal site",
