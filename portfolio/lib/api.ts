@@ -45,16 +45,14 @@ export interface PortfolioPayload {
   readonly sections: readonly SectionInstance[];
   readonly theme: PortfolioTheme;
   readonly seo: PortfolioSeo;
-  readonly publishedAt: string;
-  readonly version: number;
+  /**
+   * Fixture-only. The §7.1 render payload carries neither, and nothing in
+   * this app reads them — they survive because the fixtures declare them and
+   * dropping a field a fixture sets would be a silent contract change.
+   */
+  readonly publishedAt?: string;
+  readonly version?: number;
 }
-
-/**
- * How long a slug's payload is held in the data cache before the next request
- * refreshes it. Publishing does not wait for this — it calls the internal
- * revalidation endpoint, which drops the tag immediately (FR-PUB-7).
- */
-export const REVALIDATE_SECONDS = 3600;
 
 /** The cache tag for one tenant's payload. */
 export function portfolioTag(slug: string): string {
@@ -140,11 +138,11 @@ function assertPayload(raw: unknown, source: string): PortfolioPayload {
     };
   });
 
-  if (typeof value.publishedAt !== 'string') {
-    return fail('`publishedAt` must be a string');
+  if (value.publishedAt !== undefined && typeof value.publishedAt !== 'string') {
+    return fail('`publishedAt` must be a string when present');
   }
-  if (typeof value.version !== 'number') {
-    return fail('`version` must be a number');
+  if (value.version !== undefined && typeof value.version !== 'number') {
+    return fail('`version` must be a number when present');
   }
 
   return {
@@ -152,8 +150,8 @@ function assertPayload(raw: unknown, source: string): PortfolioPayload {
     sections,
     theme: (value.theme ?? {}) as PortfolioTheme,
     seo: (value.seo ?? {}) as PortfolioSeo,
-    publishedAt: value.publishedAt,
-    version: value.version,
+    publishedAt: value.publishedAt as string | undefined,
+    version: value.version as number | undefined,
   };
 }
 
@@ -187,6 +185,74 @@ async function fromFixtures(slug: string): Promise<PortfolioPayload | null> {
   return null;
 }
 
+/**
+ * The §7.1 render payload, rejoined into the shape this app renders from.
+ *
+ * The public surface returns two halves: `config.sections` — `{ type, order }`
+ * for each section that survived the publish — and `data`, holding each
+ * survivor's content object keyed by type. The tree below `getPortfolio`
+ * wants one array with content inline, so the halves are rejoined here. This
+ * is the only function in the app that knows the wire shape and the render
+ * shape differ; `fromFixtures` produces the render shape directly.
+ *
+ * `enabled` is synthesised as `true` rather than read: FR-TEN-5 removes
+ * disabled sections when the published tree is built, so a section listed in
+ * `config.sections` is enabled by construction and the wire carries no flag
+ * to copy. `slug` likewise comes from the caller — §7.1 does not return it.
+ *
+ * Structural checks only. The rejoined object then goes through
+ * `assertPayload`, so both sources land on one validator and one error
+ * vocabulary.
+ */
+function fromRenderPayload(
+  raw: unknown,
+  slug: string,
+  source: string,
+): PortfolioPayload {
+  const fail = (why: string): never => {
+    throw new Error(`Invalid portfolio payload from ${source}: ${why}`);
+  };
+
+  const isRecord = (v: unknown): v is Record<string, unknown> =>
+    typeof v === 'object' && v !== null && !Array.isArray(v);
+
+  if (!isRecord(raw)) return fail('expected an object');
+  if (!isRecord(raw.config)) return fail('`config` must be an object');
+  if (!isRecord(raw.data)) return fail('`data` must be an object');
+  if (!Array.isArray(raw.config.sections)) {
+    return fail('`config.sections` must be an array');
+  }
+
+  const { config, data } = raw;
+
+  const sections = (config.sections as unknown[]).map((entry, index) => {
+    const ref = isRecord(entry) ? entry : {};
+    const type = String(ref.type);
+
+    /* §7.1: one key in `data` per entry in `config.sections`, and no other.
+       A gap either way is a builder defect (FR-REG-9), not a state to render
+       around — so it fails here naming the half that is missing, rather than
+       reaching assertPayload as an absent `content`. */
+    if (!(type in data)) {
+      return fail(
+        `config.sections[${index}] is "${type}", but data.${type} is missing`,
+      );
+    }
+
+    return {
+      type: ref.type,
+      enabled: true,
+      order: ref.order,
+      content: data[type],
+    };
+  });
+
+  return assertPayload(
+    { slug, sections, theme: config.theme, seo: config.seo },
+    source,
+  );
+}
+
 async function fromApi(slug: string): Promise<PortfolioPayload | null> {
   const base = process.env.PORTFOLIO_API_URL;
   if (!base) {
@@ -199,9 +265,13 @@ async function fromApi(slug: string): Promise<PortfolioPayload | null> {
 
   const response = await fetch(url, {
     headers: { accept: 'application/json' },
-    /* Per-slug ISR: one upstream read per slug per window, dropped early by
-       the internal revalidation endpoint on publish. */
-    next: { revalidate: REVALIDATE_SECONDS, tags: [portfolioTag(slug)] },
+    /* TODO(FR-PUB-7): restore ISR + on-demand revalidate —
+       `next: { revalidate, tags: [portfolioTag(slug)] }`. The endpoint at
+       app/api/internal/revalidate already exists and still calls
+       `revalidateTag(portfolioTag(slug))`, but nothing tags this fetch any
+       more, so that call is inert until this line goes back. Every render
+       reads upstream meanwhile, against NFR-PERF-1 and NFR-PERF-3's budget. */
+    cache: 'no-store',
   });
 
   /* An unknown, unpublished or suspended slug is one indistinguishable 404
@@ -214,7 +284,7 @@ async function fromApi(slug: string): Promise<PortfolioPayload | null> {
     );
   }
 
-  return assertPayload(await response.json(), url);
+  return fromRenderPayload(await response.json(), slug, url);
 }
 
 /**

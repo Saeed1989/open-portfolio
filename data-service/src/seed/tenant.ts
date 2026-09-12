@@ -1,9 +1,4 @@
-import {
-  isSectionEmpty,
-  REGISTRY,
-  type SectionType,
-  type TypedSectionInstance,
-} from '@portfolio/registry';
+import { isSectionEmpty, type TypedSectionInstance } from '@portfolio/registry';
 import type {
   AnalyticsProvider,
   PortfolioStatus,
@@ -87,17 +82,14 @@ export function buildPublishedTree(draft: SeedDraft): PublishedTreeShape {
   const data: Record<string, unknown> = {};
   for (const section of survivors) {
     /*
-     * §7.1: a collection type emits its items as a bare array, a single type
-     * emits its content object. A collection's section-level fields —
-     * `skills.categories`, `skills.legend`, `projects.categories` — have
-     * nowhere to go in that shape and are dropped here. See the conflict note
-     * in docs/data-design.md.
+     * §7.1: `data[type]` is the section's content object verbatim, whatever
+     * its cardinality — a collection's items stay under `items`, alongside
+     * the section-level fields its descriptor declares (`skills.legend`,
+     * `projects.categories`, `achievements.credlyUsername`). Projecting a
+     * collection down to a bare array would discard those: `sectionFields`
+     * has nowhere to go in one.
      */
-    const descriptor = REGISTRY[section.type as SectionType];
-    data[section.type] =
-      descriptor.cardinality === 'collection'
-        ? ((section.content as { items?: unknown[] }).items ?? [])
-        : section.content;
+    data[section.type] = section.content;
   }
 
   return {

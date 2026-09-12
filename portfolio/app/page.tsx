@@ -60,7 +60,21 @@ async function currentOrigin(): Promise<string | undefined> {
 
 export async function generateMetadata(): Promise<Metadata> {
   const slug = await currentSlug();
-  const portfolio = slug ? await getPortfolio(slug) : null;
+
+  /*
+   * Metadata resolves before the error boundary is mounted, so a throw here
+   * escapes app/error.tsx and lands on Next's own unstyled fallback. It
+   * therefore degrades the way the layout's theme lookup does: give the
+   * document a neutral, unindexed title and let the page body — which repeats
+   * this memoised call, and rethrows — carry the failure into the boundary,
+   * where it can be rendered branded. Nothing about the cause is advertised.
+   */
+  let portfolio: PortfolioPayload | null = null;
+  try {
+    portfolio = slug ? await getPortfolio(slug) : null;
+  } catch {
+    return { title: 'Unavailable', robots: { index: false } };
+  }
 
   /* The 404 sets its own noindex metadata; nothing to advertise here. */
   if (!portfolio) return { title: 'Not found', robots: { index: false } };

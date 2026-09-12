@@ -70,6 +70,33 @@ export function isLoopbackHost(host: string | null): boolean {
 }
 
 /**
+ * Any host served from this machine, tenant label or not: `localhost`,
+ * `alice.localhost`, `127.0.0.1`, `[::1]`.
+ *
+ * Deliberately distinct from `isLoopbackHost`, which answers the narrower
+ * question of whether a host carries *no* tenant label and may therefore take
+ * the DEV_SLUG fallback. The TENANT_SOURCE=env override needs the wider one,
+ * because its whole purpose is to win over a label that did resolve — the case
+ * `isLoopbackHost` exists to exclude.
+ *
+ * A consequence worth naming: under TENANT_SOURCE=env the Host is ignored
+ * entirely, so `admin.localhost` serves the env tenant like any other local
+ * host. Reserved labels are a property of Host-based tenancy, and env mode is
+ * the deliberate choice not to use it. Under the default `host` mode they are
+ * rejected exactly as before.
+ */
+export function isLocalHost(host: string | null): boolean {
+  if (!host) return false;
+  const hostname = host.split(':')[0].trim().toLowerCase();
+  return (
+    hostname === 'localhost' ||
+    hostname.endsWith('.localhost') ||
+    hostname === '127.0.0.1' ||
+    hostname === '[::1]'
+  );
+}
+
+/**
  * `alice.site.com` → `alice`. The apex `site.com` and a bare `localhost` carry
  * no tenant label. `alice.localhost` is recognised so local multi-tenant
  * testing needs no hosts-file edit.

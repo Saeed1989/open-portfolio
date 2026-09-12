@@ -63,6 +63,24 @@ export const FONT_PAIRINGS: Record<FontPairingId, FontPairing> = {
 
 export const DEFAULT_FONT_PAIRING: FontPairingId = 'grotesk-spline';
 
+/**
+ * The pairing for an id, falling back to the default for one this build does
+ * not know.
+ *
+ * `PortfolioTheme.fontPairing` is typed `FontPairingId`, but that types our own
+ * constants, not the payload: the value arrives from the public API as JSON and
+ * is cast, never validated (lib/api.ts). An id from a newer admin, an older
+ * build, or a hand-edited document therefore reaches this map as a miss, and an
+ * unguarded lookup would throw inside the root layout — taking that tenant's
+ * whole page down over a font. FR-THM-1's curated list lives here rather than
+ * in packages/registry, so nothing upstream can reject the value first.
+ */
+function pairingFor(id: string | undefined): FontPairing {
+  return (
+    FONT_PAIRINGS[id as FontPairingId] ?? FONT_PAIRINGS[DEFAULT_FONT_PAIRING]
+  );
+}
+
 /** FR-THM-1: light, dark, or follow the visitor's system setting. */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -96,7 +114,7 @@ export function themeStyle(theme: PortfolioTheme | undefined): CSSProperties {
   if (theme.accentInk) style['--accent-ink'] = theme.accentInk;
   if (theme.accentOn) style['--accent-on'] = theme.accentOn;
 
-  const pairing = FONT_PAIRINGS[theme.fontPairing ?? DEFAULT_FONT_PAIRING];
+  const pairing = pairingFor(theme.fontPairing);
   style['--font-display'] = pairing.display;
   style['--font-sans'] = pairing.sans;
 
@@ -120,7 +138,7 @@ export function themeAttribute(theme: PortfolioTheme | undefined): ThemeMode {
 
 /** The font CDN stylesheet URL for a theme's pairing. */
 export function fontStylesheetHref(theme: PortfolioTheme | undefined): string {
-  const pairing = FONT_PAIRINGS[theme?.fontPairing ?? DEFAULT_FONT_PAIRING];
+  const pairing = pairingFor(theme?.fontPairing);
   const families = pairing.webfonts.map((f) => `family=${f}`).join('&');
   return `https://fonts.googleapis.com/css2?${families}&display=swap`;
 }
