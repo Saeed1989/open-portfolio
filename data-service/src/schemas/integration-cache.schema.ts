@@ -34,3 +34,14 @@ export class IntegrationCache {
 
 export const IntegrationCacheSchema =
   SchemaFactory.createForClass(IntegrationCache);
+
+/*
+ * I-9 (docs/data-design.md §4). Unique: the cache holds the last payload per
+ * provider (§5.5), and the sync worker's upsert would otherwise create
+ * duplicates when two runs overlap.
+ *
+ * Deliberately no TTL on `expiresAt`. Expiring the entry would delete the
+ * last good payload that FR-INT-3 requires to survive a failed sync and that
+ * publish folds against. What the field means is not specified — Q-13.
+ */
+IntegrationCacheSchema.index({ portfolioId: 1, provider: 1 }, { unique: true });

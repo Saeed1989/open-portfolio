@@ -137,3 +137,12 @@ export const PortfolioSchema = SchemaFactory.createForClass(Portfolio);
 
 PortfolioSchema.index({ userId: 1 }, { unique: true });
 PortfolioSchema.index({ slug: 1 }, { unique: true });
+
+/*
+ * I-5 (docs/data-design.md §4). Multikey, not unique: a unique index here
+ * would stop two tenants holding the same *retired* slug without stopping
+ * one claiming another's retired slug as a current slug, so the constraint
+ * belongs to the write path, not to this index. Serves the 301 lookup
+ * (FR-DAT-2) inside the same find as the live-slug read.
+ */
+PortfolioSchema.index({ 'slugHistory.slug': 1 });

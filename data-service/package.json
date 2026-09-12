@@ -5,6 +5,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
+    "seed": "npm run build && node dist/seed/seed.js",
+    "seed:reset": "npm run build && node dist/seed/seed.js --reset",
     "start:dev": "nest start --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src && prettier --check src",

@@ -39,3 +39,14 @@ export class LinkHealth {
 }
 
 export const LinkHealthSchema = SchemaFactory.createForClass(LinkHealth);
+
+/*
+ * I-10 (docs/data-design.md §4). Unique, so the weekly check upserts one row
+ * per link rather than appending. `url` comes last because one project item
+ * carries two links, demo and repository (FR-SEC-PROJ-9), so an item id does
+ * not identify a row on its own.
+ */
+LinkHealthSchema.index(
+  { portfolioId: 1, sectionType: 1, itemId: 1, url: 1 },
+  { unique: true },
+);

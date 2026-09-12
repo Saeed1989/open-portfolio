@@ -34,7 +34,14 @@ export class IntegrationConnection {
   @Prop({ type: MongooseSchema.Types.Mixed })
   config: Record<string, unknown>;
 
-  /** Ciphertext. Encrypted at rest (FR-INT-6). */
+  /*
+   * Ciphertext. A typed placeholder only — nothing in this service
+   * encrypts or decrypts it yet, so a value written here today is
+   * whatever the caller passed.
+   *
+   * TODO(NFR-SEC-3): encrypt at rest with a key held outside the
+   * database. Until that lands, no real credential may be stored.
+   */
   @Prop()
   credentials: string;
 
@@ -53,4 +60,16 @@ export class IntegrationConnection {
 
 export const IntegrationConnectionSchema = SchemaFactory.createForClass(
   IntegrationConnection,
+);
+
+/*
+ * I-7 (docs/data-design.md §4). Unique because §7.2 addresses a connection
+ * by `:provider` alone, which presumes at most one per provider per tenant.
+ * §5.4 does not state that constraint — open question Q-16's sibling Q-11.
+ * `portfolioId` leads because every admin read is scoped by tenant
+ * (FR-TEN-4), so the prefix alone serves the tenant-wide list.
+ */
+IntegrationConnectionSchema.index(
+  { portfolioId: 1, provider: 1 },
+  { unique: true },
 );
