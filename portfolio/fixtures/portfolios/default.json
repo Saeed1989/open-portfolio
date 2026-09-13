@@ -200,9 +200,38 @@
       }
     },
     {
-      "type": "contact",
+      "type": "achievements",
       "enabled": true,
       "order": 3,
+      "content": {
+        "items": [
+          { "id": "credly-dd7db9b0-dbf4-470e-874f-308b35581f26", "type": "certification", "source": "credly", "title": "Advanced RAG with Vector Databases and Retrievers", "issuer": "Coursera / IBM", "date": "2026-09-03", "credlyBadgeId": "dd7db9b0-dbf4-470e-874f-308b35581f26", "verifyUrl": "https://www.credly.com/badges/dd7db9b0-dbf4-470e-874f-308b35581f26" },
+          { "id": "credly-cacb8ff0-f69a-47fb-80bd-0b48b1d48fbf", "type": "certification", "source": "credly", "title": "Generative AI Overview for Project Managers", "issuer": "Project Management Institute", "date": "2026-02-04", "credlyBadgeId": "cacb8ff0-f69a-47fb-80bd-0b48b1d48fbf", "verifyUrl": "https://www.credly.com/badges/cacb8ff0-f69a-47fb-80bd-0b48b1d48fbf" },
+          { "id": "credly-efcb00a2-e302-4696-a40e-7e88889c7fac", "type": "certification", "source": "credly", "title": "Google AI Essentials V1", "issuer": "Coursera", "date": "2024-10-04", "credlyBadgeId": "efcb00a2-e302-4696-a40e-7e88889c7fac", "verifyUrl": "https://www.credly.com/badges/efcb00a2-e302-4696-a40e-7e88889c7fac" },
+          { "id": "credly-07b33bc1-023f-4a34-83ad-f74f0e33d3b9", "type": "certification", "source": "credly", "title": "Google Project Management Professional Certificate (v2)", "issuer": "Coursera", "date": "2024-10-18", "credlyBadgeId": "07b33bc1-023f-4a34-83ad-f74f0e33d3b9", "verifyUrl": "https://www.credly.com/badges/07b33bc1-023f-4a34-83ad-f74f0e33d3b9" }
+        ],
+        "credlyUsername": "saeed-sharman"
+      }
+    },
+    {
+      "type": "trainings",
+      "enabled": true,
+      "order": 4,
+      "content": {
+        "items": [
+          { "id": "tr1", "title": "Google Project Management Specialization", "issuer": "Google", "date": "2024-10-31", "url": "https://www.coursera.org/account/accomplishments/specialization/E2QASA57SAVA", "type": "certification" },
+          { "id": "tr2", "title": "Bangladesh-Japan ICT Engineers Training (B-JET) Program", "issuer": "JICA", "date": "2018-05-31", "type": "certification" },
+          { "id": "tr3", "title": "RESTful Web Services with Node.js and Express", "issuer": "Pluralsight", "date": "2021-11-01", "url": "https://drive.google.com/file/d/16rYO2P7fi3FYj7GEZBa5aLmy2h__LB-o/view?usp=sharing", "type": "certification" },
+          { "id": "tr4", "title": "Foundations of Document Databases with MongoDB", "issuer": "Pluralsight", "date": "2021-11-01", "url": "https://drive.google.com/file/d/1fFdacEvxZ9cEgyB1rKKkuJLFiC2R327N/view?usp=sharing", "type": "certification" },
+          { "id": "tr5", "title": "Angular - The Complete Guide (2021 Edition)", "issuer": "Udemy", "date": "2021-04-03", "url": "https://www.udemy.com/certificate/UC-a1edb049-aa19-4cc1-848f-87cfe12775df/", "type": "certification" },
+          { "id": "tr6", "title": "IoT System Architecture: Design and Evaluation", "issuer": "edX", "date": "2019-11-01", "url": "https://courses.edx.org/certificates/c7e9ec6a196044028ae49cd15ed286ee", "type": "certification" }
+        ]
+      }
+    },
+    {
+      "type": "contact",
+      "enabled": true,
+      "order": 5,
       "content": {
         "intro": "Always happy to connect — reach out below.",
         "email": {
