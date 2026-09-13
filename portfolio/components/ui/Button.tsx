@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from './cn';
+import { linkTargetProps } from './linkTarget';
 
 /**
  * The design's two call-to-action treatments. Renders an <a> when `href` is
@@ -51,12 +52,11 @@ export function Button({
   const classes = cn(BASE, VARIANT[variant], SIZE[size], className);
 
   if (href) {
-    const external = /^https?:\/\//i.test(href);
     return (
       <a
         href={href}
         download={download}
-        rel={external ? 'noopener noreferrer' : undefined}
+        {...linkTargetProps(href)}
         className={classes}
       >
         {children}

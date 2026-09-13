@@ -69,7 +69,7 @@ export function portfolioTag(slug: string): string {
  */
 export function useFixtures(): boolean {
   return (
-    process.env.NODE_ENV !== 'production' && process.env.USE_FIXTURES === 'true'
+    process.env.USE_FIXTURES === 'true'
   );
 }
 
