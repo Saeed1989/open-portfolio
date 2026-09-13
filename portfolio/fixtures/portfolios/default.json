@@ -44,19 +44,49 @@
       "enabled": true,
       "order": 1,
       "content": {
-        "categories": ["Logistics", "Fintech", "Real estate", "Data"],
+        "categories": ["SaaS", "Logistics", "Fintech", "Real estate", "Data"],
         "items": [
+          {
+            "id": "openfolio",
+            "title": "Openfolio",
+            "category": "SaaS",
+            "screenshot": null,
+            "company": null,
+            "engagementType": "self",
+            "startDate": "2026-09",
+            "endDate": null,
+            "problem": "Engineers who want a portfolio site either hand-roll one from scratch every time or force their project case studies into a generic theme that was never built for tech-stack detail, architecture write-ups, or repo links.",
+            "solution": "A hosted, multi-tenant portfolio generator: sign in, configure content through an admin panel built on a generic section registry, and publish to a subdomain — no code, no hosting to manage.",
+            "impact": "A working spec-first architecture with a generic section registry, draft/publish separation, and GitHub/Credly integrations that need no stored credentials — built solo from requirements through implementation.",
+            "role": "Sole developer and architect, from requirements and system design through implementation.",
+            "stack": ["NestJS", "Next.js", "MongoDB", "TypeScript"],
+            "demoUrl": "https://openfolio.site/",
+            "repoUrl": "https://github.com/Saeed1989/open-portfolio",
+            "bodies": {
+              "business": "<p>Engineers who want a portfolio site either hand-roll one from scratch every time, or force their project case studies into a generic theme that was never built for tech-stack detail, architecture write-ups, or repo links.</p><ul><li>No existing tool models a project at two depths — a scannable card and a full case-study modal</li><li>Off-the-shelf builders are not software-engineering-specific</li><li>Every engineer re-solves the same content-modelling and hosting problem</li></ul>",
+              "solution": "<p>A hosted <strong>multi-tenant portfolio generator</strong>: a tenant signs in via OAuth, configures their content through an admin panel, and publishes to their own subdomain, with no code and no hosting to manage.</p><ul><li>A generic <em>section registry</em> is the single source of truth — admin forms, API validation, and public render order all derive from it</li><li>Draft/publish separation, so a portfolio can be edited without going live mid-edit</li><li>GitHub stat cards and Credly badges are embedded by URL only — no stored token, no credential, no refresh job</li></ul><p>Built with a <strong>spec-first workflow</strong>: every architectural decision lands in the SRS before implementation begins.</p>",
+              "role": "<p>I am the <u>sole developer and architect</u> on this project, from requirements gathering through system design and implementation.</p><ul><li>Wrote the business requirements and the software requirements specification</li><li>Designed the section-registry architecture and the draft/publish content model</li><li>Built the NestJS API, the Next.js admin and public apps, and the MongoDB data model</li><li>Ran the project as a spec-first workflow, with every deviation triggering a spec amendment first</li></ul>"
+            },
+            "designation": "Solo developer & architect (personal project)",
+            "stackWorkedOn": ["NestJS", "Next.js", "MongoDB", "TypeScript"],
+            "tools": ["Claude Code", "Claude", "Git", "GitHub"],
+            "fullStack": ["NestJS", "Next.js", "React", "MongoDB", "TypeScript", "Redis", "BullMQ"]
+          },
           {
             "id": "unified-logistics-platform",
             "title": "Unified Logistics Platform",
             "category": "Logistics",
             "screenshot": null,
+            "company": "Talent Pro",
+            "engagementType": "employer",
+            "startDate": "2025-01",
+            "endDate": "2026-06",
             "problem": "Sales order processing, warehouse operations and delivery management ran as three disconnected processes, with conflicting workflows across departments.",
             "solution": "A unified platform integrating web and mobile applications with a centralized database, giving every department one view of the same order.",
             "impact": "Real-time visibility of orders, inventory and last-mile delivery, and manual coordination between teams largely removed.",
             "role": "Project Manager with end-to-end ownership of scope, roadmap and delivery.",
             "stack": ["React", "Flutter", "Laravel", "MySQL"],
-            "demoUrl": "TODO",
+            "demoUrl": null,
             "bodies": {
               "business": "<p>Sales order processing, warehouse operations and delivery management ran as three disconnected processes. Each department had built its own way of working, and every handoff between them was manual.</p><ul><li>No real-time visibility of orders, inventory or last-mile delivery</li><li>Conflicting workflows across the sales, warehouse and delivery teams</li><li>Coordination between departments done by hand at every step</li></ul>",
               "solution": "<p>A unified logistics system integrating web and mobile applications with a centralized database, so every department works from one view of the same order.</p><ul><li>Ran stakeholder alignment sessions across all three departments</li><li>Standardized the conflicting workflows into one agreed process</li><li>Designed a unified system architecture around that process</li></ul><p>The outcome was <strong>improved collaboration</strong> between departments and higher adoption of the system itself.</p>",
@@ -64,7 +94,7 @@
             },
             "designation": "Project Manager (End-to-End Ownership)",
             "stackWorkedOn": ["REVIEW — see notes"],
-            "tools": ["TODO — add the tools you used"],
+            "tools": ["Jira", "Confluence", "Slack", "Excel / Google Sheets", "Figma", "Miro", "ChatGPT", "Gemini", "Code Rabbit", "Claude"],
             "fullStack": ["React", "Flutter", "Laravel", "MySQL", "REST APIs", "Microservices"]
           },
           {
@@ -72,12 +102,16 @@
             "title": "Digital Payment System for a Self-Service Platform",
             "category": "Fintech",
             "screenshot": null,
+            "company": "Eagle 3D Streaming (E3DS)",
+            "engagementType": "vendor",
+            "startDate": "2023-10",
+            "endDate": "2024-09",
             "problem": "A self-service SaaS platform had no way to take payment, so it could not turn its users into subscribers.",
             "solution": "A payment gateway module integrated into the platform, letting users subscribe and pay online.",
             "impact": "Approximately 20% increase in revenue, and the platform became a revenue-generating product.",
             "role": "Technical Project Manager and feature owner, from business requirements through delivery.",
-            "stack": ["Stripe", "Node.js", "React"],
-            "demoUrl": "TODO",
+            "stack": ["Stripe", "Node.js", "Express.js", "React", "JavaScript"],
+            "demoUrl": null,
             "bodies": {
               "business": "<p>A self-service SaaS platform had no way to take money. Users could sign themselves up but not subscribe, which capped the product short of being a business.</p><ul><li>No online payment path, so no self-service revenue</li><li>Friction in the subscription process</li><li>Security and reliability both non-negotiable for anything handling payment</li></ul>",
               "solution": "<p>A payment gateway module integrated into the platform, turning it into a <strong>revenue-generating product</strong> with a seamless digital payment experience.</p><ul><li>Translated business needs into clear technical specifications</li><li>Coordinated closely with the development team through delivery</li><li>Reduced friction in the subscription process</li></ul><p>The result was a reliable, user-friendly payment flow and roughly <strong>20% more revenue</strong>.</p>",
@@ -85,7 +119,7 @@
             },
             "designation": "Technical Project Manager / Feature Owner",
             "stackWorkedOn": ["REVIEW — see notes"],
-            "tools": ["TODO — add the tools you used"],
+            "tools": ["VS Code", "Git", "Trello", "Jira"],
             "fullStack": ["Stripe", "Node.js", "Express.js", "React", "JavaScript"]
           },
           {
@@ -93,12 +127,16 @@
             "title": "Real-Time 3D Digital Twin for Real Estate",
             "category": "Real estate",
             "screenshot": null,
+            "company": "Eagle 3D Streaming (E3DS)",
+            "engagementType": "vendor",
+            "startDate": "2022-09",
+            "endDate": "2024-03",
             "problem": "Prospective buyers had to visit properties in person, and delivering a real-time 3D experience over the web normally demands high-end hardware.",
             "solution": "Digital twins of real estate buildings, explored through an interactive web experience built on pixel streaming.",
             "impact": "Remote property showcasing with no need for high-end user hardware, reducing physical visits and improving engagement.",
             "role": "Technical Project Manager, owning client communication, requirements and delivery.",
-            "stack": ["Unreal Engine", "WebRTC", "Node.js", "React"],
-            "demoUrl": "TODO",
+            "stack": ["Unreal Engine", "Pixel Streaming", "WebRTC", "Node.js", "Express.js", "React", "JavaScript"],
+            "demoUrl": null,
             "bodies": {
               "business": "<p>Showing a property meant getting people to it. Remote viewing existed, but a real-time 3D walkthrough of a building normally asks the viewer for hardware they do not have.</p><ul><li>Physical visits required to evaluate a property</li><li>High-quality 3D environments too heavy for an ordinary machine</li><li>Delivering that experience over the web was the open technical question</li></ul>",
               "solution": "<p>A real-time 3D platform that builds <em>digital twins</em> of real estate buildings and lets people explore them from a browser, using <strong>pixel streaming</strong> so the rendering happens server-side.</p><ul><li>Implemented a pixel streaming architecture</li><li>Coordinated system performance optimization across the team</li><li>Delivered a scalable real-time 3D solution</li></ul><p>The result was smooth real-time interaction and a property accessible to anyone with a browser.</p>",
@@ -106,7 +144,7 @@
             },
             "designation": "Technical Project Manager",
             "stackWorkedOn": ["REVIEW — see notes"],
-            "tools": ["TODO — add the tools you used"],
+            "tools": ["VS Code", "Bitbucket", "Trello", "Jira"],
             "fullStack": ["Unreal Engine", "Pixel Streaming", "WebRTC", "Node.js", "Express.js", "React"]
           },
           {
@@ -114,6 +152,10 @@
             "title": "ePOS System",
             "category": "Fintech",
             "screenshot": null,
+            "company": "Cognizant Japan KK",
+            "engagementType": "vendor",
+            "startDate": "2021-07",
+            "endDate": "2022-08",
             "problem": "A web-based point-of-sale system in Japan handles high-value financial transactions for hundreds of daily users, where any instability is a direct business risk.",
             "solution": "Feature development and production hardening of the SPA inside a distributed enterprise platform.",
             "impact": "Reduced production issues, with improved reliability and user trust in a critical financial system.",
@@ -127,7 +169,7 @@
             },
             "designation": "Frontend Engineer / Team Contributor",
             "stackWorkedOn": ["Angular", "TypeScript", "NgRx", "RxJS"],
-            "tools": ["TODO — add the tools you used"],
+            "tools": ["VS Code", "WinMerge", "Swagger", "Jenkins", "Git", "Jira"],
             "fullStack": ["Angular", "TypeScript", "NgRx", "RxJS", "HTML", "CSS", "Bootstrap"]
           },
           {
@@ -135,6 +177,10 @@
             "title": "Data Visualization Web Application",
             "category": "Data",
             "screenshot": null,
+            "company": "AD-Interactive",
+            "engagementType": "vendor",
+            "startDate": "2018-10",
+            "endDate": "2021-06",
             "problem": "Large volumes of data had to be made explorable on both desktop and mobile, without the interface slowing to a crawl.",
             "solution": "A structured web application for filtering and analysing data, sitting inside a larger cloud-based architecture.",
             "impact": "Improved data accessibility and usability, enabling faster decision-making from the same data.",
@@ -148,7 +194,7 @@
             },
             "designation": "Frontend Developer (Cross-Team Contributor)",
             "stackWorkedOn": ["Angular", "TypeScript", "HTML", "CSS"],
-            "tools": ["Jasmine", "Karma"],
+            "tools": ["Jasmine", "Karma", "Excel VBA", "WinMerge", "AWS", "VS Code", "Redmine", "Jira", "SVN", "Git"],
             "fullStack": ["Angular", "TypeScript", "HTML", "CSS", "AWS", "Jasmine", "Karma"]
           }
         ]
@@ -200,15 +246,109 @@
       }
     },
     {
-      "type": "achievements",
+      "type": "experience",
       "enabled": true,
       "order": 3,
+      "content": {
+        "items": [
+          {
+            "id": "e1",
+            "company": "Talent Pro",
+            "title": "Technical Project Manager",
+            "startDate": "2025-01",
+            "endDate": "2026-06",
+            "description": "Owned end-to-end development of an integrated logistics and Warehouse Management System.",
+            "accomplishments": [
+              "Owned the end-to-end development of an integrated logistics and Warehouse Management System, acting as the primary bridge between business stakeholders and engineering teams — translating operational requirements into scalable architectural decisions and executable delivery plans.",
+              "Partnered with UI/UX designers to translate business and operational requirements into intuitive user flows and interfaces, ensuring alignment with technical and architectural constraints."
+            ]
+          },
+          {
+            "id": "e2",
+            "company": "Eagle 3D Streaming (E3DS)",
+            "title": "Technical Project Manager",
+            "startDate": "2022-09",
+            "endDate": "2024-10",
+            "description": "Led delivery of a SaaS pixel-streaming platform for real-time 3D experiences.",
+            "accomplishments": [
+              "Led cross-functional teams in delivering a SaaS platform for pixel streaming solutions, enabling global deployment of Unreal applications for immersive real-time experiences.",
+              "Collaborated closely with client engineering teams to gather technical and business requirements, translating them into actionable tasks for delivering a pixel-streaming-based smart city platform."
+            ]
+          },
+          {
+            "id": "e3",
+            "company": "Cognizant Japan KK",
+            "title": "Project Associate – Frontend Developer",
+            "startDate": "2021-07",
+            "endDate": "2022-08",
+            "description": "Led frontend development for a fintech ePOS system in the insurance sector.",
+            "accomplishments": [
+              "Led the frontend development team for an innovative fintech project, developing a dynamic Single Page Application (SPA) for an ePOS system in the insurance sector.",
+              "Collaborated closely with product and QA teams to align user experience expectations with stakeholder requirements, ensuring delivery of high-quality and user-centric interfaces."
+            ]
+          },
+          {
+            "id": "e4",
+            "company": "AD-Interactive",
+            "title": "System Engineer – Software Developer",
+            "startDate": "2018-06",
+            "endDate": "2021-06",
+            "description": "Developed and tested frontend applications for client projects.",
+            "accomplishments": [
+              "Developed and tested frontend applications using Angular and TypeScript for various client projects.",
+              "Performed unit and integration testing to ensure application reliability and performance."
+            ]
+          },
+          {
+            "id": "e5",
+            "company": "Auleek",
+            "title": "Software Engineer",
+            "startDate": "2017-07",
+            "endDate": "2018-01",
+            "description": "Developed mobile and desktop applications, including 3D visualization.",
+            "accomplishments": [
+              "Developed mobile applications and desktop application — 3D visualization.",
+              "Conducted unit and integration testing to ensure application quality."
+            ]
+          },
+          {
+            "id": "e6",
+            "company": "Grameen Solutions",
+            "title": "Software Engineer (Android)",
+            "startDate": "2016-02",
+            "endDate": "2016-07",
+            "description": "Developed Android mobile applications and worked directly with customers.",
+            "accomplishments": [
+              "Developed mobile applications using Android.",
+              "Worked directly with customers to understand issues and requirements, coordinating with internal teams to resolve problems and improve application quality."
+            ]
+          },
+          {
+            "id": "e7",
+            "company": "Aplombtech BD",
+            "title": "Embedded Software Engineer",
+            "startDate": "2014-01",
+            "endDate": "2015-06",
+            "description": "Designed and developed embedded systems using AVR microcontrollers.",
+            "accomplishments": [
+              "Designed, developed, and tested embedded systems using AVR microcontrollers.",
+              "Created Android applications integrated with embedded hardware solutions."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "achievements",
+      "enabled": true,
+      "order": 4,
       "content": {
         "items": [
           { "id": "credly-dd7db9b0-dbf4-470e-874f-308b35581f26", "type": "certification", "source": "credly", "title": "Advanced RAG with Vector Databases and Retrievers", "issuer": "Coursera / IBM", "date": "2026-09-03", "credlyBadgeId": "dd7db9b0-dbf4-470e-874f-308b35581f26", "verifyUrl": "https://www.credly.com/badges/dd7db9b0-dbf4-470e-874f-308b35581f26" },
           { "id": "credly-cacb8ff0-f69a-47fb-80bd-0b48b1d48fbf", "type": "certification", "source": "credly", "title": "Generative AI Overview for Project Managers", "issuer": "Project Management Institute", "date": "2026-02-04", "credlyBadgeId": "cacb8ff0-f69a-47fb-80bd-0b48b1d48fbf", "verifyUrl": "https://www.credly.com/badges/cacb8ff0-f69a-47fb-80bd-0b48b1d48fbf" },
           { "id": "credly-efcb00a2-e302-4696-a40e-7e88889c7fac", "type": "certification", "source": "credly", "title": "Google AI Essentials V1", "issuer": "Coursera", "date": "2024-10-04", "credlyBadgeId": "efcb00a2-e302-4696-a40e-7e88889c7fac", "verifyUrl": "https://www.credly.com/badges/efcb00a2-e302-4696-a40e-7e88889c7fac" },
-          { "id": "credly-07b33bc1-023f-4a34-83ad-f74f0e33d3b9", "type": "certification", "source": "credly", "title": "Google Project Management Professional Certificate (v2)", "issuer": "Coursera", "date": "2024-10-18", "credlyBadgeId": "07b33bc1-023f-4a34-83ad-f74f0e33d3b9", "verifyUrl": "https://www.credly.com/badges/07b33bc1-023f-4a34-83ad-f74f0e33d3b9" }
+          { "id": "credly-07b33bc1-023f-4a34-83ad-f74f0e33d3b9", "type": "certification", "source": "credly", "title": "Google Project Management Professional Certificate (v2)", "issuer": "Coursera", "date": "2024-10-18", "credlyBadgeId": "07b33bc1-023f-4a34-83ad-f74f0e33d3b9", "verifyUrl": "https://www.credly.com/badges/07b33bc1-023f-4a34-83ad-f74f0e33d3b9" },
+          { "id": "ach5", "type": "certification", "title": "ITEE FE (Fundamental IT Engineer Examination)", "issuer": "ITPEC", "date": "2018-03" }
         ],
         "credlyUsername": "saeed-sharman"
       }
@@ -216,7 +356,7 @@
     {
       "type": "trainings",
       "enabled": true,
-      "order": 4,
+      "order": 5,
       "content": {
         "items": [
           { "id": "tr1", "title": "Google Project Management Specialization", "issuer": "Google", "date": "2024-10-31", "url": "https://www.coursera.org/account/accomplishments/specialization/E2QASA57SAVA", "type": "certification" },
@@ -231,7 +371,7 @@
     {
       "type": "contact",
       "enabled": true,
-      "order": 5,
+      "order": 6,
       "content": {
         "intro": "Always happy to connect — reach out below.",
         "email": {
