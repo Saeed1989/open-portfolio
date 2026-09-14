@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#060911;font-family:Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#5FD9EE;text-decoration:none}
+a:hover{color:#8AE5F4;text-decoration:underline}
+input{font-family:inherit}
+@keyframes ofspin{to{transform:rotate(360deg)}}
+</style></helmet>
+
+<div style="padding:72px 80px 140px;display:flex;flex-direction:column;gap:96px;align-items:flex-start">
+
+<div style="display:flex;gap:56px;align-items:flex-start">
+
+<!-- ARTBOARD 1 · LANDING DESKTOP -->
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">01</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Landing — desktop · 1440</span></div>
+
+<div style="width:1440px;border-radius:14px;overflow:hidden;background:#080B14;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 40px 90px -30px rgba(0,0,0,.9);color:#EDF1F8">
+
+<!-- hero block with light field -->
+<div style="position:relative;overflow:hidden;background:#080B14">
+<div style="position:absolute;top:-260px;left:-200px;width:880px;height:720px;background:radial-gradient(circle at 50% 50%,rgba(46,211,233,.20),rgba(46,211,233,0) 68%);filter:blur(30px);pointer-events:none"></div>
+<div style="position:absolute;bottom:-340px;right:-180px;width:900px;height:780px;background:radial-gradient(circle at 50% 50%,rgba(63,99,238,.22),rgba(63,99,238,0) 68%);filter:blur(30px);pointer-events:none"></div>
+<div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.075) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(#000 0%,#000 48%,transparent 88%);-webkit-mask-image:linear-gradient(#000 0%,#000 48%,transparent 88%);pointer-events:none"></div>
+
+<!-- nav -->
+<div style="position:relative;z-index:3;margin:16px 24px 0;height:62px;border-radius:12px;padding:0 24px 0 20px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(26,34,50,.92),rgba(11,15,24,.88));backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 0 1px rgba(255,255,255,.06),0 12px 28px -14px rgba(0,0,0,.8)">
+<div style="display:flex;align-items:center;gap:11px"><div style="width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 12px -4px rgba(47,120,233,.7);display:flex;align-items:center;justify-content:center;font:600 12px Archivo,sans-serif;color:#05080F">O</div><span style="font:600 16px Archivo,sans-serif;letter-spacing:-.01em">openfolio</span></div>
+<div style="display:flex;align-items:center;gap:28px">
+<span style="font:400 14px Archivo,sans-serif;color:#B6C1D2">Features</span>
+<span style="font:400 14px Archivo,sans-serif;color:#B6C1D2">Examples</span>
+<span style="font:400 14px Archivo,sans-serif;color:#B6C1D2">Sign in</span>
+<div style="font:500 14px Archivo,sans-serif;color:#05080F;padding:9px 16px;border-radius:8px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 8px 20px -6px rgba(47,120,233,.55)">Claim your address</div>
+</div>
+</div>
+
+<!-- hero -->
+<div style="position:relative;z-index:2;padding:96px 120px 88px;display:flex;gap:72px;align-items:flex-start">
+<div style="flex:1;min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#7FE1F2;padding:6px 11px;border-radius:999px;background:linear-gradient(135deg,rgba(46,211,233,.14),rgba(63,99,238,.10));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(127,225,242,.22);margin-bottom:24px"><span style="width:5px;height:5px;border-radius:50%;background:#2ED3E9"></span>Portfolios for software engineers</div>
+<h1 style="margin:0 0 20px;font:600 56px/1.05 Archivo,sans-serif;letter-spacing:-.028em;max-width:660px;text-wrap:pretty">Show the work,<br><span style="background:linear-gradient(105deg,#5FE0F2 6%,#6B8DFF 58%,#7B6CF6 96%);-webkit-background-clip:text;background-clip:text;color:transparent">not the resume.</span></h1>
+<p style="margin:0 0 34px;font:400 18px/1.62 Archivo,sans-serif;color:#A9B5C8;max-width:560px;text-wrap:pretty">Openfolio gives you one well-built page for the things you have actually shipped — the projects, the decisions behind them, and the numbers that followed. Pick your address and start filling it in.</p>
+
+<div style="display:flex;gap:10px;align-items:flex-start;max-width:610px">
+<div style="flex:1">
+<div style="display:flex;align-items:center;height:58px;border-radius:10px;padding:0 4px 0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px {{heroRing}},0 10px 26px -12px rgba(0,0,0,.85)">
+<input value="{{heroSlug}}" onChange="{{onHeroInput}}" placeholder="your-name" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 16px 'IBM Plex Mono',monospace;color:#F2F6FC">
+<span style="font:400 16px 'IBM Plex Mono',monospace;color:#8B98AD;padding-right:10px;white-space:nowrap">.openfolio.com</span>
+<sc-if value="{{heroChecking}}" hint-placeholder-val="{{false}}"><div style="width:14px;height:14px;border:2px solid rgba(255,255,255,.14);border-top-color:#2ED3E9;border-radius:50%;animation:ofspin .7s linear infinite;margin-right:12px"></div></sc-if>
+</div>
+<div style="height:22px;padding-top:8px;font:400 13px 'IBM Plex Mono',monospace;color:{{heroMsgColor}}">{{heroMsg}}</div>
+</div>
+<div onClick="{{onClaim}}" style="height:58px;padding:0 28px;border-radius:10px;background:{{claimBg}};color:{{claimColor}};box-shadow:{{claimShadow}};display:flex;align-items:center;font:500 16px Archivo,sans-serif;cursor:pointer;user-select:none">Claim</div>
+</div>
+<div style="font:400 13px Archivo,sans-serif;color:#94A2B8;margin-top:6px">Free, and that is the whole pricing page. Sign in with GitHub or Google — there is no password to make up.</div>
+</div>
+
+<div style="width:296px;flex:none;border-radius:12px;padding:22px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 16px 36px -16px rgba(0,0,0,.85)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:16px">How it works</div>
+<div style="display:flex;flex-direction:column;gap:13px">
+<div style="display:flex;gap:11px"><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5FD9EE;width:14px">1</span><span style="font:400 13px/1.5 Archivo,sans-serif;color:#BAC5D6">Claim an address and sign in.</span></div>
+<div style="display:flex;gap:11px"><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5FD9EE;width:14px">2</span><span style="font:400 13px/1.5 Archivo,sans-serif;color:#BAC5D6">One setup step: name, address, preset.</span></div>
+<div style="display:flex;gap:11px"><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5FD9EE;width:14px">3</span><span style="font:400 13px/1.5 Archivo,sans-serif;color:#BAC5D6">Fill in sections in the admin panel.</span></div>
+<div style="display:flex;gap:11px"><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5FD9EE;width:14px">4</span><span style="font:400 13px/1.5 Archivo,sans-serif;color:#BAC5D6">Publish. Live in under a minute.</span></div>
+</div>
+<div style="margin-top:18px;padding-top:15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);font:400 12px/1.5 Archivo,sans-serif;color:#94A2B8">Everything stays private until you press publish.</div>
+</div>
+</div>
+</div>
+
+<!-- live example -->
+<div style="padding:72px 120px 76px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px">
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">A published portfolio</div>
+<h2 style="margin:0;font:600 30px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Every tenant gets the same layout, well built.</h2>
+</div>
+<div style="font:400 14px/1.55 Archivo,sans-serif;color:#A9B5C8;max-width:360px;text-align:right">Server-rendered, fast, readable on a phone. You change the accent, the theme and the type pairing — not the structure.</div>
+</div>
+
+<div style="border-radius:12px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(255,255,255,.07),0 36px 70px -28px rgba(0,0,0,.95)">
+<div style="height:40px;background:linear-gradient(135deg,#1A2231,#10151F);display:flex;align-items:center;gap:14px;padding:0 14px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.05)">
+<div style="display:flex;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#2A3345"></span><span style="width:10px;height:10px;border-radius:50%;background:#2A3345"></span><span style="width:10px;height:10px;border-radius:50%;background:#2A3345"></span></div>
+<div style="flex:1;height:25px;border-radius:6px;background:#0A0E17;box-shadow:inset 0 1px 2px rgba(0,0,0,.6);display:flex;align-items:center;padding:0 10px;font:400 12px 'IBM Plex Mono',monospace;color:#A3AFC0"><span style="color:#5FD9EE;margin-right:2px">alice</span>.openfolio.com</div>
+</div>
+<div style="background:#0C1018;padding:44px 56px 40px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:28px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.07)">
+<div>
+<div style="font:600 30px/1.15 Archivo,sans-serif;letter-spacing:-.02em;margin-bottom:8px">Alice Nakamura</div>
+<div style="font:400 15px/1.5 Archivo,sans-serif;color:#A9B5C8;max-width:520px">Frontend engineer. Design systems and browser performance. Six years on products that had to stay fast while the team doubled.</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;font:400 12px 'IBM Plex Mono',monospace;color:#94A2B8">
+<span>Lisbon, PT · UTC+1</span><span style="color:#5FD9EE">github.com/alicenk</span><span style="color:#5FD9EE">alice@nakamura.dev</span>
+</div>
+</div>
+<div style="display:flex;gap:44px;padding-top:26px">
+<div style="flex:1;min-width:0">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:18px">Selected projects</div>
+<sc-for list="{{exProjects}}" as="p" hint-placeholder-count="3">
+<div style="padding:16px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);display:flex;gap:28px">
+<div style="flex:1;min-width:0">
+<div style="font:500 16px Archivo,sans-serif;margin-bottom:5px">{{p.name}}</div>
+<div style="font:400 13px/1.55 Archivo,sans-serif;color:#A2AEC2;margin-bottom:9px">{{p.blurb}}</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:#8A97AC">{{p.stack}}</div>
+</div>
+<div style="width:190px;flex:none;display:flex;flex-direction:column;gap:7px">
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:#6FE3B0">{{p.m1}}</div>
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:#94A2B8">{{p.m2}}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="width:260px;flex:none">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:18px">Skills</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{skills}}" as="k" hint-placeholder-count="8">
+<span style="font:400 11px 'IBM Plex Mono',monospace;color:#C6D0DF;border-radius:5px;padding:5px 8px;background:linear-gradient(135deg,#151D2A,#0D121A);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05)">{{k}}</span>
+</sc-for>
+</div>
+<div style="margin-top:24px;padding-top:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:12px">Contact</div>
+<div style="font:400 13px/1.6 Archivo,sans-serif;color:#A2AEC2">Open to frontend platform work. Email is the fastest way to reach me.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- what you publish -->
+<div style="padding:76px 120px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px">
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">What you publish</div>
+<h2 style="margin:0;font:600 30px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Thirteen section types. Four are on from the start.</h2>
+</div>
+<div style="display:flex;align-items:center;gap:9px;font:400 13px Archivo,sans-serif;color:#A9B5C8"><span style="width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)"></span>Enabled by the software-engineer preset</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+<sc-for list="{{sectionTypes}}" as="s" hint-placeholder-count="13">
+<div style="border-radius:9px;padding:14px 15px;min-height:74px;display:flex;flex-direction:column;gap:5px;background:{{s.bg}};box-shadow:{{s.shadow}}">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<span style="font:500 14px Archivo,sans-serif;color:#EDF1F8">{{s.name}}</span>
+<sc-if value="{{s.on}}" hint-placeholder-val="{{false}}"><span style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:#7FE1F2;border-radius:4px;padding:3px 6px;background:rgba(46,211,233,.10);box-shadow:0 0 0 1px rgba(127,225,242,.28)">preset</span></sc-if>
+</div>
+<span style="font:400 12px/1.45 Archivo,sans-serif;color:#94A2B8">{{s.desc}}</span>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:18px;font:400 13px Archivo,sans-serif;color:#94A2B8">Turn any of the other nine on whenever you have something to put in it. Empty sections never render.</div>
+</div>
+
+<!-- integrations -->
+<div style="padding:72px 120px 76px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">Integrations</div>
+<h2 style="margin:0 0 8px;font:600 30px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Pull in what already exists.</h2>
+<p style="margin:0 0 28px;font:400 15px/1.6 Archivo,sans-serif;color:#A9B5C8;max-width:620px">Connect an account and the numbers keep themselves current. Every one of these has a manual path, so nothing depends on an integration staying connected.</p>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+<sc-for list="{{integrations}}" as="i" hint-placeholder-count="3">
+<div style="border-radius:12px;padding:22px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 18px 40px -18px rgba(0,0,0,.9)">
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+<div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#1E283A,#121823);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 0 1px rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font:500 13px 'IBM Plex Mono',monospace;color:#C6D0DF">{{i.mark}}</div>
+<span style="font:600 15px Archivo,sans-serif">{{i.name}}</span>
+</div>
+<div style="font:400 14px/1.55 Archivo,sans-serif;color:#B6C1D2;margin-bottom:14px;min-height:66px">{{i.desc}}</div>
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:#94A2B8;padding-top:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)">{{i.fallback}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- theming -->
+<div style="padding:76px 120px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">Theming</div>
+<h2 style="margin:0 0 28px;font:600 30px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Three dials, and they are the right three.</h2>
+<div style="display:flex;gap:40px;align-items:flex-start">
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:28px">
+<div>
+<div style="font:500 12px Archivo,sans-serif;margin-bottom:12px;color:#EDF1F8">Accent colour</div>
+<div style="display:flex;gap:9px">
+<sc-for list="{{accents}}" as="a" hint-placeholder-count="6">
+<div onClick="{{a.pick}}" style="width:34px;height:34px;border-radius:8px;background:{{a.fill}};cursor:pointer;box-shadow:{{a.ring}}"></div>
+</sc-for>
+</div>
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:#94A2B8;margin-top:11px">{{accentLabel}}</div>
+</div>
+<div>
+<div style="font:500 12px Archivo,sans-serif;margin-bottom:12px;color:#EDF1F8">Theme</div>
+<div style="display:inline-flex;border-radius:9px;padding:4px;background:linear-gradient(135deg,#141C29,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05)">
+<sc-for list="{{themeModes}}" as="t" hint-placeholder-count="3">
+<div onClick="{{t.pick}}" style="padding:7px 15px;border-radius:6px;background:{{t.bg}};color:{{t.fg}};box-shadow:{{t.shadow}};font:500 13px Archivo,sans-serif;cursor:pointer">{{t.label}}</div>
+</sc-for>
+</div>
+</div>
+<div>
+<div style="font:500 12px Archivo,sans-serif;margin-bottom:12px;color:#EDF1F8">Font pairing</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{fontPairs}}" as="f" hint-placeholder-count="3">
+<div onClick="{{f.pick}}" style="border-radius:9px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:{{f.bg}};box-shadow:{{f.shadow}}">
+<span style="font:500 13px Archivo,sans-serif;color:#EDF1F8">{{f.label}}</span>
+<span style="font:400 11px 'IBM Plex Mono',monospace;color:#94A2B8">{{f.note}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="font:400 12px/1.5 Archivo,sans-serif;color:#94A2B8;padding-top:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)">System theme follows the visitor's device. Everything else is your choice, and it applies the moment you publish.</div>
+</div>
+
+<div style="flex:1;display:flex;gap:16px;min-width:0">
+<div style="flex:1;min-width:0">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:9px">Light</div>
+<div style="border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 20px 44px -20px rgba(0,0,0,.9)">
+<div style="height:27px;background:#F0F2F5;display:flex;align-items:center;padding:0 10px;font:400 10px 'IBM Plex Mono',monospace;color:#6C7483">alice.openfolio.com</div>
+<div style="padding:20px">
+<div style="font:600 17px Archivo,sans-serif;color:#14161A;margin-bottom:4px">Alice Nakamura</div>
+<div style="font:400 12px Archivo,sans-serif;color:#5F6775;margin-bottom:6px">Frontend engineer · design systems, performance</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:{{accentInk}};margin-bottom:16px">github.com/alicenk</div>
+<div style="height:1px;background:#E6E9EE;margin-bottom:14px"></div>
+<div style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6C7483;margin-bottom:10px">Projects</div>
+<div style="margin-bottom:12px"><div style="font:500 13px Archivo,sans-serif;color:#14161A">Aperture design system</div><div style="font:400 11px 'IBM Plex Mono',monospace;color:#5F6775;margin-top:3px">118 → 44 components</div></div>
+<div><div style="font:500 13px Archivo,sans-serif;color:#14161A">Checkout rewrite</div><div style="font:400 11px 'IBM Plex Mono',monospace;color:#5F6775;margin-top:3px">LCP 3.4s → 1.1s</div></div>
+<div style="margin-top:16px;display:inline-flex;font:500 11px Archivo,sans-serif;color:#fff;background:{{accentInk}};padding:7px 13px;border-radius:6px">Get in touch</div>
+</div>
+</div>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:9px">Dark</div>
+<div style="border-radius:10px;overflow:hidden;background:#0C1018;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.07),0 20px 44px -20px rgba(0,0,0,.9)">
+<div style="height:27px;background:linear-gradient(135deg,#1A2231,#10151F);display:flex;align-items:center;padding:0 10px;font:400 10px 'IBM Plex Mono',monospace;color:#A3AFC0">alice.openfolio.com</div>
+<div style="padding:20px">
+<div style="font:600 17px Archivo,sans-serif;color:#EDF1F8;margin-bottom:4px">Alice Nakamura</div>
+<div style="font:400 12px Archivo,sans-serif;color:#A9B5C8;margin-bottom:6px">Frontend engineer · design systems, performance</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:{{accentLight}};margin-bottom:16px">github.com/alicenk</div>
+<div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:14px"></div>
+<div style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">Projects</div>
+<div style="margin-bottom:12px"><div style="font:500 13px Archivo,sans-serif;color:#EDF1F8">Aperture design system</div><div style="font:400 11px 'IBM Plex Mono',monospace;color:#A2AEC2;margin-top:3px">118 → 44 components</div></div>
+<div><div style="font:500 13px Archivo,sans-serif;color:#EDF1F8">Checkout rewrite</div><div style="font:400 11px 'IBM Plex Mono',monospace;color:#A2AEC2;margin-top:3px">LCP 3.4s → 1.1s</div></div>
+<div style="margin-top:16px;display:inline-flex;font:500 11px Archivo,sans-serif;color:#05080F;background:{{accentFill}};padding:7px 13px;border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)">Get in touch</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- draft to publish -->
+<div style="padding:72px 120px 76px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">Draft → publish</div>
+<h2 style="margin:0 0 28px;font:600 30px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Nothing goes out until you say so.</h2>
+<div style="display:flex;align-items:stretch;gap:14px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3">
+<div style="flex:1;border-radius:12px;padding:24px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 18px 40px -18px rgba(0,0,0,.9)">
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:12px">
+<span style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px -6px rgba(47,120,233,.7);color:#05080F;font:500 12px 'IBM Plex Mono',monospace;display:flex;align-items:center;justify-content:center">{{st.n}}</span>
+<span style="font:600 16px Archivo,sans-serif">{{st.title}}</span>
+</div>
+<div style="font:400 14px/1.6 Archivo,sans-serif;color:#B6C1D2">{{st.body}}</div>
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:#7FE1F2;margin-top:15px">{{st.tag}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- faq -->
+<div style="padding:76px 120px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);display:flex;gap:80px;align-items:flex-start">
+<div style="width:300px;flex:none">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">Questions</div>
+<h2 style="margin:0;font:600 30px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Straight answers.</h2>
+</div>
+<div style="flex:1;min-width:0">
+<sc-for list="{{faqs}}" as="q" hint-placeholder-count="5">
+<div style="padding:22px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;gap:32px">
+<div style="width:280px;flex:none;font:500 16px/1.4 Archivo,sans-serif;color:#EDF1F8">{{q.q}}</div>
+<div style="flex:1;font:400 14px/1.65 Archivo,sans-serif;color:#A9B5C8">{{q.a}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- footer CTA -->
+<div style="position:relative;overflow:hidden;padding:80px 120px 0;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="position:absolute;top:-300px;left:120px;width:760px;height:620px;background:radial-gradient(circle at 50% 50%,rgba(46,211,233,.16),rgba(46,211,233,0) 68%);filter:blur(30px);pointer-events:none"></div>
+<div style="position:absolute;bottom:-380px;right:-120px;width:820px;height:700px;background:radial-gradient(circle at 50% 50%,rgba(63,99,238,.18),rgba(63,99,238,0) 68%);filter:blur(30px);pointer-events:none"></div>
+<div style="position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:space-between;gap:60px">
+<div>
+<h2 style="margin:0 0 12px;font:600 34px/1.15 Archivo,sans-serif;letter-spacing:-.02em;max-width:520px">Take the address before someone else does.</h2>
+<p style="margin:0;font:400 15px/1.6 Archivo,sans-serif;color:#A9B5C8;max-width:480px">Claim it now, fill the page in this week, publish when it reads the way you want.</p>
+</div>
+<div style="flex:none;display:flex;gap:10px;align-items:flex-start">
+<div>
+<div style="display:flex;align-items:center;width:420px;height:56px;border-radius:10px;padding:0 4px 0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px {{heroRing}},0 10px 26px -12px rgba(0,0,0,.85)">
+<input value="{{heroSlug}}" onChange="{{onHeroInput}}" placeholder="your-name" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 15px 'IBM Plex Mono',monospace;color:#F2F6FC">
+<span style="font:400 15px 'IBM Plex Mono',monospace;color:#8B98AD;padding-right:10px;white-space:nowrap">.openfolio.com</span>
+<sc-if value="{{heroChecking}}" hint-placeholder-val="{{false}}"><div style="width:13px;height:13px;border:2px solid rgba(255,255,255,.14);border-top-color:#2ED3E9;border-radius:50%;animation:ofspin .7s linear infinite;margin-right:12px"></div></sc-if>
+</div>
+<div style="height:20px;padding-top:8px;font:400 12px 'IBM Plex Mono',monospace;color:{{heroMsgColor}}">{{heroMsg}}</div>
+</div>
+<div onClick="{{onClaim}}" style="height:56px;padding:0 26px;border-radius:10px;background:{{claimBg}};color:{{claimColor}};box-shadow:{{claimShadow}};display:flex;align-items:center;font:500 15px Archivo,sans-serif;cursor:pointer;user-select:none">Claim</div>
+</div>
+</div>
+<div style="position:relative;z-index:2;margin-top:60px;padding:24px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font:600 10px Archivo,sans-serif;color:#05080F">O</div><span style="font:500 13px Archivo,sans-serif;color:#A9B5C8">© 2026 Openfolio</span></div>
+<div style="display:flex;gap:28px;font:400 13px Archivo,sans-serif;color:#A9B5C8"><span>Status</span><span>Privacy</span><span>Terms</span><span>Acceptable use</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px">hello@openfolio.com</span></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ARTBOARD 2 · MOBILE -->
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">02</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Landing — mobile · 390</span></div>
+<div style="width:390px;border-radius:14px;overflow:hidden;background:#080B14;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 40px 90px -30px rgba(0,0,0,.9);color:#EDF1F8">
+
+<div style="position:relative;overflow:hidden;padding-bottom:30px">
+<div style="position:absolute;top:-180px;left:-120px;width:460px;height:420px;background:radial-gradient(circle at 50% 50%,rgba(46,211,233,.22),rgba(46,211,233,0) 68%);filter:blur(24px)"></div>
+<div style="position:absolute;bottom:-260px;right:-140px;width:460px;height:440px;background:radial-gradient(circle at 50% 50%,rgba(63,99,238,.22),rgba(63,99,238,0) 68%);filter:blur(24px)"></div>
+<div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(#000 0%,#000 45%,transparent 90%);-webkit-mask-image:linear-gradient(#000 0%,#000 45%,transparent 90%)"></div>
+
+<div style="position:relative;z-index:2;margin:12px 12px 0;height:52px;border-radius:11px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(26,34,50,.92),rgba(11,15,24,.88));box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 0 1px rgba(255,255,255,.06)">
+<div style="display:flex;align-items:center;gap:8px"><div style="width:21px;height:21px;border-radius:6px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font:600 11px Archivo,sans-serif;color:#05080F">O</div><span style="font:600 15px Archivo,sans-serif">openfolio</span></div>
+<div style="display:flex;align-items:center;gap:14px"><span style="font:400 13px Archivo,sans-serif;color:#B6C1D2">Sign in</span><div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#1C2434,#111722);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px"><span style="width:14px;height:1.5px;background:#B6C1D2"></span><span style="width:14px;height:1.5px;background:#B6C1D2"></span></div></div>
+</div>
+
+<div style="position:relative;z-index:2;padding:34px 20px 0">
+<div style="display:inline-flex;align-items:center;gap:7px;font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#7FE1F2;padding:5px 10px;border-radius:999px;background:linear-gradient(135deg,rgba(46,211,233,.14),rgba(63,99,238,.10));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(127,225,242,.22);margin-bottom:16px"><span style="width:4px;height:4px;border-radius:50%;background:#2ED3E9"></span>Portfolios for engineers</div>
+<h1 style="margin:0 0 14px;font:600 35px/1.08 Archivo,sans-serif;letter-spacing:-.028em">Show the work,<br><span style="background:linear-gradient(105deg,#5FE0F2 6%,#6B8DFF 58%,#7B6CF6 96%);-webkit-background-clip:text;background-clip:text;color:transparent">not the resume.</span></h1>
+<p style="margin:0 0 24px;font:400 15px/1.6 Archivo,sans-serif;color:#A9B5C8">One well-built page for the things you have actually shipped — projects, decisions, and the numbers that followed.</p>
+<div style="display:flex;align-items:center;height:54px;border-radius:10px;padding:0 14px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px {{heroRing}},0 10px 24px -12px rgba(0,0,0,.85);margin-bottom:6px">
+<input value="{{heroSlug}}" onChange="{{onHeroInput}}" placeholder="your-name" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 15px 'IBM Plex Mono',monospace;color:#F2F6FC">
+<span style="font:400 13px 'IBM Plex Mono',monospace;color:#8B98AD;white-space:nowrap">.openfolio.com</span>
+</div>
+<div style="height:20px;font:400 12px 'IBM Plex Mono',monospace;color:{{heroMsgColor}};margin-bottom:10px">{{heroMsg}}</div>
+<div onClick="{{onClaim}}" style="height:52px;border-radius:10px;background:{{claimBg}};color:{{claimColor}};box-shadow:{{claimShadow}};display:flex;align-items:center;justify-content:center;font:500 16px Archivo,sans-serif;cursor:pointer">Claim</div>
+<div style="font:400 12px/1.5 Archivo,sans-serif;color:#94A2B8;margin-top:12px">Free. GitHub or Google sign-in — no password.</div>
+</div>
+</div>
+
+<div style="padding:30px 20px 32px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:8px">A published portfolio</div>
+<h2 style="margin:0 0 16px;font:600 21px/1.25 Archivo,sans-serif;letter-spacing:-.02em">Same layout for everyone, well built.</h2>
+<div style="border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px rgba(255,255,255,.07),0 20px 40px -18px rgba(0,0,0,.9)">
+<div style="height:30px;background:linear-gradient(135deg,#1A2231,#10151F);display:flex;align-items:center;padding:0 10px;gap:8px">
+<div style="display:flex;gap:4px"><span style="width:7px;height:7px;border-radius:50%;background:#2A3345"></span><span style="width:7px;height:7px;border-radius:50%;background:#2A3345"></span></div>
+<div style="flex:1;height:19px;border-radius:5px;background:#0A0E17;display:flex;align-items:center;padding:0 8px;font:400 10px 'IBM Plex Mono',monospace;color:#A3AFC0"><span style="color:#5FD9EE">alice</span>.openfolio.com</div>
+</div>
+<div style="background:#0C1018;padding:20px 18px">
+<div style="font:600 18px Archivo,sans-serif;color:#EDF1F8;margin-bottom:5px">Alice Nakamura</div>
+<div style="font:400 12px/1.5 Archivo,sans-serif;color:#A9B5C8;margin-bottom:8px">Frontend engineer. Design systems and browser performance.</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:#5FD9EE;margin-bottom:18px">github.com/alicenk</div>
+<div style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:12px">Selected projects</div>
+<div style="padding:12px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)">
+<div style="font:500 14px Archivo,sans-serif;color:#EDF1F8;margin-bottom:4px">Aperture design system</div>
+<div style="font:400 11px/1.5 Archivo,sans-serif;color:#A2AEC2;margin-bottom:6px">Consolidated 40 product surfaces onto one component set.</div>
+<div style="font:400 10px 'IBM Plex Mono',monospace;color:#6FE3B0">118 → 44 components</div>
+</div>
+<div style="padding:12px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)">
+<div style="font:500 14px Archivo,sans-serif;color:#EDF1F8;margin-bottom:4px">Checkout rewrite</div>
+<div style="font:400 11px/1.5 Archivo,sans-serif;color:#A2AEC2;margin-bottom:6px">Moved a five-step flow to React Server Components.</div>
+<div style="font:400 10px 'IBM Plex Mono',monospace;color:#6FE3B0">LCP 3.4s → 1.1s</div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="padding:30px 20px 32px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:8px">What you publish</div>
+<h2 style="margin:0 0 16px;font:600 21px/1.25 Archivo,sans-serif;letter-spacing:-.02em">Thirteen section types. Four are on from the start.</h2>
+<div style="display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{sectionTypes}}" as="s" hint-placeholder-count="13">
+<div style="border-radius:9px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:{{s.bg}};box-shadow:{{s.shadow}}">
+<span style="font:500 13px Archivo,sans-serif">{{s.name}}</span>
+<span style="font:400 11px 'IBM Plex Mono',monospace;color:{{s.tagColor}}">{{s.tag}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:30px 20px 32px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:8px">Integrations</div>
+<h2 style="margin:0 0 16px;font:600 21px/1.25 Archivo,sans-serif;letter-spacing:-.02em">Pull in what already exists.</h2>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{integrations}}" as="i" hint-placeholder-count="3">
+<div style="border-radius:11px;padding:15px 16px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 14px 30px -16px rgba(0,0,0,.9)">
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#1E283A,#121823);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 0 1px rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font:500 11px 'IBM Plex Mono',monospace;color:#C6D0DF">{{i.mark}}</div><span style="font:600 14px Archivo,sans-serif">{{i.name}}</span></div>
+<div style="font:400 13px/1.55 Archivo,sans-serif;color:#B6C1D2;margin-bottom:8px">{{i.desc}}</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:#94A2B8">{{i.fallback}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:30px 20px 32px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:8px">Theming</div>
+<h2 style="margin:0 0 16px;font:600 21px/1.25 Archivo,sans-serif;letter-spacing:-.02em">Accent, theme, type pairing.</h2>
+<div style="display:flex;gap:9px;margin-bottom:14px">
+<sc-for list="{{accents}}" as="a" hint-placeholder-count="6">
+<div onClick="{{a.pick}}" style="width:30px;height:30px;border-radius:8px;background:{{a.fill}};cursor:pointer;box-shadow:{{a.ring}}"></div>
+</sc-for>
+</div>
+<div style="display:inline-flex;border-radius:9px;padding:4px;background:linear-gradient(135deg,#141C29,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05);margin-bottom:16px">
+<sc-for list="{{themeModes}}" as="t" hint-placeholder-count="3">
+<div onClick="{{t.pick}}" style="padding:6px 13px;border-radius:6px;background:{{t.bg}};color:{{t.fg}};box-shadow:{{t.shadow}};font:500 12px Archivo,sans-serif;cursor:pointer">{{t.label}}</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;border-radius:9px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.12)">
+<div style="height:20px;background:#F0F2F5;display:flex;align-items:center;padding:0 8px;font:400 8px 'IBM Plex Mono',monospace;color:#6C7483">alice.openfolio.com</div>
+<div style="padding:12px">
+<div style="font:600 12px Archivo,sans-serif;color:#14161A;margin-bottom:3px">Alice Nakamura</div>
+<div style="font:400 9px Archivo,sans-serif;color:#5F6775;margin-bottom:4px">Frontend engineer</div>
+<div style="font:400 8px 'IBM Plex Mono',monospace;color:{{accentInk}};margin-bottom:10px">github.com/alicenk</div>
+<div style="font:500 11px Archivo,sans-serif;color:#14161A;margin-bottom:3px">Aperture</div>
+<div style="font:400 8px 'IBM Plex Mono',monospace;color:#5F6775">118 → 44 components</div>
+</div>
+</div>
+<div style="flex:1;border-radius:9px;overflow:hidden;background:#0C1018;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.07)">
+<div style="height:20px;background:linear-gradient(135deg,#1A2231,#10151F);display:flex;align-items:center;padding:0 8px;font:400 8px 'IBM Plex Mono',monospace;color:#A3AFC0">alice.openfolio.com</div>
+<div style="padding:12px">
+<div style="font:600 12px Archivo,sans-serif;color:#EDF1F8;margin-bottom:3px">Alice Nakamura</div>
+<div style="font:400 9px Archivo,sans-serif;color:#A9B5C8;margin-bottom:4px">Frontend engineer</div>
+<div style="font:400 8px 'IBM Plex Mono',monospace;color:{{accentLight}};margin-bottom:10px">github.com/alicenk</div>
+<div style="font:500 11px Archivo,sans-serif;color:#EDF1F8;margin-bottom:3px">Aperture</div>
+<div style="font:400 8px 'IBM Plex Mono',monospace;color:#A2AEC2">118 → 44 components</div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="padding:30px 20px 32px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:8px">Draft → publish</div>
+<h2 style="margin:0 0 16px;font:600 21px/1.25 Archivo,sans-serif;letter-spacing:-.02em">Nothing goes out until you say so.</h2>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3">
+<div style="border-radius:11px;padding:15px 16px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 14px 30px -16px rgba(0,0,0,.9)">
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><span style="width:21px;height:21px;border-radius:6px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);color:#05080F;font:500 11px 'IBM Plex Mono',monospace;display:flex;align-items:center;justify-content:center">{{st.n}}</span><span style="font:600 14px Archivo,sans-serif">{{st.title}}</span></div>
+<div style="font:400 13px/1.55 Archivo,sans-serif;color:#B6C1D2">{{st.body}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="padding:30px 20px 32px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:8px">Questions</div>
+<h2 style="margin:0 0 6px;font:600 21px/1.25 Archivo,sans-serif;letter-spacing:-.02em">Straight answers.</h2>
+<sc-for list="{{faqs}}" as="q" hint-placeholder-count="5">
+<div style="padding:15px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)">
+<div style="font:500 14px/1.4 Archivo,sans-serif;margin-bottom:6px">{{q.q}}</div>
+<div style="font:400 13px/1.6 Archivo,sans-serif;color:#A9B5C8">{{q.a}}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="position:relative;overflow:hidden;padding:34px 20px 26px;background:#0A0E18;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+<div style="position:absolute;bottom:-300px;right:-160px;width:520px;height:480px;background:radial-gradient(circle at 50% 50%,rgba(63,99,238,.20),rgba(63,99,238,0) 68%);filter:blur(26px)"></div>
+<div style="position:relative;z-index:2">
+<h2 style="margin:0 0 10px;font:600 24px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Take the address before someone else does.</h2>
+<p style="margin:0 0 18px;font:400 13px/1.6 Archivo,sans-serif;color:#A9B5C8">Claim it now, fill the page in this week, publish when it reads the way you want.</p>
+<div style="display:flex;align-items:center;height:52px;border-radius:10px;padding:0 14px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px {{heroRing}};margin-bottom:8px">
+<input value="{{heroSlug}}" onChange="{{onHeroInput}}" placeholder="your-name" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 14px 'IBM Plex Mono',monospace;color:#F2F6FC">
+<span style="font:400 13px 'IBM Plex Mono',monospace;color:#8B98AD;white-space:nowrap">.openfolio.com</span>
+</div>
+<div onClick="{{onClaim}}" style="height:52px;border-radius:10px;background:{{claimBg}};color:{{claimColor}};box-shadow:{{claimShadow}};display:flex;align-items:center;justify-content:center;font:500 15px Archivo,sans-serif;cursor:pointer">Claim</div>
+<div style="margin-top:28px;padding-top:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);display:flex;flex-wrap:wrap;gap:14px;font:400 12px Archivo,sans-serif;color:#A9B5C8"><span>Status</span><span>Privacy</span><span>Terms</span><span>Acceptable use</span><span style="width:100%;font-family:'IBM Plex Mono',monospace">© 2026 Openfolio</span></div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- ARTBOARD 3 · SLUG STATES -->
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">03</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Slug input — states · detail</span></div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+
+<div style="width:500px;border-radius:12px;padding:28px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 24px 50px -22px rgba(0,0,0,.9)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:18px">Empty · default</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;display:flex;align-items:center;height:58px;border-radius:10px;padding:0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(255,255,255,.09)"><span style="flex:1;white-space:nowrap;font:500 16px 'IBM Plex Mono',monospace;color:#6E7A8E">your-name</span><span style="font:400 16px 'IBM Plex Mono',monospace;color:#8B98AD;white-space:nowrap">.openfolio.com</span></div>
+<div style="height:58px;padding:0 26px;border-radius:10px;background:linear-gradient(135deg,#1A2231,#11161F);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05);color:#6E7A8E;display:flex;align-items:center;font:500 16px Archivo,sans-serif">Claim</div>
+</div>
+<div style="height:22px;padding-top:9px;font:400 13px 'IBM Plex Mono',monospace;color:#98A5BA">Lowercase letters, numbers and hyphens.</div>
+</div>
+
+<div style="width:500px;border-radius:12px;padding:28px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 24px 50px -22px rgba(0,0,0,.9)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:18px">Checking</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;display:flex;align-items:center;height:58px;border-radius:10px;padding:0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(46,211,233,.55),0 0 0 4px rgba(46,211,233,.12)"><span style="flex:1;white-space:nowrap;font:500 16px 'IBM Plex Mono',monospace;color:#F2F6FC">alice</span><span style="font:400 16px 'IBM Plex Mono',monospace;color:#8B98AD;padding-right:10px;white-space:nowrap">.openfolio.com</span><div style="width:14px;height:14px;border:2px solid rgba(255,255,255,.14);border-top-color:#2ED3E9;border-radius:50%;animation:ofspin .7s linear infinite"></div></div>
+<div style="height:58px;padding:0 26px;border-radius:10px;background:linear-gradient(135deg,#1A2231,#11161F);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05);color:#6E7A8E;display:flex;align-items:center;font:500 16px Archivo,sans-serif">Claim</div>
+</div>
+<div style="height:22px;padding-top:9px;font:400 13px 'IBM Plex Mono',monospace;color:#A9B5C8">Checking availability…</div>
+</div>
+
+<div style="width:500px;border-radius:12px;padding:28px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 24px 50px -22px rgba(0,0,0,.9)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:18px">Available · CTA enabled</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;display:flex;align-items:center;height:58px;border-radius:10px;padding:0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(111,227,176,.55),0 0 0 4px rgba(111,227,176,.12)"><span style="flex:1;white-space:nowrap;font:500 16px 'IBM Plex Mono',monospace;color:#F2F6FC">alice-nakamura</span><span style="font:400 16px 'IBM Plex Mono',monospace;color:#8B98AD;padding-right:10px;white-space:nowrap">.openfolio.com</span><span style="font:500 15px 'IBM Plex Mono',monospace;color:#6FE3B0">✓</span></div>
+<div style="height:58px;padding:0 26px;border-radius:10px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 10px 26px -8px rgba(47,120,233,.6);color:#05080F;display:flex;align-items:center;font:500 16px Archivo,sans-serif">Claim</div>
+</div>
+<div style="height:22px;padding-top:9px;font:400 13px 'IBM Plex Mono',monospace;color:#6FE3B0">Available — yours for the next 30 minutes.</div>
+</div>
+
+<div style="width:500px;border-radius:12px;padding:28px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 24px 50px -22px rgba(0,0,0,.9)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:18px">Taken / reserved</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;display:flex;align-items:center;height:58px;border-radius:10px;padding:0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(255,143,134,.55),0 0 0 4px rgba(255,143,134,.10)"><span style="flex:1;white-space:nowrap;font:500 16px 'IBM Plex Mono',monospace;color:#F2F6FC">alice</span><span style="font:400 16px 'IBM Plex Mono',monospace;color:#8B98AD;white-space:nowrap">.openfolio.com</span></div>
+<div style="height:58px;padding:0 26px;border-radius:10px;background:linear-gradient(135deg,#1A2231,#11161F);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05);color:#6E7A8E;display:flex;align-items:center;font:500 16px Archivo,sans-serif">Claim</div>
+</div>
+<div style="height:22px;padding-top:9px;font:400 13px 'IBM Plex Mono',monospace;color:#FF8F86">Taken — try alice-dev</div>
+<div style="margin-top:20px;padding-top:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)">
+<div style="display:flex;gap:10px">
+<div style="flex:1;display:flex;align-items:center;height:58px;border-radius:10px;padding:0 16px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(255,143,134,.55)"><span style="flex:1;white-space:nowrap;font:500 16px 'IBM Plex Mono',monospace;color:#F2F6FC">admin</span><span style="font:400 16px 'IBM Plex Mono',monospace;color:#8B98AD;white-space:nowrap">.openfolio.com</span></div>
+<div style="height:58px;padding:0 26px;border-radius:10px;background:linear-gradient(135deg,#1A2231,#11161F);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05);color:#6E7A8E;display:flex;align-items:center;font:500 16px Archivo,sans-serif">Claim</div>
+</div>
+<div style="height:22px;padding-top:9px;font:400 13px 'IBM Plex Mono',monospace;color:#FF8F86">Reserved</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ARTBOARDS 4-6 -->
+<div style="display:flex;gap:40px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">04</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Sign in</span></div>
+<div style="width:680px;border-radius:14px;overflow:hidden;background:#080B14;box-shadow:{{ring4}};color:#EDF1F8">
+<div style="height:58px;display:flex;align-items:center;padding:0 24px;gap:10px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)"><div style="width:21px;height:21px;border-radius:6px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font:600 11px Archivo,sans-serif;color:#05080F">O</div><span style="font:600 15px Archivo,sans-serif">openfolio</span></div>
+<div style="position:relative;overflow:hidden;padding:56px 108px 64px">
+<div style="position:absolute;top:-220px;left:-100px;width:600px;height:520px;background:radial-gradient(circle at 50% 50%,rgba(46,211,233,.16),rgba(46,211,233,0) 68%);filter:blur(26px)"></div>
+<div style="position:relative;z-index:2">
+<div style="border-radius:10px;padding:15px 17px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(46,211,233,.13),rgba(63,99,238,.10));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(127,225,242,.24)">
+<div>
+<div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7FE1F2;margin-bottom:6px">Holding for you</div>
+<div style="font:500 17px 'IBM Plex Mono',monospace;color:#F2F6FC"><span style="color:#5FD9EE">{{claimedSlug}}</span>.openfolio.com</div>
+</div>
+<span style="font:400 12px 'IBM Plex Mono',monospace;color:#A9B5C8">29:41 left</span>
+</div>
+<h1 style="margin:0 0 10px;font:600 28px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Sign in to finish claiming it.</h1>
+<p style="margin:0 0 28px;font:400 15px/1.6 Archivo,sans-serif;color:#A9B5C8">Two ways in, both one click. There is no password to create.</p>
+<div style="display:flex;flex-direction:column;gap:11px">
+<div onClick="{{onSignIn}}" style="height:54px;border-radius:10px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 12px 28px -8px rgba(47,120,233,.55);color:#05080F;display:flex;align-items:center;justify-content:center;gap:10px;font:500 15px Archivo,sans-serif;cursor:pointer"><span style="width:19px;height:19px;border-radius:50%;background:rgba(5,8,15,.75);color:#EDF1F8;font:600 10px 'IBM Plex Mono',monospace;display:flex;align-items:center;justify-content:center">GH</span>Continue with GitHub</div>
+<div onClick="{{onSignIn}}" style="height:54px;border-radius:10px;background:linear-gradient(135deg,#1C2434,#111722);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.07),0 10px 24px -12px rgba(0,0,0,.8);color:#EDF1F8;display:flex;align-items:center;justify-content:center;gap:10px;font:500 15px Archivo,sans-serif;cursor:pointer"><span style="width:19px;height:19px;border-radius:50%;background:linear-gradient(135deg,#2A3345,#1A2130);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);color:#C6D0DF;font:600 10px 'IBM Plex Mono',monospace;display:flex;align-items:center;justify-content:center">G</span>Continue with Google</div>
+</div>
+<div style="margin-top:22px;padding-top:19px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);font:400 13px/1.6 Archivo,sans-serif;color:#A9B5C8">Signing in with GitHub also connects the GitHub integration, so repo and commit stats can fill themselves in. Google sign-in works the same otherwise — you can connect GitHub later, or type those numbers in yourself.</div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">05</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Onboarding — one step</span></div>
+<div style="width:760px;border-radius:14px;overflow:hidden;background:#080B14;box-shadow:{{ring5}};color:#EDF1F8">
+<div style="height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:21px;height:21px;border-radius:6px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font:600 11px Archivo,sans-serif;color:#05080F">O</div><span style="font:600 15px Archivo,sans-serif">openfolio</span></div>
+<div style="display:flex;align-items:center;gap:10px;font:400 12px 'IBM Plex Mono',monospace;color:#A9B5C8"><span style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#1E283A,#121823);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-weight:500;color:#C6D0DF">A</span>alice@nakamura.dev</div>
+</div>
+<div style="padding:40px 56px 48px">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:10px">Setup · the only step</div>
+<h1 style="margin:0 0 8px;font:600 28px/1.2 Archivo,sans-serif;letter-spacing:-.02em">Three things and you are in.</h1>
+<p style="margin:0 0 32px;font:400 15px/1.6 Archivo,sans-serif;color:#A9B5C8">All of it is editable later in the admin panel.</p>
+
+<div style="display:flex;gap:20px;margin-bottom:30px">
+<div style="flex:1;min-width:0">
+<label style="display:block;font:500 13px Archivo,sans-serif;margin-bottom:9px">Display name</label>
+<div style="height:50px;border-radius:9px;display:flex;align-items:center;padding:0 15px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(255,255,255,.09)"><input value="{{obName}}" onChange="{{onObName}}" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:400 15px Archivo,sans-serif;color:#F2F6FC"></div>
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:#98A5BA;margin-top:8px">From your GitHub profile.</div>
+</div>
+<div style="flex:1;min-width:0">
+<label style="display:block;font:500 13px Archivo,sans-serif;margin-bottom:9px">Address</label>
+<div style="height:50px;border-radius:9px;display:flex;align-items:center;padding:0 13px;background:linear-gradient(135deg,#151D2B,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px {{obRing}}">
+<input value="{{obSlug}}" onChange="{{onObSlug}}" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 15px 'IBM Plex Mono',monospace;color:#F2F6FC">
+<span style="font:400 14px 'IBM Plex Mono',monospace;color:#8B98AD;padding-right:8px;white-space:nowrap">.openfolio.com</span>
+<sc-if value="{{obChecking}}" hint-placeholder-val="{{false}}"><div style="width:13px;height:13px;border:2px solid rgba(255,255,255,.14);border-top-color:#2ED3E9;border-radius:50%;animation:ofspin .7s linear infinite"></div></sc-if>
+</div>
+<div style="font:400 12px 'IBM Plex Mono',monospace;color:{{obMsgColor}};margin-top:8px">{{obMsg}}</div>
+</div>
+</div>
+
+<div style="font:500 13px Archivo,sans-serif;margin-bottom:6px">Starting preset</div>
+<div style="font:400 12px Archivo,sans-serif;color:#98A5BA;margin-bottom:13px">Which sections start enabled. Every section can be switched on or off afterwards.</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:30px">
+<sc-for list="{{presets}}" as="p" hint-placeholder-count="3">
+<div onClick="{{p.pick}}" style="border-radius:11px;padding:17px;cursor:pointer;background:{{p.bg}};box-shadow:{{p.shadow}}">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:9px">
+<span style="font:600 14px Archivo,sans-serif;color:#EDF1F8">{{p.name}}</span>
+<span style="width:17px;height:17px;border-radius:50%;background:{{p.dotBg}};box-shadow:{{p.dotShadow}};flex:none;display:flex;align-items:center;justify-content:center;font:500 9px 'IBM Plex Mono',monospace;color:#05080F">{{p.dot}}</span>
+</div>
+<div style="font:400 12px/1.5 Archivo,sans-serif;color:#B6C1D2;margin-bottom:13px;min-height:54px">{{p.desc}}</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:#98A5BA;padding-top:11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)">{{p.sections}}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;align-items:center;gap:16px">
+<div onClick="{{onFinish}}" style="height:52px;padding:0 30px;border-radius:10px;background:{{finishBg}};color:{{finishColor}};box-shadow:{{finishShadow}};display:flex;align-items:center;font:500 15px Archivo,sans-serif;cursor:pointer">Create my portfolio</div>
+<span style="font:400 13px Archivo,sans-serif;color:#98A5BA">Creates it as a private draft. Nothing is published yet.</span>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">06</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Onboarding success</span></div>
+<div style="width:680px;border-radius:14px;overflow:hidden;background:#080B14;box-shadow:{{ring6}};color:#EDF1F8">
+<div style="height:58px;display:flex;align-items:center;padding:0 24px;gap:10px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)"><div style="width:21px;height:21px;border-radius:6px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font:600 11px Archivo,sans-serif;color:#05080F">O</div><span style="font:600 15px Archivo,sans-serif">openfolio</span></div>
+<div style="position:relative;overflow:hidden;padding:56px 88px 64px">
+<div style="position:absolute;top:-240px;right:-120px;width:620px;height:540px;background:radial-gradient(circle at 50% 50%,rgba(63,99,238,.18),rgba(63,99,238,0) 68%);filter:blur(26px)"></div>
+<div style="position:relative;z-index:2">
+<div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,rgba(111,227,176,.22),rgba(46,211,233,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1px rgba(111,227,176,.35),0 10px 24px -10px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;font:500 18px 'IBM Plex Mono',monospace;color:#6FE3B0;margin-bottom:24px">✓</div>
+<h1 style="margin:0 0 10px;font:600 28px/1.2 Archivo,sans-serif;letter-spacing:-.02em">{{claimedSlug}}.openfolio.com is yours.</h1>
+<p style="margin:0 0 28px;font:400 15px/1.6 Archivo,sans-serif;color:#A9B5C8">The address is reserved and the page exists. Nobody can see it yet.</p>
+<div style="border-radius:11px;overflow:hidden;margin-bottom:28px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 18px 40px -18px rgba(0,0,0,.9)">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 17px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)">
+<span style="font:400 13px Archivo,sans-serif;color:#A9B5C8">Address</span>
+<span style="font:500 14px 'IBM Plex Mono',monospace;color:#F2F6FC"><span style="color:#5FD9EE">{{claimedSlug}}</span>.openfolio.com</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 17px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)">
+<span style="font:400 13px Archivo,sans-serif;color:#A9B5C8">Status</span>
+<span style="display:inline-flex;align-items:center;gap:7px;font:500 12px 'IBM Plex Mono',monospace;color:#F0C674;border-radius:5px;padding:4px 9px;background:rgba(240,198,116,.10);box-shadow:0 0 0 1px rgba(240,198,116,.28)"><span style="width:6px;height:6px;border-radius:50%;background:#F0C674"></span>Unpublished draft</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 17px">
+<span style="font:400 13px Archivo,sans-serif;color:#A9B5C8">Sections enabled</span>
+<span style="font:400 13px 'IBM Plex Mono',monospace;color:#EDF1F8">hero · projects · skills · contact</span>
+</div>
+</div>
+<div onClick="{{onAdmin}}" style="height:52px;padding:0 30px;border-radius:10px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 12px 28px -8px rgba(47,120,233,.55);color:#05080F;display:inline-flex;align-items:center;font:500 15px Archivo,sans-serif;cursor:pointer">Open the admin panel</div>
+<div style="margin-top:20px;font:400 13px/1.6 Archivo,sans-serif;color:#A9B5C8">Add a project or two, preview it at your own address, then publish. The live page catches up within 60 seconds.</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- ARTBOARD 7 · BUTTON STATES -->
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">07</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Buttons — hover &amp; pressed · detail</span></div>
+<div style="display:flex;gap:20px;align-items:flex-start">
+<sc-for list="{{buttonStates}}" as="b" hint-placeholder-count="6">
+<div style="width:300px;border-radius:12px;padding:26px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 24px 50px -22px rgba(0,0,0,.9)">
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#8A97AC;margin-bottom:20px">{{b.label}}</div>
+<div style="display:flex;justify-content:center;padding:{{b.pad}}">
+<div style="height:52px;padding:0 28px;border-radius:10px;background:{{b.bg}};color:{{b.fg}};box-shadow:{{b.shadow}};display:flex;align-items:center;font:500 15px Archivo,sans-serif">{{b.text}}</div>
+</div>
+<div style="margin-top:24px;padding-top:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);font:400 11px/1.7 'IBM Plex Mono',monospace;color:#98A5BA;white-space:pre-line">{{b.spec}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- ARTBOARD 8 · TOKENS -->
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="font:500 11px 'IBM Plex Mono',monospace;background:linear-gradient(135deg,#2ED3E9,#3F63EE);color:#05080F;padding:4px 8px;border-radius:4px">08</span><span style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8A97AC">Tokens</span></div>
+<div style="width:1440px;border-radius:14px;padding:44px 48px 48px;background:#080B14;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 40px 90px -30px rgba(0,0,0,.9);color:#EDF1F8">
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:44px">
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:16px">Accent pair · 43° of hue travel</div>
+<div style="display:flex;gap:12px">
+<div style="flex:1;border-radius:11px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.06)">
+<div style="height:88px;background:#2ED3E9;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)"></div>
+<div style="padding:13px 14px;background:linear-gradient(135deg,#161E2C,#0C1119)">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#EDF1F8;margin-bottom:5px">accent-cyan</div>
+<div style="font:400 11px/1.6 'IBM Plex Mono',monospace;color:#98A5BA">oklch(0.80 0.13 215)<br>#2ED3E9</div>
+</div>
+</div>
+<div style="flex:1;border-radius:11px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.06)">
+<div style="height:88px;background:#3F63EE;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)"></div>
+<div style="padding:13px 14px;background:linear-gradient(135deg,#161E2C,#0C1119)">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#EDF1F8;margin-bottom:5px">accent-indigo</div>
+<div style="font:400 11px/1.6 'IBM Plex Mono',monospace;color:#98A5BA">oklch(0.58 0.20 258)<br>#3F63EE</div>
+</div>
+</div>
+<div style="flex:1;border-radius:11px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.06)">
+<div style="height:88px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)"></div>
+<div style="padding:13px 14px;background:linear-gradient(135deg,#161E2C,#0C1119)">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#EDF1F8;margin-bottom:5px">accent-fill</div>
+<div style="font:400 11px/1.6 'IBM Plex Mono',monospace;color:#98A5BA">135deg, cyan → indigo<br>light source: top-left</div>
+</div>
+</div>
+</div>
+<div style="margin-top:14px;font:400 11px/1.7 'IBM Plex Mono',monospace;color:#98A5BA">accent-ink #5FD9EE — links and inline accents on dark<br>accent-tint rgba(46,211,233,.13) — badge and callout fills</div>
+</div>
+
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:16px">Surface gradient · 135deg</div>
+<div style="height:88px;border-radius:11px;background:linear-gradient(135deg,#1A2231,#0B1018);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.06)"></div>
+<div style="display:flex;justify-content:space-between;margin-top:10px;font:400 11px 'IBM Plex Mono',monospace;color:#98A5BA"><span>#1A2231 · lit edge</span><span>#0B1018 · shadow edge</span></div>
+<div style="margin-top:22px;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:14px">Ground</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1"><div style="height:44px;border-radius:8px;background:#060911;box-shadow:0 0 0 1px rgba(255,255,255,.06)"></div><div style="font:400 10px 'IBM Plex Mono',monospace;color:#98A5BA;margin-top:7px">canvas #060911</div></div>
+<div style="flex:1"><div style="height:44px;border-radius:8px;background:#080B14;box-shadow:0 0 0 1px rgba(255,255,255,.06)"></div><div style="font:400 10px 'IBM Plex Mono',monospace;color:#98A5BA;margin-top:7px">page #080B14</div></div>
+<div style="flex:1"><div style="height:44px;border-radius:8px;background:#0A0E18;box-shadow:0 0 0 1px rgba(255,255,255,.06)"></div><div style="font:400 10px 'IBM Plex Mono',monospace;color:#98A5BA;margin-top:7px">band #0A0E18</div></div>
+<div style="flex:1"><div style="height:44px;border-radius:8px;background:#0C1018;box-shadow:0 0 0 1px rgba(255,255,255,.06)"></div><div style="font:400 10px 'IBM Plex Mono',monospace;color:#98A5BA;margin-top:7px">frame #0C1018</div></div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:16px">Elevation · two levels</div>
+<div style="display:flex;gap:16px">
+<div style="flex:1;border-radius:11px;padding:20px;min-height:132px;background:linear-gradient(135deg,#161E2C,#0C1119);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 18px 40px -18px rgba(0,0,0,.9)">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#EDF1F8;margin-bottom:10px">elev-1 · at rest</div>
+<div style="font:400 10.5px/1.7 'IBM Plex Mono',monospace;color:#98A5BA">inset 0 1px 0 rgba(255,255,255,.08)<br>0 0 0 1px rgba(255,255,255,.06)<br>0 18px 40px -18px rgba(0,0,0,.9)</div>
+</div>
+<div style="flex:1;border-radius:11px;padding:20px;min-height:132px;background:linear-gradient(135deg,#1B2433,#0E131D);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.09),0 32px 64px -20px rgba(0,0,0,.95)">
+<div style="font:500 12px 'IBM Plex Mono',monospace;color:#EDF1F8;margin-bottom:10px">elev-2 · lifted on hover</div>
+<div style="font:400 10.5px/1.7 'IBM Plex Mono',monospace;color:#98A5BA">inset 0 1px 0 rgba(255,255,255,.12)<br>0 0 0 1px rgba(255,255,255,.09)<br>0 32px 64px -20px rgba(0,0,0,.95)</div>
+</div>
+</div>
+</div>
+
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:16px">Primary button · recipe exploded</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:16px"><div style="width:150px;height:40px;border-radius:9px;background:linear-gradient(135deg,#2ED3E9,#3F63EE)"></div><span style="font:400 11px 'IBM Plex Mono',monospace;color:#98A5BA">1 · accent-fill, 135deg</span></div>
+<div style="display:flex;align-items:center;gap:16px"><div style="width:150px;height:40px;border-radius:9px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38)"></div><span style="font:400 11px 'IBM Plex Mono',monospace;color:#98A5BA">2 · + top highlight, inset 0 1px 0 rgba(255,255,255,.38)</span></div>
+<div style="display:flex;align-items:center;gap:16px"><div style="width:150px;height:40px;border-radius:9px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 0 0 1px rgba(46,211,233,.35)"></div><span style="font:400 11px 'IBM Plex Mono',monospace;color:#98A5BA">3 · + hairline ring, 0 0 0 1px rgba(46,211,233,.35)</span></div>
+<div style="display:flex;align-items:center;gap:16px"><div style="width:150px;height:40px;border-radius:9px;background:linear-gradient(135deg,#2ED3E9,#3F63EE);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 0 0 1px rgba(46,211,233,.35),0 12px 28px -8px rgba(47,120,233,.6)"></div><span style="font:400 11px 'IBM Plex Mono',monospace;color:#98A5BA">4 · + glow, 0 12px 28px -8px rgba(47,120,233,.6)</span></div>
+</div>
+<div style="margin-top:18px;padding-top:15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);font:400 11px/1.7 'IBM Plex Mono',monospace;color:#98A5BA">Secondary uses the surface recipe and no glow.<br>Label ink on accent-fill: #05080F — 13.4:1.</div>
+</div>
+</div>
+
+<div style="margin-top:40px;padding-top:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);display:flex;gap:56px">
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:12px">Ink</div>
+<div style="font:400 11px/1.9 'IBM Plex Mono',monospace;color:#98A5BA"><span style="color:#EDF1F8">#EDF1F8 primary — 15.9:1</span><br><span style="color:#A9B5C8">#A9B5C8 secondary — 8.6:1</span><br><span style="color:#98A5BA">#98A5BA tertiary — 6.8:1</span><br><span style="color:#8A97AC">#8A97AC labels — 5.6:1</span></div>
+</div>
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:12px">Status</div>
+<div style="font:400 11px/1.9 'IBM Plex Mono',monospace;color:#98A5BA"><span style="color:#6FE3B0">#6FE3B0 available</span><br><span style="color:#FF8F86">#FF8F86 taken / reserved</span><br><span style="color:#F0C674">#F0C674 unpublished</span></div>
+</div>
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:12px">Type</div>
+<div style="font:400 11px/1.9 'IBM Plex Mono',monospace;color:#98A5BA">Archivo 600 — headings, -.02em<br>Archivo 400/500 — body, UI<br>IBM Plex Mono 400/500 — URLs, slugs, labels</div>
+</div>
+<div>
+<div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A97AC;margin-bottom:12px">Geometry</div>
+<div style="font:400 11px/1.9 'IBM Plex Mono',monospace;color:#98A5BA">spacing — 8px scale<br>radius — 6 / 9 / 10 / 12 / 14<br>grid — 32px dots, fades below hero</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1600,&quot;height&quot;:1000},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;cyan-indigo&quot;,&quot;mint-teal&quot;,&quot;amber-rose&quot;,&quot;violet-indigo&quot;,&quot;sky-slate&quot;,&quot;lime-cyan&quot;],&quot;default&quot;:&quot;cyan-indigo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;}}">
+const TAKEN = ['alice','john','sam','dev','me','portfolio','alex','chris'];
+const RESERVED = ['admin','api','app','www','status','docs','blog','mail','help','openfolio','support','static'];
+
+const SURFACE = 'inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.06),0 18px 40px -18px rgba(0,0,0,.9)';
+const SURFACE_SEL = 'inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(127,225,242,.45),0 0 0 4px rgba(46,211,233,.10),0 18px 40px -18px rgba(0,0,0,.9)';
+const CTA = 'inset 0 1px 0 rgba(255,255,255,.38),0 0 0 1px rgba(46,211,233,.35),0 12px 28px -8px rgba(47,120,233,.6)';
+const CTA_HOVER = 'inset 0 1px 0 rgba(255,255,255,.48),0 0 0 1px rgba(46,211,233,.5),0 18px 40px -8px rgba(47,120,233,.75)';
+const CTA_PRESS = 'inset 0 2px 5px rgba(2,6,16,.45),0 0 0 1px rgba(46,211,233,.3),0 4px 12px -6px rgba(47,120,233,.5)';
+const SEC = 'inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.07),0 10px 24px -12px rgba(0,0,0,.8)';
+const SEC_HOVER = 'inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(255,255,255,.12),0 20px 44px -14px rgba(0,0,0,.9)';
+const SEC_PRESS = 'inset 0 2px 5px rgba(2,6,16,.5),0 0 0 1px rgba(255,255,255,.07)';
+const DISABLED = 'inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(255,255,255,.05)';
+const FILL = 'linear-gradient(135deg,#2ED3E9,#3F63EE)';
+const SURF_BG = 'linear-gradient(135deg,#161E2C,#0C1119)';
+
+class Component extends DCLogic {
+  state = {
+    heroSlug: '', heroStatus: 'idle',
+    claimed: '', step: 0,
+    obName: 'Alice Nakamura', obSlug: '', obStatus: 'idle',
+    preset: 'swe', accent: null, theme: 'dark', font: 0
+  };
+
+  componentWillUnmount() { clearTimeout(this._t1); clearTimeout(this._t2); }
+
+  resolve(v) {
+    if (!v) return 'idle';
+    if (RESERVED.indexOf(v) > -1) return 'reserved';
+    if (TAKEN.indexOf(v) > -1) return 'taken';
+    if (v.length < 3) return 'short';
+    return 'available';
+  }
+
+  edit(which, raw) {
+    const v = (raw || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    const key = which === 'hero' ? 'heroSlug' : 'obSlug';
+    const sk = which === 'hero' ? 'heroStatus' : 'obStatus';
+    const timer = which === 'hero' ? '_t1' : '_t2';
+    this.setState({ [key]: v, [sk]: v ? 'checking' : 'idle' });
+    clearTimeout(this[timer]);
+    this[timer] = setTimeout(() => this.setState({ [sk]: this.resolve(v) }), 650);
+  }
+
+  msg(status, slug) {
+    switch (status) {
+      case 'checking': return ['Checking availability…', '#A9B5C8'];
+      case 'available': return ['Available — yours for the next 30 minutes.', '#6FE3B0'];
+      case 'taken': return ['Taken — try ' + (slug || 'alice') + '-dev', '#FF8F86'];
+      case 'reserved': return ['Reserved', '#FF8F86'];
+      case 'short': return ['At least 3 characters.', '#FF8F86'];
+      default: return ['Lowercase letters, numbers and hyphens.', '#98A5BA'];
+    }
+  }
+
+  ring(status) {
+    if (status === 'available') return 'rgba(111,227,176,.55)';
+    if (status === 'taken' || status === 'reserved' || status === 'short') return 'rgba(255,143,134,.55)';
+    if (status === 'checking') return 'rgba(46,211,233,.55)';
+    return 'rgba(255,255,255,.09)';
+  }
+
+  renderVals() {
+    const s = this.state;
+    const accent = s.accent || this.props.accent || 'cyan-indigo';
+    const A = {
+      'cyan-indigo': { fill: FILL, ink: '#2E86D8', light: '#5FD9EE', label: 'oklch(0.80 0.13 215) → oklch(0.58 0.20 258)' },
+      'mint-teal': { fill: 'linear-gradient(135deg,#6FE3B0,#1E9E8A)', ink: '#12806C', light: '#6FE3B0', label: 'oklch(0.86 0.13 165) → oklch(0.62 0.12 185)' },
+      'amber-rose': { fill: 'linear-gradient(135deg,#F7C46C,#E4645E)', ink: '#B4473F', light: '#F7C46C', label: 'oklch(0.85 0.12 82) → oklch(0.65 0.17 25)' },
+      'violet-indigo': { fill: 'linear-gradient(135deg,#B08CF8,#4F46E5)', ink: '#5B45C9', light: '#B08CF8', label: 'oklch(0.75 0.16 300) → oklch(0.52 0.24 272)' },
+      'sky-slate': { fill: 'linear-gradient(135deg,#8FC4F0,#4A6B8A)', ink: '#3B5F7E', light: '#8FC4F0', label: 'oklch(0.80 0.09 245) → oklch(0.52 0.06 250)' },
+      'lime-cyan': { fill: 'linear-gradient(135deg,#C9E86A,#2ED3E9)', ink: '#5C7A16', light: '#C9E86A', label: 'oklch(0.89 0.16 118) → oklch(0.80 0.13 215)' }
+    };
+    const cur = A[accent] || A['cyan-indigo'];
+
+    const heroOk = s.heroStatus === 'available';
+    const [heroMsg, heroMsgColor] = this.msg(s.heroStatus, s.heroSlug);
+    const [obMsg, obMsgColor] = this.msg(s.obStatus, s.obSlug);
+    const obOk = s.obStatus === 'available' || (s.obStatus === 'idle' && !!s.obSlug);
+    const lift = n => s.step === n
+      ? '0 0 0 1px rgba(127,225,242,.6),0 0 0 5px rgba(46,211,233,.14),0 44px 90px -30px rgba(0,0,0,.95)'
+      : '0 0 0 1px rgba(255,255,255,.07),0 40px 90px -30px rgba(0,0,0,.9)';
+
+    return {
+      heroSlug: s.heroSlug,
+      heroChecking: s.heroStatus === 'checking',
+      heroMsg, heroMsgColor,
+      heroRing: this.ring(s.heroStatus),
+      claimBg: heroOk ? FILL : 'linear-gradient(135deg,#1A2231,#11161F)',
+      claimColor: heroOk ? '#05080F' : '#6E7A8E',
+      claimShadow: heroOk ? CTA : DISABLED,
+      onHeroInput: e => this.edit('hero', e.target.value),
+      onClaim: () => { if (heroOk) this.setState({ claimed: s.heroSlug, obSlug: s.heroSlug, obStatus: 'available', step: 1 }); },
+
+      claimedSlug: s.claimed || 'alice-nakamura',
+      ring4: lift(1), ring5: lift(2), ring6: lift(3),
+      onSignIn: () => this.setState({ step: 2 }),
+      onFinish: () => { if (obOk) this.setState({ claimed: s.obSlug || s.claimed, step: 3 }); },
+      onAdmin: () => this.setState({ step: 0 }),
+
+      obName: s.obName,
+      onObName: e => this.setState({ obName: e.target.value }),
+      obSlug: s.obSlug || 'alice-nakamura',
+      onObSlug: e => this.edit('ob', e.target.value),
+      obChecking: s.obStatus === 'checking',
+      obMsg: s.obStatus === 'idle' && !s.obSlug ? 'Carried over from the page you came from.' : obMsg,
+      obMsgColor: s.obStatus === 'idle' && !s.obSlug ? '#98A5BA' : obMsgColor,
+      obRing: this.ring(s.obStatus === 'idle' && s.obSlug ? 'available' : s.obStatus),
+      finishBg: obOk ? FILL : 'linear-gradient(135deg,#1A2231,#11161F)',
+      finishColor: obOk ? '#05080F' : '#6E7A8E',
+      finishShadow: obOk ? CTA : DISABLED,
+
+      accentFill: cur.fill, accentInk: cur.ink, accentLight: cur.light, accentLabel: cur.label,
+      accents: Object.keys(A).map(k => ({
+        fill: A[k].fill,
+        ring: accent === k
+          ? 'inset 0 1px 0 rgba(255,255,255,.35),0 0 0 2px #080B14,0 0 0 4px rgba(127,225,242,.7)'
+          : 'inset 0 1px 0 rgba(255,255,255,.28),0 0 0 1px rgba(255,255,255,.10)',
+        pick: () => this.setState({ accent: k })
+      })),
+      themeModes: ['Light', 'Dark', 'System'].map(label => {
+        const on = s.theme === label.toLowerCase();
+        return {
+          label,
+          bg: on ? 'linear-gradient(135deg,#243049,#161E2C)' : 'transparent',
+          fg: on ? '#EDF1F8' : '#A9B5C8',
+          shadow: on ? 'inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.08)' : 'none',
+          pick: () => this.setState({ theme: label.toLowerCase() })
+        };
+      }),
+      fontPairs: [
+        ['Archivo + IBM Plex Mono', 'grotesk'],
+        ['Source Serif + IBM Plex Mono', 'serif'],
+        ['Public Sans + JetBrains Mono', 'neutral']
+      ].map(([label, note], i) => ({
+        label, note,
+        bg: s.font === i ? 'linear-gradient(135deg,#1B2739,#0E131D)' : SURF_BG,
+        shadow: s.font === i ? SURFACE_SEL : 'inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(255,255,255,.06)',
+        pick: () => this.setState({ font: i })
+      })),
+
+      sectionTypes: [
+        ['Hero', 'Name, role, a short intro', 1], ['Projects', 'Case studies with stack and outcomes', 1],
+        ['Skills', 'Grouped by language, tool, practice', 1], ['Contact', 'Email and profile links', 1],
+        ['Experience', 'Roles, dates, what you shipped', 0], ['Education', 'Degrees and coursework', 0],
+        ['Achievements', 'Awards and verified badges', 0], ['Trainings', 'Courses and certifications', 0],
+        ['Writing', 'Posts pulled from Medium or RSS', 0], ['Open source', 'Repos, stars, commit activity', 0],
+        ['Talks', 'Conference and meetup sessions', 0], ['Testimonials', 'Quotes you paste in yourself', 0],
+        ['Gallery', 'Screenshots and interface shots', 0]
+      ].map(([name, desc, on]) => ({
+        name, desc, on: !!on,
+        bg: on ? 'linear-gradient(135deg,#17253A,#0C1220)' : SURF_BG,
+        shadow: on
+          ? 'inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(127,225,242,.32),0 14px 32px -16px rgba(0,0,0,.9)'
+          : 'inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(255,255,255,.06),0 14px 32px -18px rgba(0,0,0,.85)',
+        tag: on ? 'preset' : 'off',
+        tagColor: on ? '#7FE1F2' : '#6E7A8E'
+      })),
+
+      skills: ['TypeScript', 'React', 'Next.js', 'Vite', 'Playwright', 'WCAG 2.2', 'Style Dictionary', 'OpenTelemetry'],
+
+      exProjects: [
+        { name: 'Aperture design system', blurb: 'Consolidated forty product surfaces onto one component set, with tokens generated from a single source and visual regression on every PR.', stack: 'TypeScript · React · Radix · Style Dictionary · Chromatic', m1: '118 → 44 components', m2: 'Adopted by 6 squads' },
+        { name: 'Checkout rewrite', blurb: 'Moved a five-step legacy flow to React Server Components and cut the client bundle to what the interactions actually need.', stack: 'Next.js · RSC · Stripe Elements · Playwright', m1: 'LCP 3.4s → 1.1s', m2: 'JS shipped 412kb → 96kb' },
+        { name: 'tsx-lens', blurb: 'Open-source CLI that maps prop drilling and dead exports across a React codebase using the TypeScript compiler API.', stack: 'TypeScript compiler API · Node · Vitest', m1: '1.2k stars · 38 contributors', m2: 'Runs in 9 internal repos' }
+      ],
+
+      integrations: [
+        { mark: 'GH', name: 'GitHub', desc: 'Pulls repo metadata, stars and commit activity into your projects and open-source sections, and keeps them current.', fallback: 'Or enter repos and numbers by hand.' },
+        { mark: 'CR', name: 'Credly', desc: 'Pulls your verified badges into achievements, with the issuer and issue date carried over.', fallback: 'Or add achievements manually.' },
+        { mark: 'RS', name: 'Medium / RSS', desc: 'Pulls recent posts from any Medium profile or RSS feed into your writing section.', fallback: 'Or paste post titles and links.' }
+      ],
+
+      steps: [
+        { n: '1', title: 'Edit', body: 'Fill sections in the admin panel. Your live page does not move while you work, so half-written drafts stay yours.', tag: 'private' },
+        { n: '2', title: 'Preview', body: 'See exactly what a visitor gets, rendered the same way, before anyone else can reach it.', tag: 'same renderer as production' },
+        { n: '3', title: 'Publish', body: 'One button. The page at your address updates within 60 seconds, and you can unpublish just as fast.', tag: 'live in under a minute' }
+      ],
+
+      faqs: [
+        { q: 'What does it cost?', a: 'Nothing. There is one free tier, no billing and no plans to choose between — which is why there is no pricing page on this site.' },
+        { q: 'Can I use my own domain?', a: 'No. Every portfolio lives at your-slug.openfolio.com and custom domains are not supported. If that is a dealbreaker, this is the wrong tool for you and we would rather you knew now.' },
+        { q: 'Who owns what I put in?', a: 'You do. The writing, screenshots and links stay yours. Delete your account and the page comes off the web with it.' },
+        { q: 'Do I need to write code?', a: 'No. Everything is a form in the admin panel. The layout is built and maintained for you — the only code involved is whatever you write about.' },
+        { q: 'Can I unpublish?', a: 'Yes, at any time. Unpublishing takes the page offline and leaves your draft untouched, so you can bring it back later without rebuilding it.' }
+      ],
+
+      presets: [
+        ['swe', 'Software engineer', 'The default. Enough to look finished the day you publish.', 'hero · projects · skills · contact'],
+        ['blank', 'Blank', 'Nothing enabled. Build the page section by section yourself.', 'no sections enabled'],
+        ['full', 'Everything', 'All thirteen on. Empty ones stay hidden until you fill them.', 'all 13 section types']
+      ].map(([id, name, desc, sections]) => {
+        const on = s.preset === id;
+        return {
+          name, desc, sections,
+          bg: on ? 'linear-gradient(135deg,#1B2739,#0E131D)' : SURF_BG,
+          shadow: on ? SURFACE_SEL : SURFACE,
+          dot: on ? '✓' : '',
+          dotBg: on ? FILL : 'linear-gradient(135deg,#222C3E,#141A24)',
+          dotShadow: on ? 'inset 0 1px 0 rgba(255,255,255,.4)' : 'inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.12)',
+          pick: () => this.setState({ preset: id })
+        };
+      }),
+
+      buttonStates: [
+        { label: 'Primary · rest', text: 'Claim', bg: FILL, fg: '#05080F', shadow: CTA, pad: '18px 0', spec: 'fill  135deg cyan → indigo\nhi    inset 0 1px 0 #fff/.38\nring  0 0 0 1px cyan/.35\nglow  0 12px 28px -8px #2F78E9/.60' },
+        { label: 'Primary · hover', text: 'Claim', bg: 'linear-gradient(135deg,#4ADCEF,#5375F4)', fg: '#05080F', shadow: CTA_HOVER, pad: '14px 0 22px', spec: 'fill  +4% lightness\nhi    inset 0 1px 0 #fff/.48\nring  0 0 0 1px cyan/.50\nglow  0 18px 40px -8px #2F78E9/.75\nlift  translateY(-2px)' },
+        { label: 'Primary · pressed', text: 'Claim', bg: 'linear-gradient(135deg,#25B9CE,#3553D4)', fg: '#05080F', shadow: CTA_PRESS, pad: '20px 0 16px', spec: 'fill  -6% lightness\nhi    removed\ninner inset 0 2px 5px #020610/.45\nglow  0 4px 12px -6px #2F78E9/.50\nsink  translateY(+1px)' },
+        { label: 'Secondary · rest', text: 'Continue with Google', bg: 'linear-gradient(135deg,#1C2434,#111722)', fg: '#EDF1F8', shadow: SEC, pad: '18px 0', spec: 'fill  135deg surface\nhi    inset 0 1px 0 #fff/.08\nring  0 0 0 1px #fff/.07\nshdw  0 10px 24px -12px #000/.80\nglow  none' },
+        { label: 'Secondary · hover', text: 'Continue with Google', bg: 'linear-gradient(135deg,#232D40,#151C29)', fg: '#FFFFFF', shadow: SEC_HOVER, pad: '14px 0 22px', spec: 'fill  +5% lightness\nhi    inset 0 1px 0 #fff/.14\nring  0 0 0 1px #fff/.12\nshdw  0 20px 44px -14px #000/.90\nlift  translateY(-2px)' },
+        { label: 'Secondary · pressed', text: 'Continue with Google', bg: 'linear-gradient(135deg,#131A26,#0C111A)', fg: '#C6D0DF', shadow: SEC_PRESS, pad: '20px 0 16px', spec: 'fill  -5% lightness\nhi    removed\ninner inset 0 2px 5px #020610/.50\nring  0 0 0 1px #fff/.07\nsink  translateY(+1px)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
