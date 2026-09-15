@@ -3,8 +3,8 @@ import { Icon } from './Icon';
 import { Input, type InputSize, type InputTone } from './Input';
 
 /**
- * `taken` and `reserved` are built but not reachable from this app until
- * §10.3 Q4 is resolved; this component calls nothing.
+ * `taken` and `reserved` are built but not reachable from this app: no
+ * unauthenticated slug lookup exists (SRS §10.3 Q4); this component calls nothing.
  */
 export type SlugState = 'idle' | 'invalid' | 'checking' | 'available' | 'taken' | 'reserved';
 
@@ -30,7 +30,7 @@ const messageTones: Record<SlugState, string> = {
 interface SlugInputProps {
   /** Accessible name; visually hidden. */
   label: string;
-  /** Fixed domain suffix, e.g. ".openfolio.com". */
+  /** Fixed domain suffix, e.g. ".openfolio.site". */
   suffix: string;
   value: string;
   onChange: (value: string) => void;

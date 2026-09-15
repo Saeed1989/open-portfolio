@@ -1,5 +1,5 @@
 // Client-side slug format check only. Availability and the reserved list
-// (FR-DAT-1) are decided by the auth surface, not here (§10.3 Q4).
+// (FR-DAT-1) are decided by admin behind a session (SRS §7.2), not here.
 
 export const SLUG_MIN_LENGTH = 3;
 export const SLUG_MAX_LENGTH = 39;

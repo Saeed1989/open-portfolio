@@ -26,7 +26,7 @@ const sizes: Record<BrowserFrameSize, { frame: string; chrome: string; url: stri
 interface BrowserFrameProps {
   /** Highlighted subdomain in the address bar. */
   slug: string;
-  /** Rest of the host, e.g. ".openfolio.com". */
+  /** Rest of the host, e.g. ".openfolio.site". */
   host: string;
   /** The frame is illustrative, so it is exposed as one image with this name. */
   label: string;
