@@ -1,6 +1,6 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.5 (draft) · **Date** 11 September 2026
+**Version** 0.6 (draft) · **Date** 15 September 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
 
 ---
@@ -19,7 +19,7 @@ Where the business document says "the owner decides X at launch", this specifica
 
 - Multi-tenant account creation via OAuth
 - Admin panel for content authoring, section toggling, and theming
-- Server-rendered public portfolio at `{slug}.site.com`
+- Server-rendered public portfolio at `{slug}.openfolio.site`
 - Thirteen section types, generic in structure, shipped with a software-engineering preset
 - GitHub and RSS integrations with mandatory manual fallback
 - Browser-embedded GitHub stat cards and Credly badges, stored as URLs rather than synced
@@ -41,7 +41,7 @@ Where the business document says "the owner decides X at launch", this specifica
 | **Portfolio** | The complete configured document for a tenant — sections, content, theme, SEO. |
 | **Section** | An instance of a section type within a portfolio, with its own enabled flag, order, and content. |
 | **Section type** | One of thirteen declared kinds (`hero`, `projects`, `skills`, …), defined in the section registry. |
-| **Slug** | The tenant's subdomain label. `alice` → `alice.site.com`. |
+| **Slug** | The tenant's subdomain label. `alice` → `alice.openfolio.site`. |
 | **Draft** | The working copy edited in admin. Not publicly visible. |
 | **Published** | The immutable-until-next-publish copy served to the public. |
 | **Preset** | A named starting configuration — which sections are enabled, with what defaults. |
@@ -62,24 +62,27 @@ Priority follows the source document: **Must** = launch blocker, **Should** = v1
 
 | Component | Technology | Exposure | Auth |
 |---|---|---|---|
-| `api` | NestJS | `api.site.com` | Two surfaces — see below |
-| `admin` | Next.js | `admin.site.com` | OAuth session required |
-| `portfolio` | Next.js (SSR) | `*.site.com` wildcard | None — fully public |
+| `api` | NestJS | `api.openfolio.site` | Two surfaces — see below |
+| `admin` | Next.js | `admin.openfolio.site` | OAuth session required |
+| `portfolio` | Next.js (SSR) | `*.openfolio.site` wildcard | None — fully public |
+| `www` | Static client-rendered SPA | `openfolio.site` (apex) | None — fully public |
 | `db` | MongoDB | Internal | — |
 | `storage` | S3-compatible object store | CDN-fronted | Public read, signed write |
 
-A fourth workspace, `packages/registry`, is a shared library rather than a deployable. It compiles to dual ESM/CJS with four entrypoints — descriptors, validation, the rich-text sanitiser configuration, and the render-tree builder (FR-REG-9) — so that `api` (CJS, built with `tsc`) and the two Next.js apps consume prebuilt output rather than package source. It imports no framework, no ORM, and no React, and reads no environment: descriptors are data, and validators and the builder are pure functions. Presentation belonging to a section type — icons, components, styling — lives in the consuming app, keyed by the descriptor's identifier.
+`www` is the marketing site at the apex domain and the entry point to sign-up. It is built to static files and served as built: it holds no session, makes no call to `api` or to any other service, and renders no portfolio data. Its calls to action are plain links to `admin.openfolio.site`, where sign-in (FR-AUTH-1) and then the branch of FR-AUTH-7 take over. It is client-rendered, and whether that is sufficient is open (§10.3 Q10).
+
+A further workspace, `packages/registry`, is a shared library rather than a deployable. It compiles to dual ESM/CJS with four entrypoints — descriptors, validation, the rich-text sanitiser configuration, and the render-tree builder (FR-REG-9) — so that `api` (CJS, built with `tsc`) and the two Next.js apps consume prebuilt output rather than package source. It imports no framework, no ORM, and no React, and reads no environment: descriptors are data, and validators and the builder are pure functions. Presentation belonging to a section type — icons, components, styling — lives in the consuming app, keyed by the descriptor's identifier.
 
 A single API server hosts **two logically separate surfaces**. **The admin surface and the public surface are two NestJS modules inside the one `api` deployable, not two services.** They share a process, a database connection pool, and a release, so neither can be deployed, scaled, or restarted without the other. That cost is accepted because the public surface sits behind the ISR cache (§2.2) and sees little traffic of its own, so a separate service would buy little.
 
-- **Public surface** (`/public/*`) — unauthenticated, read-only, returns published content only. Tenant is resolved from the requested slug. Returns public-safe configuration — theme, SEO, the analytics measurement id or Plausible domain, and the ordered list of sections to render — because each of those is visible in the rendered page's source whether the API returns it or not. Never returns draft content, disabled sections, integration credentials, sync status or `lastError`, a tenant's user id, or any tenant's account email address — the address held in `users`, as distinct from a contact address the tenant chooses to publish in `contact`, which is content. That configuration never leaves the admin surface.
-- **Admin surface** (`/admin/*`) — session-authenticated, read/write. Tenant is resolved from the session, never from a request parameter.
+- **Public surface** (`/public/*`) — unauthenticated, read-only, returns published content only. The portfolio is resolved from the requested slug. Returns public-safe configuration — theme, SEO, the analytics measurement id or Plausible domain, and the ordered list of sections to render — because each of those is visible in the rendered page's source whether the API returns it or not. Never returns draft content, disabled sections, integration credentials, sync status or `lastError`, a tenant's user id, or any tenant's account email address — the address held in `users`, as distinct from a contact address the tenant chooses to publish in `contact`, which is content. That configuration never leaves the admin surface.
+- **Admin surface** (`/admin/*`) — session-authenticated, read/write. The tenant is resolved from the session, and the tenant's portfolio, if one exists, from the tenant — never from a request parameter.
 
 The two surfaces use separate controllers, separate guards, and separate response DTOs. No DTO is shared between them.
 
 ### 2.2 Request flow — public page view
 
-1. Request arrives at `alice.site.com`.
+1. Request arrives at `alice.openfolio.site`.
 2. `portfolio` middleware reads the `Host` header, extracts `alice`, rejects reserved labels.
 3. If a valid ISR cache entry exists for that slug, it is served. No API call, no database read.
 4. Otherwise `portfolio` calls `GET /public/portfolios/alice` server-side.
@@ -176,11 +179,13 @@ The business document is deliberately software-engineering-weighted — "tech st
 
 **FR-REG-5 (Must)** — Section *types* and their field schemas are domain-neutral in mechanism. **FR-REG-6 (Must)** — The system ships a `software-engineer` preset that enables Hero, Projects, Skills, Contact and sets field labels, placeholder text, and skill categories (Backend, Frontend, Database, DevOps, Tools & Practices) to the source document's values. **FR-REG-7 (Could)** — Additional presets (designer, writer, researcher) reuse the same types with different labels and category defaults.
 
-A tenant selects a preset once during onboarding. It only sets initial state; everything remains editable afterwards.
+A tenant selects a preset once, on the portfolio-creation screen (FR-AUTH-5). It only sets initial state; everything remains editable afterwards.
 
 **FR-REG-8 (Must)** — A field descriptor's `required` flag is enforced at publish, not at save. Draft writes validate shape, type, and enumeration only, so a tenant may save incomplete content per §2.4. `validateForPublish` additionally enforces `required`, collection `min` and `max`, and cross-field rules, and reports every failure at once per FR-PUB-6.
 
 **FR-REG-9 (Must)** — The registry package exports a pure builder that takes a content tree in draft shape, with the synced payload of each connected provider, and returns the render shape `{ config, data }` of §7.1. It removes sections with `enabled: false` and items with `published: false`; merges each synced payload beneath the tenant's manual values (FR-INT-4); removes every section whose merged content satisfies its descriptor's `emptyCondition`; and emits the survivors as `config.sections`, in ascending `order`, with their content under `data` keyed by type. It is the only code that produces the shape. `api` calls it at publish and at each fold of synced data (§2.3, FR-INT-15), and `admin` calls it for the live preview (FR-CFG-5) — one function deciding for all three, so the preview cannot show a section the published page omits. It is generic over descriptors: a section type added under FR-REG-3 needs no change to it.
+
+**FR-REG-10 (Must)** — The preset is applied at creation by the registry package, not by `api`. The package exports, beside the builder of FR-REG-9, a pure function that takes a preset id and returns the initial draft tree: one entry in `sections` per declared section type, enabled, ordered, and defaulted as the preset sets, with the preset's theme and SEO defaults and `analytics: null`. `api` calls it once, inside `POST /admin/portfolio` (§7.2), and stores its output as `draft`, with `presetId` and the current `REGISTRY_VERSION`. The reason is FR-REG-3: a preset is registry data expressed in section types, and if `api` assembled the draft from it, adding a section type or a preset would require a change to `api`. Like the builder, the function reads no environment and touches no database.
 
 ---
 
@@ -284,17 +289,18 @@ _id, portfolioId, userId, action, targetPath, timestamp, ipHash
 | ID | Priority | Requirement |
 |---|---|---|
 | FR-AUTH-1 | Must | Sign-in is via GitHub OAuth or Google OAuth. No password is stored. |
-| FR-AUTH-2 | Must | First successful sign-in creates a user and an unpublished portfolio, then routes to onboarding. |
-| FR-AUTH-3 | Must | Sessions are httpOnly, secure, SameSite=Lax cookies scoped to `admin.site.com`, expiring after 30 days idle. |
+| FR-AUTH-2 | Must | First successful sign-in creates a user and nothing else. It creates no portfolio and does not route to the creation screen itself; where the tenant goes next is decided by FR-AUTH-7. |
+| FR-AUTH-3 | Must | Sessions are httpOnly, secure, SameSite=Lax cookies scoped to `admin.openfolio.site`, expiring after 30 days idle. |
 | FR-AUTH-4 | Must | If a GitHub account is used to sign in, its OAuth token is reused for the GitHub integration rather than requiring a second authorisation. |
-| FR-AUTH-5 | Should | Onboarding collects display name, desired slug, and preset in a single step. Slug availability is checked live. |
+| FR-AUTH-5 | Should | The portfolio-creation screen, reached when an authenticated tenant has no portfolio (FR-AUTH-7), collects display name, desired slug, and preset in a single step and submits them to `POST /admin/portfolio`. Slug availability is checked live, through the session-authenticated availability endpoint (§7.2). |
 | FR-AUTH-6 | Should | A tenant can delete their account. Deletion removes the portfolio, releases the slug after a 30-day hold, and purges media within 7 days. |
+| FR-AUTH-7 | Must | Once authenticated — at sign-in, or on a later visit with a valid session — `admin` branches on whether the tenant has a portfolio, as reported by `GET /admin/me`: to the dashboard if one exists, to the creation screen (FR-AUTH-5) if not. A portfolio is created only by `POST /admin/portfolio`, which requires a session, and at most once per tenant: `portfolios.userId` carries a unique index (§5.2), so a second creation, concurrent or not, is refused (§7.2). |
 
 ### 6.2 Tenancy and addressing — `FR-TEN`
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-TEN-1 | Must | A published portfolio is served at `{slug}.site.com` over a wildcard DNS record and wildcard TLS certificate. |
+| FR-TEN-1 | Must | A published portfolio is served at `{slug}.openfolio.site` over a wildcard DNS record and wildcard TLS certificate. |
 | FR-TEN-2 | Must | Tenant identity for public requests derives solely from the `Host` header. |
 | FR-TEN-3 | Must | An unknown, unpublished, or suspended slug returns a branded 404 with `noindex`. It must not disclose whether the slug is registered. |
 | FR-TEN-4 | Must | Every admin data access is scoped by the portfolio id resolved from the session. A portfolio id supplied in a request body or path is ignored, never trusted. |
@@ -516,11 +522,13 @@ Project detail is delivered inside `data.projects`, modal-level fields included,
 ### 7.2 Admin (`/admin`, session-authenticated)
 
 ```
-GET   /admin/me
-GET   /admin/portfolio                       → full draft
+GET   /admin/me                              → the tenant; portfolio is null when none exists
+GET   /admin/slug-availability?slug=         → available | taken | reserved | invalid
+POST  /admin/portfolio                       → create, once per tenant
+GET   /admin/portfolio                       → full draft; 404 when no portfolio exists
 PATCH /admin/portfolio/theme
 PATCH /admin/portfolio/seo
-PATCH /admin/portfolio/slug
+PATCH /admin/portfolio/slug                  → change only; always triggers FR-DAT-2
 GET   /admin/portfolio/sections
 PATCH /admin/portfolio/sections/:type        → toggle, reorder, replace content
 POST  /admin/portfolio/sections/:type/items  → collection types
@@ -538,6 +546,18 @@ POST  /admin/publish
 POST  /admin/unpublish
 GET   /admin/link-health
 ```
+
+**Creation.** `POST /admin/portfolio` takes `{ name, slug, preset }` — the three fields of FR-AUTH-5, `preset` being a preset id. On success it creates the portfolio with `status: 'unpublished'`, `published: null`, and `draft` as returned by the registry's preset function (FR-REG-10), and responds `201` with the draft as `GET /admin/portfolio` returns it. On any failure nothing is written:
+
+- `422` with field-level errors (FR-API-4) for a malformed body, an unknown preset, a slug that fails format validation, or a slug on the reserved list of FR-DAT-1 (`slug_reserved`).
+- `409 portfolio_exists` when the tenant already has a portfolio. The unique index on `portfolios.userId` decides it, so two concurrent requests from one tenant create one portfolio. It takes precedence over every slug error.
+- `409 slug_taken`, as a field-level error on `slug`, when the slug belongs to another portfolio, is held in another portfolio's `slugHistory` (FR-DAT-2), or is in a deletion hold (FR-AUTH-6). The unique index on `slug` decides a race between two tenants, so a slug reported available a moment earlier can still collide at the write.
+
+**Slug availability.** `GET /admin/slug-availability?slug=` requires a session and is open to any tenant, with or without a portfolio. It answers `{ slug, status }`, where `status` is `invalid`, `reserved`, `taken` — by the same rules as `409 slug_taken` — or `available`. The answer is advisory; only the write decides. No unauthenticated slug lookup exists: §7.1 offers none, and FR-TEN-3's 404 discloses nothing.
+
+**A tenant with no portfolio.** `GET /admin/me` responds `200` with the tenant and `portfolio: null`; when a portfolio exists, `portfolio` is `{ slug, status }`. `admin` branches on this field (FR-AUTH-7). `GET /admin/portfolio` responds `404 portfolio_not_found`, and so does every other route above except `GET /admin/me`, `GET /admin/slug-availability`, and `POST /admin/portfolio`, since FR-TEN-4 has no portfolio id to scope them by.
+
+**Slug change.** `PATCH /admin/portfolio/slug` changes the slug of an existing portfolio and does nothing else. It never creates a portfolio or sets a first slug — that is `POST /admin/portfolio` — and with no portfolio it responds `404` as above. Every successful call is a change and triggers FR-DAT-2: the old slug enters `slugHistory` and its subdomain answers with a 301. A request naming the current slug is rejected with `422 slug_unchanged` rather than accepted as a no-op, so no success skips FR-DAT-2. The new slug is validated, and collides, exactly as at creation.
 
 **FR-API-3 (Must)** — No admin endpoint accepts a portfolio id or user id as a parameter. Scope comes from the session.
 
@@ -675,6 +695,8 @@ Every business requirement maps to at least one software requirement, or is reco
 | 18.6 | FR-CFG-7 |
 | 18.7 | FR-REG-1, FR-CFG-7 — every declared field is editable through generated admin forms, with no developer or agency involvement |
 
+FR-AUTH-7, FR-REG-10, and the `www` deployable (§2.1) trace to no business requirement. The business document describes the content of one portfolio, not how an account comes to hold one; like the rest of FR-AUTH, they originate in this specification.
+
 ---
 
 ## 10. Assumptions, deferred scope, and open questions
@@ -684,7 +706,7 @@ Every business requirement maps to at least one software requirement, or is reco
 1. One portfolio per tenant. Multiple portfolios per account would change `portfolios.userId` from a unique index to a plain one and add a selection step throughout admin — cheap to add later, but not assumed now.
 2. English-only content and UI in v1. No field is modelled as a translation map.
 3. Object storage is S3-compatible and CDN-fronted.
-4. The operator controls a wildcard DNS record and wildcard TLS certificate for `*.site.com`.
+4. The operator controls a wildcard DNS record and wildcard TLS certificate for `*.openfolio.site`.
 5. Free tier only. No billing, no plan-based feature gating.
 
 ### 10.2 Deferred, with reasoning
@@ -701,9 +723,10 @@ Every business requirement maps to at least one software requirement, or is reco
 1. **Résumé hosting.** Requirement 1.4 offers résumé download as a CTA. Is the file uploaded to the platform (adding a PDF path to media handling), or linked externally? Currently specified as uploadable, at 10 MB.
 2. **Contact form.** Requirement 16.2 tracks a "contact form" goal, but no section in the source document defines one — §4 lists links only. Is a form in scope? If so it needs its own section type, spam protection, and an email delivery dependency.
 3. **Project detail routing — resolved (0.3).** The modal is chosen over the dedicated page. Clicking a card opens an in-page dialog holding the full case study; there is no `/{slug}/projects/{id}` route and no URL change. The cost is accepted: project detail is not deep-linkable and not separately crawlable, and the portfolio page remains the only indexable surface. In exchange the system carries no additional routes and no additional sitemap entries. FR-SEC-PROJ-6 is rewritten accordingly, FR-SEC-PROJ-10 and 13 specify the dialog's behaviour, and the now-unnecessary `GET /public/portfolios/:slug/projects/:projectId` endpoint is removed from §7.1 in the same revision.
-4. **Slug policy.** Are slugs first-come-first-served, or is there a reservation process for names matching well-known people or trademarks?
+4. **Slug policy — enumeration resolved (0.6), reservation open.** No unauthenticated slug lookup exists anywhere: availability is answered only by the session-authenticated endpoint of §7.2, §7.1 offers no equivalent, and FR-TEN-3's 404 does not disclose whether a slug is registered. Still open: are slugs first-come-first-served, or is there a reservation process for names matching well-known people or trademarks?
 5. **Public directory.** Should published portfolios be discoverable through a platform-level index, or reachable only by direct URL?
 6. **Section ordering freedom.** FR-CFG-3 allows arbitrary reordering, but requirement 6.3 states Education belongs below work and projects. Is the ordering fully free, or does the layout impose constraints the tenant cannot override?
 7. **Trainings vs. achievements.** `trainings` inherits the Achievements schema verbatim, including its `type` enum — certification / award / ranking / hackathon. That enum does not describe a training well; the natural values are course, workshop, bootcamp, programme, and business §11a.2 does not ask for a type at all. Three options: (a) two section types with divergent `type` enums; (b) two section types with `type` dropped from Trainings altogether; (c) one collapsed type in which `type` distinguishes a training from an achievement, at the cost of the separate heading and the independent enable toggle. Option (a) is specified for now, with the enum unchanged, pending a decision.
 8. **Certification overlap.** A certification is both an achievement (11.1) and the outcome of a training. Business §11a.4 states that a credential is listed once and never in both sections, but does not say how that is upheld: admin needs help text steering the tenant to one section or the other, or entries will be duplicated.
 9. **Testimonials from LinkedIn.** Requirement 8.3 says testimonials "can be pulled from LinkedIn", but 13.4 scopes the LinkedIn import to experience and education only, and FR-INT-10 follows 13.4. The two business requirements disagree with each other. Either 13.4 widens to cover recommendations — which changes the import's scope, its permission requirements, and depends on what LinkedIn actually exposes — or 8.3's clause is dropped and testimonials stay manual. Specified as manual for now, following 13.4. This one belongs to the business document rather than to this specification.
+10. **Apex site rendering.** `www` (§2.1) is client-rendered, and nothing guarantees its content reaches a crawler or link unfurler that does not run JavaScript: FR-PUB-4 covers portfolio pages only. Three options: (a) accept client rendering — the page is marketing copy and the major search crawlers execute JavaScript, at the cost of empty previews wherever one does not; (b) prerender to static HTML at build time — `www` fetches nothing, so its output is fixed per build and it stays static files, at the cost of a prerender step and hydration; (c) extend FR-PUB-4, or add a requirement, to cover `www` with server-side rendering, which makes `www` a server rather than static files. Not decided.
