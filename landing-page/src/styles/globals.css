@@ -61,6 +61,12 @@
   --color-surface-to: oklch(0.176 0.018 259.7);
   --color-raised-from: oklch(0.26 0.032 263.8);
   --color-raised-to: oklch(0.204 0.024 262.3);
+  --color-raised-hover-from: oklch(0.297 0.037 262.8);
+  --color-raised-hover-to: oklch(0.226 0.028 262.5);
+  --color-raised-pressed-from: oklch(0.217 0.026 261);
+  --color-raised-pressed-to: oklch(0.177 0.02 261.9);
+  --color-selected-from: oklch(0.263 0.044 258.3);
+  --color-selected-to: oklch(0.184 0.03 265.8);
 
   /* ink */
   --color-text: oklch(0.957 0.01 261.8);
@@ -71,7 +77,11 @@
 
   /* accent */
   --color-accent-from: oklch(0.797 0.129 208.9);
-  --color-accent-to: oklch(0.558 0.213 267.7);
+  /* design #3F63EE (L 0.558) lifted to L 0.598 so on-accent ink passes AA at
+     the gradient's darkest point: 4.04:1 -> 4.79:1 */
+  --color-accent-to: oklch(0.598 0.213 267.7);
+  --color-accent-from-hover: oklch(0.826 0.123 207.6);
+  --color-accent-to-hover: oklch(0.638 0.193 267.7);
   --color-accent-ink: oklch(0.824 0.112 210.6);
   --color-accent-ink-strong: oklch(0.856 0.095 209.9);
   --color-on-accent: oklch(0.134 0.017 262.2);
@@ -86,15 +96,36 @@
   --color-border-strong: oklch(1 0 0 / 0.12);
   --color-highlight-on-accent: oklch(1 0 0 / 0.38);
 
-  /* elevation — top-edge highlight, hairline ring, drop shadow */
+  /* light preview frame (Theming section) */
+  --color-light-bg: oklch(1 0 0);
+  --color-light-chrome: oklch(0.96 0.005 258.3);
+  --color-light-text-muted: oklch(0.512 0.024 261.7);
+
+  /* elevation — top-edge highlight, hairline ring, drop shadow falling
+     bottom-right from the top-left light source */
   --shadow-lift-1:
     inset 0 1px 0 var(--color-border), 0 0 0 1px var(--color-border-subtle),
-    0 18px 40px -18px oklch(0 0 0 / 0.9);
+    6px 18px 40px -18px oklch(0 0 0 / 0.9);
   --shadow-lift-2:
     inset 0 1px 0 var(--color-border-strong), 0 0 0 1px var(--color-border),
-    0 32px 64px -20px oklch(0 0 0 / 0.95);
+    10px 32px 64px -20px oklch(0 0 0 / 0.95);
   /* design glow was #2F78E9, a third hue; drawn from accent-to instead */
-  --shadow-glow: 0 12px 28px -8px color-mix(in oklch, var(--color-accent-to) 60%, transparent);
+  --shadow-glow: 4px 12px 28px -8px color-mix(in oklch, var(--color-accent-to) 60%, transparent);
+  --shadow-glow-hover: 6px 18px 40px -8px color-mix(in oklch, var(--color-accent-to) 75%, transparent);
+  --shadow-glow-pressed: 1px 4px 12px -6px color-mix(in oklch, var(--color-accent-to) 50%, transparent);
+  --shadow-control: 3px 10px 24px -12px oklch(0 0 0 / 0.8);
+  --shadow-control-hover: 6px 20px 44px -14px oklch(0 0 0 / 0.9);
+  --shadow-field-accent:
+    0 0 0 4px color-mix(in oklch, var(--color-accent-from) 12%, transparent), var(--shadow-control);
+  --shadow-field-success:
+    0 0 0 4px color-mix(in oklch, var(--color-success) 12%, transparent), var(--shadow-control);
+  --shadow-field-danger:
+    0 0 0 4px color-mix(in oklch, var(--color-danger) 10%, transparent), var(--shadow-control);
+
+  --inset-shadow-highlight: inset 0 1px 0 var(--color-border);
+  --inset-shadow-highlight-strong: inset 0 1px 0 var(--color-border-strong);
+  --inset-shadow-highlight-accent: inset 0 1px 0 var(--color-highlight-on-accent);
+  --inset-shadow-pressed: inset 1px 2px 5px color-mix(in oklch, var(--color-on-accent) 50%, transparent);
 
   /* radius */
   --radius-xs: 0.25rem;
