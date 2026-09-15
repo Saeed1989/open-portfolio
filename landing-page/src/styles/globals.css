@@ -1,0 +1,243 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+ * Fonts — self-hosted, latin subset (no third-party request, FR-ANL-3 spirit)
+ * ------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Archivo';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/archivo-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/archivo-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/archivo-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+}
+
+/* ---------------------------------------------------------------------------
+ * Tokens — the only place colour, shadow, radius, type and spacing values live.
+ * Converted from the design's hex values (Stage 0 table). Tailwind's default
+ * palettes are cleared so nothing outside this list can be used.
+ * ------------------------------------------------------------------------- */
+@theme static {
+  --color-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --radius-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --tracking-*: initial;
+  --blur-*: initial;
+
+  /* ground */
+  --color-bg: oklch(0.151 0.02 269.2);
+  --color-bg-band: oklch(0.165 0.022 267.2);
+  --color-bg-sunken: oklch(0.173 0.018 263.9);
+
+  /* surfaces — 135deg, lit edge (from) top-left to shadow edge (to) */
+  --color-surface-from: oklch(0.234 0.03 261.3);
+  --color-surface-to: oklch(0.176 0.018 259.7);
+  --color-raised-from: oklch(0.26 0.032 263.8);
+  --color-raised-to: oklch(0.204 0.024 262.3);
+
+  /* ink */
+  --color-text: oklch(0.957 0.01 261.8);
+  --color-text-muted: oklch(0.77 0.03 259.6);
+  --color-text-subtle: oklch(0.719 0.034 260);
+  --color-text-label: oklch(0.673 0.035 260);
+  --color-text-disabled: oklch(0.577 0.034 260.7);
+
+  /* accent */
+  --color-accent-from: oklch(0.797 0.129 208.9);
+  --color-accent-to: oklch(0.558 0.213 267.7);
+  --color-accent-ink: oklch(0.824 0.112 210.6);
+  --color-accent-ink-strong: oklch(0.856 0.095 209.9);
+  --color-on-accent: oklch(0.134 0.017 262.2);
+
+  /* status */
+  --color-success: oklch(0.834 0.129 162.7);
+  --color-danger: oklch(0.768 0.137 25.6);
+
+  /* lines and highlights */
+  --color-border-subtle: oklch(1 0 0 / 0.06);
+  --color-border: oklch(1 0 0 / 0.09);
+  --color-border-strong: oklch(1 0 0 / 0.12);
+  --color-highlight-on-accent: oklch(1 0 0 / 0.38);
+
+  /* elevation — top-edge highlight, hairline ring, drop shadow */
+  --shadow-lift-1:
+    inset 0 1px 0 var(--color-border), 0 0 0 1px var(--color-border-subtle),
+    0 18px 40px -18px oklch(0 0 0 / 0.9);
+  --shadow-lift-2:
+    inset 0 1px 0 var(--color-border-strong), 0 0 0 1px var(--color-border),
+    0 32px 64px -20px oklch(0 0 0 / 0.95);
+  /* design glow was #2F78E9, a third hue; drawn from accent-to instead */
+  --shadow-glow: 0 12px 28px -8px color-mix(in oklch, var(--color-accent-to) 60%, transparent);
+
+  /* radius */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5625rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* spacing — 4px base; p-4 = 16px */
+  --spacing: 0.25rem;
+
+  /* type */
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.028em;
+  --text-display-sm: 2.1875rem;
+  --text-display-sm--line-height: 1.05;
+  --text-display-sm--letter-spacing: -0.028em;
+  --text-cta: 2.125rem;
+  --text-cta--line-height: 1.15;
+  --text-cta--letter-spacing: -0.02em;
+  --text-cta-sm: 1.5rem;
+  --text-cta-sm--line-height: 1.2;
+  --text-cta-sm--letter-spacing: -0.02em;
+  --text-heading: 1.875rem;
+  --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.02em;
+  --text-heading-sm: 1.3125rem;
+  --text-heading-sm--line-height: 1.2;
+  --text-heading-sm--letter-spacing: -0.02em;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.6;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.5;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.6;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.6;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.6;
+  --text-small: 0.75rem;
+  --text-small--line-height: 1.5;
+  --text-eyebrow: 0.6875rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1.4;
+
+  --tracking-wordmark: -0.01em;
+  --tracking-eyebrow: 0.1em;
+
+  --blur-field: 30px;
+  --blur-nav: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Background layers — base fill, dot grid, two blurred accent radials.
+ * Light source top-left: cyan field top-left, indigo field bottom-right.
+ * Children paint above both pseudo-elements via `isolation`.
+ * ------------------------------------------------------------------------- */
+
+/* hero: radials + dot grid fading out below the fold */
+@utility field-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--color-bg);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        circle 386px at 240px 100px,
+        color-mix(in oklch, var(--color-accent-from) 20%, transparent),
+        transparent
+      ),
+      radial-gradient(
+        circle 405px at calc(100% - 270px) calc(100% - 50px),
+        color-mix(in oklch, var(--color-accent-to) 22%, transparent),
+        transparent
+      );
+    filter: blur(var(--blur-field));
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(oklch(1 0 0 / 0.075) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(black 0%, black 48%, transparent 88%);
+  }
+}
+
+/* closing CTA: radials only, on the band fill */
+@utility field-cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--color-bg-band);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        circle 333px at 500px 10px,
+        color-mix(in oklch, var(--color-accent-from) 16%, transparent),
+        transparent
+      ),
+      radial-gradient(
+        circle 367px at calc(100% - 290px) calc(100% + 30px),
+        color-mix(in oklch, var(--color-accent-to) 18%, transparent),
+        transparent
+      );
+    filter: blur(var(--blur-field));
+  }
+}
