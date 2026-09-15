@@ -99,7 +99,9 @@
   /* light preview frame (Theming section) */
   --color-light-bg: oklch(1 0 0);
   --color-light-chrome: oklch(0.96 0.005 258.3);
+  --color-light-text: oklch(0.2 0.009 264.4);
   --color-light-text-muted: oklch(0.512 0.024 261.7);
+  --color-light-border: oklch(0.933 0.007 260.7);
 
   /* elevation — top-edge highlight, hairline ring, drop shadow falling
      bottom-right from the top-left light source */

@@ -1,16 +1,19 @@
 import type { ReactNode } from 'react';
 
-export type CardVariant = 'surface' | 'selected';
-export type CardSize = 'sm' | 'md';
+export type CardVariant = 'surface' | 'selected' | 'glass';
+export type CardSize = 'sm' | 'md' | 'bar';
 
 const variants: Record<CardVariant, string> = {
   surface: 'from-surface-from to-surface-to',
   selected: 'from-selected-from to-selected-to ring-1 ring-accent-ink-strong/30',
+  // translucent, blurred — the floating nav bar
+  glass: 'from-raised-from/92 to-surface-to/88 backdrop-blur-nav',
 };
 
 const sizes: Record<CardSize, string> = {
   sm: 'rounded-md p-4',
   md: 'rounded-xl p-6',
+  bar: 'h-13 rounded-lg px-3.5 md:h-15.5 md:rounded-xl md:px-5',
 };
 
 interface CardProps {

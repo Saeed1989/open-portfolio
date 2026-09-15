@@ -3,12 +3,14 @@
 import { useState, type ReactNode } from 'react';
 import { Badge } from '../components/ui/Badge';
 import { BrowserFrame } from '../components/ui/BrowserFrame';
-import { Button } from '../components/ui/Button';
+import { Button, ButtonLink } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Heading } from '../components/ui/Heading';
 import { Icon } from '../components/ui/Icon';
 import { Input } from '../components/ui/Input';
 import { Link } from '../components/ui/Link';
+import { List } from '../components/ui/List';
+import { Logo } from '../components/ui/Logo';
 import { SectionShell } from '../components/ui/SectionShell';
 import { SlugInput, type SlugState } from '../components/ui/SlugInput';
 import { Text, type TextSize, type TextTone } from '../components/ui/Text';
@@ -48,7 +50,9 @@ const colors = [
   'highlight-on-accent',
   'light-bg',
   'light-chrome',
+  'light-text',
   'light-text-muted',
+  'light-border',
 ];
 
 const radii = ['rounded-xs', 'rounded-sm', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-full'];
@@ -226,6 +230,87 @@ export function Styleguide() {
               <Input size="md" placeholder="Display name" disabled />
             </label>
           </div>
+        </Group>
+
+        <Group title="ButtonLink">
+          <Row>
+            <ButtonLink href="#buttonlink" size="sm">
+              Claim your address
+            </ButtonLink>
+            <ButtonLink href="#buttonlink" variant="secondary" size="md">
+              Secondary link
+            </ButtonLink>
+          </Row>
+        </Group>
+
+        <Group title="Logo">
+          <Row>
+            <Logo href="#logo" mark="O" name="openfolio" />
+          </Row>
+        </Group>
+
+        <Group title="Card · glass, bar">
+          <Card variant="glass" size="bar" className="flex items-center justify-between">
+            <Logo href="#logo" mark="O" name="openfolio" />
+            <Text as="span" size="small" tone="subtle" mono>
+              variant=glass size=bar
+            </Text>
+          </Card>
+        </Group>
+
+        <Group title="List · divided">
+          <div className="grid gap-6 md:grid-cols-3">
+            {(['none', 'between', 'all'] as const).map((divided) => (
+              <List key={divided} as="ul" divided={divided}>
+                <li className="py-3">
+                  <Text size="small" tone="subtle" mono>
+                    divided={divided}
+                  </Text>
+                </li>
+                <li className="py-3">
+                  <Text size="body-sm">Second row</Text>
+                </li>
+                <li className="py-3">
+                  <Text size="body-sm">Third row</Text>
+                </li>
+              </List>
+            ))}
+          </div>
+        </Group>
+
+        <Group title="Badge · swatch, cta">
+          <Row>
+            <Badge variant="swatch" />
+            <Badge variant="cta">Get in touch</Badge>
+          </Row>
+        </Group>
+
+        <Group title="Text · heading, semibold, light tones">
+          <Text size="heading" weight="semibold">
+            size heading · semibold
+          </Text>
+          <BrowserFrame slug="your-name" host=".openfolio.com" label="Light tones" tone="light" size="sm">
+            <div className="p-5">
+              <Text tone="light" weight="semibold">
+                tone light
+              </Text>
+              <Text size="small" tone="light-muted">
+                tone light-muted
+              </Text>
+              <List as="ul" divided="all" tone="light" className="mt-3">
+                <li className="py-2">
+                  <Text size="caption" tone="light">
+                    List tone light
+                  </Text>
+                </li>
+                <li className="py-2">
+                  <Text size="caption" tone="light">
+                    Second row
+                  </Text>
+                </li>
+              </List>
+            </div>
+          </BrowserFrame>
         </Group>
 
         <Group title="Heading">

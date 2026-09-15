@@ -19,17 +19,23 @@ const sizes: Record<ButtonSize, string> = {
 const variants: Record<ButtonVariant, string> = {
   primary:
     'from-accent-from to-accent-to text-on-accent inset-shadow-highlight-accent ring-accent-from/35 shadow-glow ' +
-    'enabled:hover:from-accent-from-hover enabled:hover:to-accent-to-hover enabled:hover:ring-accent-from/50 enabled:hover:shadow-glow-hover ' +
-    'enabled:active:from-accent-from enabled:active:to-accent-to enabled:active:inset-shadow-pressed enabled:active:shadow-glow-pressed',
+    'hover:from-accent-from-hover hover:to-accent-to-hover hover:ring-accent-from/50 hover:shadow-glow-hover ' +
+    'active:from-accent-from active:to-accent-to active:inset-shadow-pressed active:shadow-glow-pressed',
   secondary:
     'from-raised-from to-raised-to text-text inset-shadow-highlight ring-border shadow-control ' +
-    'enabled:hover:from-raised-hover-from enabled:hover:to-raised-hover-to enabled:hover:ring-border-strong enabled:hover:inset-shadow-highlight-strong enabled:hover:shadow-control-hover ' +
-    'enabled:active:from-raised-pressed-from enabled:active:to-raised-pressed-to enabled:active:inset-shadow-pressed enabled:active:shadow-none',
+    'hover:from-raised-hover-from hover:to-raised-hover-to hover:ring-border-strong hover:inset-shadow-highlight-strong hover:shadow-control-hover ' +
+    'active:from-raised-pressed-from active:to-raised-pressed-to active:inset-shadow-pressed active:shadow-none',
 };
 
+// `disabled:` sorts after `hover:` and `active:` in Tailwind's variant order,
+// so a disabled button keeps this look under the pointer.
 const disabled =
   'disabled:from-raised-from disabled:to-raised-to disabled:text-text-disabled disabled:ring-border-subtle ' +
   'disabled:inset-shadow-highlight disabled:shadow-none';
+
+function buttonClasses(variant: ButtonVariant, size: ButtonSize, className?: string) {
+  return [base, sizes[size], variants[variant], disabled, className].filter(Boolean).join(' ');
+}
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   variant?: ButtonVariant;
@@ -47,13 +53,33 @@ export function Button({
   children,
   ...rest
 }: ButtonProps) {
-  const classes = [base, sizes[size], variants[variant], disabled, className]
-    .filter(Boolean)
-    .join(' ');
-
   return (
-    <button type={type} className={classes} {...rest}>
+    <button type={type} className={buttonClasses(variant, size, className)} {...rest}>
       {children}
     </button>
+  );
+}
+
+interface ButtonLinkProps {
+  href: string;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  /** Layout classes only. */
+  className?: string;
+  children: ReactNode;
+}
+
+/** A link that navigates, styled as a button. */
+export function ButtonLink({
+  href,
+  variant = 'primary',
+  size = 'md',
+  className,
+  children,
+}: ButtonLinkProps) {
+  return (
+    <a href={href} className={buttonClasses(variant, size, className)}>
+      {children}
+    </a>
   );
 }

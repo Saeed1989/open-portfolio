@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type BadgeVariant = 'pill' | 'tag' | 'chip' | 'step' | 'mark';
+export type BadgeVariant = 'pill' | 'tag' | 'chip' | 'step' | 'mark' | 'swatch' | 'cta';
 
 const variants: Record<BadgeVariant, string> = {
   // hero eyebrow pill
@@ -23,6 +23,13 @@ const variants: Record<BadgeVariant, string> = {
   mark:
     'size-8 justify-center rounded-md font-mono text-caption font-medium text-text ' +
     'bg-linear-135 from-raised-from to-raised-to inset-shadow-highlight ring-1 ring-border-subtle',
+  // decorative accent square, e.g. a legend key
+  swatch:
+    'size-3 rounded-xs bg-linear-135 from-accent-from to-accent-to inset-shadow-highlight-accent',
+  // non-interactive button look, for illustrations only
+  cta:
+    'rounded-sm px-3 py-1.5 text-small font-medium text-on-accent ' +
+    'bg-linear-135 from-accent-from to-accent-to inset-shadow-highlight-accent',
 };
 
 interface BadgeProps {
@@ -31,7 +38,7 @@ interface BadgeProps {
   dot?: boolean;
   /** Layout classes only. */
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export function Badge({ variant, dot = false, className, children }: BadgeProps) {
@@ -40,7 +47,7 @@ export function Badge({ variant, dot = false, className, children }: BadgeProps)
     .join(' ');
 
   return (
-    <span className={classes}>
+    <span className={classes} aria-hidden={variant === 'swatch' ? true : undefined}>
       {dot && <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-from" />}
       {children}
     </span>

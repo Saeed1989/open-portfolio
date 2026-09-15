@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 export type TextSize =
+  | 'heading'
   | 'lead'
   | 'body-lg'
   | 'body'
@@ -18,9 +19,12 @@ export type TextTone =
   | 'accent'
   | 'accent-strong'
   | 'success'
-  | 'danger';
+  | 'danger'
+  | 'light'
+  | 'light-muted';
 
 const sizes: Record<TextSize, string> = {
+  heading: 'text-heading-sm md:text-heading',
   lead: 'text-lead',
   'body-lg': 'text-body-lg',
   body: 'text-body',
@@ -40,6 +44,15 @@ const tones: Record<TextTone, string> = {
   'accent-strong': 'text-accent-ink-strong',
   success: 'text-success',
   danger: 'text-danger',
+  // for content inside a light BrowserFrame
+  light: 'text-light-text',
+  'light-muted': 'text-light-text-muted',
+};
+
+const weights = {
+  regular: '',
+  medium: 'font-medium',
+  semibold: 'font-semibold',
 };
 
 interface TextProps {
@@ -48,7 +61,7 @@ interface TextProps {
   /** Defaults to `label` for eyebrows, `default` otherwise. */
   tone?: TextTone;
   mono?: boolean;
-  weight?: 'regular' | 'medium';
+  weight?: keyof typeof weights;
   id?: string;
   /** Layout classes only — colour and typography come from the props above. */
   className?: string;
@@ -69,7 +82,7 @@ export function Text({
     sizes[size],
     tones[tone ?? (size === 'eyebrow' ? 'label' : 'default')],
     mono && 'font-mono',
-    weight === 'medium' && 'font-medium',
+    weights[weight],
     className,
   ]
     .filter(Boolean)
