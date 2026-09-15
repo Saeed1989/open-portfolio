@@ -38,7 +38,7 @@ awk '/^### 1\.2 Scope/,/^### 1\.3/' ../spec/srs.md
 # what is deferred, and why — the page must not contradict it
 awk '/^### 10\.2 Deferred/,/^### 10\.3/' ../spec/srs.md
 
-# auth and onboarding, the flow this page starts
+# sign-in and portfolio creation, the flow this page starts
 awk '/^### 6\.1 Authentication/,/^### 6\.2/' ../spec/srs.md
 
 # look up one requirement id
@@ -117,15 +117,15 @@ inline SVG. Budget is ~60 KB gzipped JS.
 
 - No password field. OAuth only — GitHub or Google (FR-AUTH-1).
 - No custom-domain claim, anywhere. Deferred (§10.2). Every URL example is
-  `{slug}.openfolio.com` (FR-TEN-1).
+  `{slug}.openfolio.site` (FR-TEN-1).
 - No pricing or plan comparison. Free tier only (§10.1.5).
 - No invented testimonials, named people, or "trusted by" logos.
 - No analytics script — the platform injects no tracking (FR-ANL-3).
-- No OAuth flow here. The CTA redirects to the auth surface.
+- No OAuth flow here. The CTA links to the admin host (§2.1).
 - No availability API call from the slug input, and no reserved-slug list
-  (FR-DAT-1) in client code. Pending §10.3 Q4 the input validates format only
-  and carries the value to auth as a query param; the taken/reserved states are
-  built and left unwired.
+  (FR-DAT-1) in client code. No unauthenticated slug lookup exists (§10.3 Q4),
+  so the input validates format only and carries the value to the admin host as
+  a query param; the taken/reserved states are built and stay unwired.
 
 ---
 

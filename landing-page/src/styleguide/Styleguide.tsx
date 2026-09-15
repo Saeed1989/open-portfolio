@@ -117,7 +117,7 @@ function LiveSlugInput() {
   return (
     <SlugInput
       label="Your address"
-      suffix=".openfolio.com"
+      suffix=".openfolio.site"
       placeholder="your-name"
       value={value}
       onChange={(raw) => setValue(normalizeSlug(raw))}
@@ -183,7 +183,7 @@ export function Styleguide() {
                 </Text>
                 <SlugInput
                   label="Your address"
-                  suffix=".openfolio.com"
+                  suffix=".openfolio.site"
                   placeholder="your-name"
                   value={value}
                   onChange={() => undefined}
@@ -202,7 +202,7 @@ export function Styleguide() {
           </Text>
           <SlugInput
             label="Your address"
-            suffix=".openfolio.com"
+            suffix=".openfolio.site"
             placeholder="your-name"
             value=""
             onChange={() => undefined}
@@ -289,7 +289,7 @@ export function Styleguide() {
           <Text size="heading" weight="semibold">
             size heading · semibold
           </Text>
-          <BrowserFrame slug="your-name" host=".openfolio.com" label="Light tones" tone="light" size="sm">
+          <BrowserFrame slug="your-name" host=".openfolio.site" label="Light tones" tone="light" size="sm">
             <div className="p-5">
               <Text tone="light" weight="semibold">
                 tone light
@@ -334,7 +334,7 @@ export function Styleguide() {
               {size} · Show the work, not the resume.
             </Text>
           ))}
-          <Text mono>mono · your-name.openfolio.com</Text>
+          <Text mono>mono · your-name.openfolio.site</Text>
           <Text weight="medium">weight medium</Text>
         </Group>
 
@@ -404,20 +404,20 @@ export function Styleguide() {
 
         <Group title="BrowserFrame">
           <div className="grid gap-6 md:grid-cols-2">
-            <BrowserFrame slug="your-name" host=".openfolio.com" label="Example portfolio">
+            <BrowserFrame slug="your-name" host=".openfolio.site" label="Example portfolio">
               <div className="p-6">
                 <Text tone="muted">dark · md</Text>
               </div>
             </BrowserFrame>
             <BrowserFrame
               slug="your-name"
-              host=".openfolio.com"
+              host=".openfolio.site"
               label="Example portfolio, light theme"
               tone="light"
             >
               <div className="h-24" />
             </BrowserFrame>
-            <BrowserFrame slug="your-name" host=".openfolio.com" label="Example" size="sm">
+            <BrowserFrame slug="your-name" host=".openfolio.site" label="Example" size="sm">
               <div className="p-4">
                 <Text size="small" tone="muted">
                   dark · sm
@@ -426,7 +426,7 @@ export function Styleguide() {
             </BrowserFrame>
             <BrowserFrame
               slug="your-name"
-              host=".openfolio.com"
+              host=".openfolio.site"
               label="Example, light"
               tone="light"
               size="sm"

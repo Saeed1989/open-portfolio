@@ -18,14 +18,14 @@ export const copy = {
   },
 
   links: {
-    // Auth surface (FR-AUTH-1). The slug is carried as a query param; availability
-    // is checked there, not here (FR-AUTH-5, §10.3 Q4).
-    signIn: 'https://admin.openfolio.com/sign-in',
+    // Admin host (FR-AUTH-1, SRS §2.1). The slug is carried as a query param;
+    // availability is checked on the creation screen, behind a session (FR-AUTH-5, §7.2).
+    signIn: 'https://admin.openfolio.site/sign-in',
     slugParam: 'slug',
   },
 
   domain: {
-    suffix: '.openfolio.com',
+    suffix: '.openfolio.site',
   },
 
   nav: {
@@ -52,8 +52,8 @@ export const copy = {
     howItWorks: {
       title: 'How it works',
       steps: [
-        'Claim an address and sign in.',
-        'Pick a starting preset.',
+        'Sign in with GitHub or Google.',
+        'Choose your address and a starting preset.',
         'Fill in sections in the admin panel.',
         'Publish. Live in under a minute.',
       ],
@@ -66,7 +66,7 @@ export const copy = {
     title: 'Every tenant gets the same layout, well built.',
     aside:
       'Server-rendered, fast, readable on a phone. You change the accent, the theme and the type pairing — not the structure.',
-    frameLabel: 'Example of a published portfolio at your-name.openfolio.com',
+    frameLabel: 'Example of a published portfolio at your-name.openfolio.site',
     slug: 'your-name',
     name: 'Your Name',
     bio: 'Frontend engineer. Design systems and browser performance. Two or three sentences on what you build and how you work.',
@@ -225,7 +225,7 @@ export const copy = {
       },
       {
         question: 'Can I use my own domain?',
-        answer: 'Not in this version. Every portfolio lives at your-name.openfolio.com.',
+        answer: 'Not in this version. Every portfolio lives at your-name.openfolio.site.',
       },
       {
         question: 'Is there a password?',
