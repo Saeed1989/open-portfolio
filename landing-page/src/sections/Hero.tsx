@@ -34,7 +34,7 @@ export function Hero() {
           {c.lead}
         </Text>
         <ClaimForm id="claim" size="lg" className="mt-8 max-w-152" />
-        <Text size="caption" tone="subtle" className="mt-1.5 max-w-152">
+        <Text size="caption" tone="muted" className="mt-1.5 max-w-152">
           {c.finePrint}
         </Text>
       </div>

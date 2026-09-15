@@ -18,7 +18,8 @@ const tones: Record<SlugState, InputTone> = {
 };
 
 const messageTones: Record<SlugState, string> = {
-  idle: 'text-text-subtle',
+  // muted, not subtle: subtle measures 4.30:1 over the hero field's lightest point
+  idle: 'text-text-muted',
   invalid: 'text-danger',
   checking: 'text-text-muted',
   available: 'text-success',

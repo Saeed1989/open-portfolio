@@ -6,7 +6,10 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 const base =
   'inline-flex items-center justify-center gap-2.5 whitespace-nowrap select-none font-medium ' +
   'bg-linear-135 ring-1 cursor-pointer disabled:cursor-not-allowed ' +
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-ink-strong';
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-ink-strong ' +
+  // lift on hover, sink on press — translate only, and only when motion is allowed
+  'motion-safe:transition-transform motion-safe:duration-150 ' +
+  'motion-safe:not-disabled:hover:-translate-y-0.5 motion-safe:not-disabled:active:translate-y-px';
 
 const sizes: Record<ButtonSize, string> = {
   sm: 'h-9 rounded-md px-4 text-body-sm',

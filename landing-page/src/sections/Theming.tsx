@@ -83,7 +83,7 @@ export function Theming() {
           </Text>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row">
+        <div className="flex min-w-0 flex-1 gap-2.5 sm:gap-4">
           <Preview tone="light" />
           <Preview tone="dark" />
         </div>

@@ -49,8 +49,15 @@ export function ExamplePortfolio() {
                 {c.projectsLabel}
               </Text>
               <List as="ul" divided="all">
-                {c.projects.map((project) => (
-                  <li key={project.name} className="flex flex-col gap-3 py-4 sm:flex-row sm:gap-7">
+                {c.projects.map((project, index) => (
+                  <li
+                    key={project.name}
+                    // the 390 artboard shows two projects
+                    className={[
+                      'flex-col gap-2 py-3 sm:flex-row sm:gap-7 sm:py-4',
+                      index > 1 ? 'hidden sm:flex' : 'flex',
+                    ].join(' ')}
+                  >
                     <div className="min-w-0 flex-1">
                       <Text size="body-lg" weight="medium">
                         {project.name}
@@ -58,7 +65,7 @@ export function ExamplePortfolio() {
                       <Text size="caption" tone="muted" className="mt-1">
                         {project.blurb}
                       </Text>
-                      <Text size="micro" tone="label" mono className="mt-2">
+                      <Text size="micro" tone="label" mono className="mt-2 hidden sm:block">
                         {project.stack}
                       </Text>
                     </div>
@@ -66,7 +73,7 @@ export function ExamplePortfolio() {
                       <Text size="small" tone="success" mono>
                         {project.impact}
                       </Text>
-                      <Text size="small" tone="subtle" mono>
+                      <Text size="small" tone="subtle" mono className="hidden sm:block">
                         {project.role}
                       </Text>
                     </div>

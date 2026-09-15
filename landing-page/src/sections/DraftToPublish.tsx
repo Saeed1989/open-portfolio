@@ -27,7 +27,7 @@ export function DraftToPublish() {
             <Text size="body-sm" tone="muted">
               {step.body}
             </Text>
-            <Text size="small" tone="accent-strong" mono className="mt-4">
+            <Text size="small" tone="accent-strong" mono className="mt-4 hidden md:block">
               {step.tag}
             </Text>
           </Card>

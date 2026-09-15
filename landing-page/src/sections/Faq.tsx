@@ -8,8 +8,8 @@ export function Faq() {
   const c = copy.faq;
 
   return (
-    <SectionShell labelledBy="faq-title" className="flex flex-col gap-6 md:flex-row md:gap-20">
-      <div className="md:w-75 md:shrink-0">
+    <SectionShell labelledBy="faq-title" className="flex flex-col gap-6 lg:flex-row lg:gap-20">
+      <div className="lg:w-75 lg:shrink-0">
         <Text size="eyebrow">{c.eyebrow}</Text>
         <Heading level={2} size="heading" id="faq-title" className="mt-2.5">
           {c.title}

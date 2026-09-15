@@ -77,11 +77,13 @@
 
   /* accent */
   --color-accent-from: oklch(0.797 0.129 208.9);
-  /* design #3F63EE (L 0.558) lifted to L 0.598 so on-accent ink passes AA at
-     the gradient's darkest point: 4.04:1 -> 4.79:1 */
-  --color-accent-to: oklch(0.598 0.213 267.7);
+  /* design #3F63EE (L 0.558) lifted to L 0.638 so that, at the gradient's
+     darkest point, on-accent label ink passes AA (4.04:1 in the design) and the
+     hero headline's gradient line passes 3:1 against the hero field's lightest
+     point (2.56:1 at L 0.598) */
+  --color-accent-to: oklch(0.638 0.193 267.7);
   --color-accent-from-hover: oklch(0.826 0.123 207.6);
-  --color-accent-to-hover: oklch(0.638 0.193 267.7);
+  --color-accent-to-hover: oklch(0.678 0.168 267.7);
   --color-accent-ink: oklch(0.824 0.112 210.6);
   --color-accent-ink-strong: oklch(0.856 0.095 209.9);
   --color-on-accent: oklch(0.134 0.017 262.2);
@@ -199,6 +201,21 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Reduced motion — nothing moves. Components already gate their motion behind
+ * motion-safe; this is the backstop. The background layers are static.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    translate: none !important;
+    scroll-behavior: auto !important;
   }
 }
 

@@ -15,7 +15,7 @@ export function Integrations() {
       <Heading level={2} size="heading" id="integrations-title" className="mt-2.5">
         {c.title}
       </Heading>
-      <Text tone="muted" className="mt-2 max-w-155">
+      <Text tone="muted" className="mt-2 hidden max-w-155 md:block">
         {c.intro}
       </Text>
 

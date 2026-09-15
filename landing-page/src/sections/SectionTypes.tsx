@@ -32,7 +32,7 @@ export function SectionTypes() {
             as="li"
             size="sm"
             variant={item.preset ? 'selected' : 'surface'}
-            className="flex min-h-18.5 flex-col gap-1.5"
+            className="flex flex-col gap-1.5 sm:min-h-18.5"
           >
             <div className="flex items-center justify-between gap-2">
               <Text as="span" size="body-sm" weight="medium">
@@ -40,7 +40,7 @@ export function SectionTypes() {
               </Text>
               {item.preset && <Badge variant="tag">{c.presetTag}</Badge>}
             </div>
-            <Text as="span" size="small" tone="subtle">
+            <Text as="span" size="small" tone="subtle" className="hidden sm:block">
               {item.desc}
             </Text>
           </Card>
