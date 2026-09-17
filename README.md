@@ -14,14 +14,19 @@ portfolio through an admin panel, and publishes it at `{slug}.site.com` — no c
 
 | Component | Tech | Exposure |
 |---|---|---|
+| `edge` | nginx | `site.com`, `admin.site.com`, `*.site.com` — terminates TLS, routes by host, resolves identity |
+| `api` | NestJS | not publicly routable — public, admin, and auth surfaces, reachable only from `edge` |
 | `api` | NestJS | `api.site.com` — public read-only surface + session-auth + admin surface |
 | `admin` | Next.js | `admin.site.com` — OAuth session required |
 | `portfolio` | Next.js SSR/ISR | `*.site.com` wildcard — fully public |
+| `www` | Static SPA | `site.com` apex — marketing site, fully public |
 | `db` | MongoDB | internal |
 | `storage` | S3-compatible, CDN-fronted | signed writes, public read |
 
-The two API surfaces use separate controllers, guards, and DTOs, and share none. Admin scope
-always comes from the session — never from a request parameter.
+The three API surfaces — public, admin, and auth — use separate controllers, guards, and
+DTOs, and share none. `edge` resolves the session by subrequest to the auth surface and injects
+the user id as an `X-User-Id` header; admin scope always comes from that header — never from
+a request parameter.
 
 ## Core ideas
 

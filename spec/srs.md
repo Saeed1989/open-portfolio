@@ -1,6 +1,6 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.7 (draft) · **Date** 16 September 2026
+**Version** 0.8 (draft) · **Date** 18 September 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
 
 ---
@@ -62,9 +62,9 @@ Priority follows the source document: **Must** = launch blocker, **Should** = v1
 
 | Component | Technology | Exposure | Auth |
 |---|---|---|---|
-| `api` | NestJS | `api.openfolio.site` | Two surfaces — see below |
-| `admin` | Next.js | `admin.openfolio.site` | Sign-in required — holds no session of its own; see `gateway` |
-| `gateway` | <<TBD: gateway runtime and framework — §10.3 Q11>> | `admin.openfolio.site/api/*` | Owns the session — see below |
+| `edge` | nginx | `openfolio.site`, `admin.openfolio.site`, `*.openfolio.site` | Terminates TLS; resolves identity by subrequest — see §2.6 |
+| `api` | NestJS | **Not publicly routable** — reachable from `edge` and internal services only | Three surfaces — see below |
+| `admin` | Next.js | `admin.openfolio.site` | Sign-in required — holds no session of its own; see below |
 | `portfolio` | Next.js (SSR) | `*.openfolio.site` wildcard | None — fully public |
 | `www` | Static client-rendered SPA | `openfolio.site` (apex) | None — fully public |
 | `db` | MongoDB | Internal | — |
@@ -72,23 +72,26 @@ Priority follows the source document: **Must** = launch blocker, **Should** = v1
 
 `www` is the marketing site at the apex domain and the entry point to sign-up. It is built to static files and served as built: it holds no session, makes no call to `api` or to any other service, and renders no portfolio data. Its calls to action are plain links to `admin.openfolio.site`, where sign-in (FR-AUTH-1) and then the branch of FR-AUTH-7 take over. It is client-rendered, and whether that is sufficient is open (§10.3 Q10).
 
-`gateway` owns sign-in and session state. It is co-located with `admin` on one host, `admin.openfolio.site`, under the `/api` path prefix — same host, different prefix, so the two are a single origin to the browser. It holds the session cookie, resolves it on every request, and relays admin calls onward to `api` with an identity it signs itself (§2.5, §2.6). The `admin` app is a plain client: it calls `/api/admin/...` on its own origin, and because the cookie is scoped to `Path=/api`, the admin app's own server never sees it. This supersedes the earlier position, in which authentication was a third NestJS module inside `api` and the admin Next.js app acted as a backend-for-frontend holding the session.
+`edge` terminates every public connection. It is not new infrastructure: the wildcard certificate of FR-TEN-1 and the separation of the admin host from the tenant wildcard already require a reverse proxy in front of everything, and v0.7 left that proxy unnamed — which is how `gateway` came to absorb work that belonged to it. Naming it changes what is specified rather than what is deployed. Its configuration is a specified artifact, versioned in the monorepo (FR-EDGE-6, NFR-OPS-5) and part of the security boundary rather than part of the environment the system happens to run in.
 
 A further workspace, `packages/registry`, is a shared library rather than a deployable. It compiles to dual ESM/CJS with four entrypoints — descriptors, validation, the rich-text sanitiser configuration, and the render-tree builder (FR-REG-9) — so that `api` (CJS, built with `tsc`) and the two Next.js apps consume prebuilt output rather than package source. It imports no framework, no ORM, and no React, and reads no environment: descriptors are data, and validators and the builder are pure functions. Presentation belonging to a section type — icons, components, styling — lives in the consuming app, keyed by the descriptor's identifier.
 
-A single API server hosts **two logically separate surfaces**. **The admin surface and the public surface are two NestJS modules inside the one `api` deployable, not two services.** They share a process, a database connection pool, and a release, so neither can be deployed, scaled, or restarted without the other. That cost is accepted because the public surface sits behind the ISR cache (§2.2) and sees little traffic of its own, so a separate service would buy little.
+A single API server hosts **three logically separate surfaces**. **The public, admin, and auth surfaces are three NestJS module trees inside the one `api` deployable, not three services.** They share a process, a database connection pool, and a release, so none can be deployed, scaled, or restarted without the others. That cost is accepted because the public surface sits behind the ISR cache (§2.2) and sees little traffic of its own, so a separate service would buy little.
 
 - **Public surface** (`/public/*`) — unauthenticated, read-only, returns published content only. The portfolio is resolved from the requested slug. Returns public-safe configuration — theme, SEO, the analytics measurement id or Plausible domain, and the ordered list of sections to render — because each of those is visible in the rendered page's source whether the API returns it or not. Never returns draft content, disabled sections, integration credentials, sync status or `lastError`, a tenant's user id, or any tenant's account email address — the address held in `users`, as distinct from a contact address the tenant chooses to publish in `contact`, which is content. That configuration never leaves the admin surface.
-- **Admin surface** (`/admin/*`) — session-authenticated, read/write. The tenant is resolved from the session, and the tenant's portfolio, if one exists, from the tenant — never from a request parameter.
+- **Admin surface** (`/admin/*`) — read/write. The tenant is resolved from the user id supplied by `edge` (FR-AUTH-12), and the tenant's portfolio, if one exists, from the tenant — never from a request parameter. It parses no cookie, performs no session lookup, and reads neither `users` nor `sessions`.
+- **Auth surface** (`/auth/*`) — sign-in, sign-out, session resolution, and account state. It is the sole holder of the OAuth client secret, and the sole reader and writer of `users` and `sessions`.
 
-The two surfaces use separate controllers, separate guards, and separate response DTOs. No DTO is shared between them.
+The three surfaces use separate controllers, separate guards, and separate response DTOs. No DTO is shared between them, and the separation is enforced rather than observed: ESLint `import/no-restricted-paths` zones forbid one module tree from importing another's internals, one zone per surface, so three now rather than two.
+
+The auth module is written to be extractable. Every access to `users` or `sessions` from outside it goes through a declared in-process interface (FR-AUTH-17) rather than a direct Mongoose call, so extracting it into a service of its own would be a transport change rather than a redesign. §10.4 records when that becomes worthwhile and what the work would be.
 
 ### 2.2 Request flow — public page view
 
 1. Request arrives at `alice.openfolio.site`.
 2. `portfolio` middleware reads the `Host` header, extracts `alice`, rejects reserved labels.
 3. If a valid ISR cache entry exists for that slug, it is served. No API call, no database read.
-4. Otherwise `portfolio` calls `GET /public/portfolios/alice` server-side.
+4. Otherwise `portfolio` calls `GET /public/portfolios/alice` server-side. The call is made at `api`'s internal address, and since `api` is not publicly routable (§2.1) it never leaves the deployment network.
 5. `api` performs one find on `portfolios`, keyed by the slug and projecting `published.config` and `published.data`, and serialises the result through the public DTO as the two-part payload of §7.1: `config` — theme, SEO, public-safe analytics, and the ordered list of sections to render — and `data`, each section's content keyed by its type. Both halves were resolved at publish (§2.3), so nothing is stripped, evaluated, or joined per request.
 6. `portfolio` applies `config.theme`, `config.seo`, and `config.analytics`, then renders the layout by iterating `config.sections` in order and dispatching each entry to the component registered for its type, with `data[type]` as its content.
 
@@ -120,33 +123,36 @@ Every portfolio document therefore holds two content trees, `draft` and `publish
 
 ### 2.5 Request flow — sign-in
 
-1. The tenant follows the "Sign in with GitHub" link the admin panel renders, to `/api/auth/github/start`. That path is `gateway`, not the admin app — same host, different path prefix.
-2. `gateway` generates a `state` value and a PKCE verifier, stores both in a cookie expiring after 10 minutes, and redirects the browser to GitHub.
+1. The tenant follows the "Sign in with GitHub" link the admin panel renders, to `/api/auth/github/start`. `edge` routes `/api/auth/*` on the admin host to `api`'s `/auth/*` without an identity subrequest.
+2. `api`'s auth module generates a `state` value and a PKCE verifier, stores both in a cookie scoped `Path=/api/auth`, `httpOnly`, `Secure`, `SameSite=Lax`, expiring after 10 minutes, and redirects the browser to GitHub. `SameSite=Lax` is required here rather than incidental: the callback arrives as a top-level cross-site GET navigation, which `Strict` would not accompany with the cookie.
 3. GitHub returns the browser to `/api/auth/github/callback` with a code.
-4. `gateway` verifies `state` first. Only then does it call `api`'s `POST /auth/exchange` (§7.3) with the code, over a shared secret.
-5. `api` is the only holder of the OAuth client secret. It trades the code for a provider token, reads the profile and verified email, upserts the user, encrypts and stores the provider token (NFR-SEC-3), and returns a user id. It creates no session and no portfolio. For a suspended user it refuses the exchange.
-6. `gateway` takes the user id, mints a 256-bit random session token, stores its SHA-256 hash in `sessions` (§5.8), and sets the session cookie: httpOnly, Secure, SameSite=Lax, host-only, `Path=/api` (FR-AUTH-3).
-7. `gateway` redirects the browser to the admin panel, where FR-AUTH-7 decides what the tenant sees.
+4. `api` verifies `state` against the cookie first, and only then exchanges the code — client secret, verifier, and redirect URI all in one process.
+5. It reads the profile and verified email, upserts the user, encrypts and stores the provider token (NFR-SEC-3), and refuses a suspended user. It creates no portfolio.
+6. It mints a 256-bit random session token, stores its SHA-256 hash in `sessions` (§5.8), clears the `state` cookie, and sets the session cookie: `httpOnly`, `Secure`, `SameSite=Lax`, host-only to `admin.openfolio.site`, `Path=/api` (FR-AUTH-3).
+7. It redirects the browser to the admin panel, subject to FR-AUTH-15, where FR-AUTH-7 decides what the tenant sees.
 
 Google OAuth is the same flow on the mirrored paths (FR-AUTH-1).
 
+`Path=/api` is retained from v0.7 for the property it bought: the `admin` Next.js app is served at `/` on the same host, and so never receives the session cookie. The recorded cost is that the `__Host-` prefix requires `Path=/` and therefore cannot be used; see open question 13.
+
 ### 2.6 Request flow — authenticated admin request
 
-1. The admin panel, a plain client, calls `/api/admin/...` on its own origin. The browser attaches the session cookie automatically — but only for `/api/*`, so the admin panel's own server never sees it.
-2. `gateway` hashes the presented token and looks the hash up in `sessions`.
-3. It checks four things: the session is not revoked, it is inside the 30-day idle window, it is inside the 90-day absolute window, and its idle expiry is refreshed if more than an hour stale.
-4. Any failure is a 401, and `api` is never called.
-5. On pass, `gateway` mints a JWT — the user id as `sub`, a 60-second expiry, signed EdDSA with a private key only `gateway` holds — and forwards the request to `api` with it attached. The session token itself never leaves `gateway`.
-6. `api` verifies the signature against a public key it holds, checks audience and expiry, and takes the tenant from `sub` (FR-TEN-4, FR-API-3). No network call, no session lookup, no shared state.
-7. The response streams back through `gateway` to the browser untouched.
+1. The admin panel, a plain client, calls `/api/admin/...` on its own origin. The browser attaches the cookie automatically, but only for `/api/*`, so the admin app's own server never sees it.
+2. `edge` matches the admin host exactly, then the `/api/admin/` location, and issues an `auth_request` subrequest to `api`'s `GET /auth/resolve` before proxying anything. The subrequest carries the original request's headers, including the cookie, and no body.
+3. The auth module hashes the token and looks it up in `sessions`. It checks three things: the session is not revoked, it is inside the 30-day idle window, and it is inside the 90-day absolute window. The idle expiry is refreshed when more than an hour stale.
+4. Any failure is a `401`. `edge` propagates it, and the admin surface is never called.
+5. Success is a `204` carrying the resolved user id in an `X-User-Id` response header.
+6. `edge` captures that header, **overwrites** any `X-User-Id` on the inbound request with it, and forwards the request to `api`'s `/admin/*` (FR-EDGE-4).
+7. `api`'s admin guard reads `X-User-Id`, rejects the request if it is absent or malformed, takes the tenant from it (FR-TEN-4, FR-API-3), and scopes every query by it. No cookie parsing, no session lookup, no `users` read.
+8. The response streams back through `edge` to the browser untouched.
 
-**Why `gateway` relays rather than `admin` calling `api` directly.** The session cookie cannot reach `api.openfolio.site`, because it is scoped to `admin.openfolio.site`; widening it to `Domain=openfolio.site` would send every tenant's admin cookie to every public portfolio page on the wildcard. So `gateway` sits on the admin host, where the cookie already goes, and relays.
+**Why a header rather than a signed token.** `api` has no public DNS record and no public ingress, so only `edge` and internal services can address it; `edge` overwrites the identity header on every location it proxies, so a client-supplied value cannot survive. v0.7 rejected this arrangement on the grounds that "only the gateway calls us" is a network assumption rather than a control, and that objection is recorded here as accepted-with-cost rather than answered: the assumption is now enforced at the network layer (FR-EDGE-5) and verified by test (NFR-SEC-1), but it remains an assumption. What it buys is the deletion of a key pair, a custody requirement, an unspecified rotation procedure, and a deployable. If `api` ever becomes publicly reachable — a second client, a partner integration, a mobile app — this decision must be revisited before that happens, and the replacement is a signed assertion.
 
-**Why a signed identity rather than a header.** `api` cannot trust a plain `X-User-Id` header: "only `gateway` calls us" is a network assumption, not a control. Asymmetric keys make it one — a compromised `api` holds only the public key, so it still cannot forge a caller identity (NFR-SEC-7).
+**Why `edge` relays rather than `admin` calling `api` directly.** The session cookie cannot cross to another host, and widening it to `Domain=openfolio.site` would send every tenant's admin cookie to every public portfolio page on the wildcard. So the relay sits on the admin host, where the cookie already goes. What has changed from v0.7 is that the relay is a routing rule in infrastructure that already exists, rather than an application of its own.
 
-**One owner per collection.** `gateway` touches `sessions` and nothing else; `api` touches everything else and never `sessions`. When `api` needs a user's sessions killed — account deletion (FR-AUTH-6), operator suspension — it calls `gateway`'s `POST /api/auth/revoke-all` (§7.4).
+**One owner per collection.** `users` and `sessions` belong to `api`'s auth module. The admin and public surfaces read neither, and reach account data only through the interface of FR-AUTH-17. Revocation on account deletion (FR-AUTH-6) and on operator suspension is an in-process call into that interface.
 
-The consequence, stated so it is not rediscovered: `gateway` cannot see `users`, so it cannot check whether an account is suspended. Suspension therefore revokes all of that user's sessions outright, and `api` refuses the exchange for a suspended user (§2.5 step 5). Account state never touches the session-resolution path.
+**Per-request cost.** Two reads — `sessions` by token hash, then `portfolios` by user id — and one internal round trip from `edge` into `api` over a keepalive pool. nginx does not cache `auth_request` results, so this happens on every admin request. NFR-PERF-5 bounds it, and open question 14 records what to do if that bound is missed.
 
 ---
 
@@ -233,7 +239,7 @@ _id, provider ('github'|'google'), providerId, email, displayName,
 avatarUrl, createdAt, lastLoginAt, status ('active'|'suspended')
 ```
 
-Unique compound index on `(provider, providerId)`. Unique index on `email`.
+Unique compound index on `(provider, providerId)`. Unique index on `email`. This collection is owned solely by `api`'s auth module; the encrypted provider token stored here is reached through the interface of FR-AUTH-17 (FR-AUTH-4), never by a direct query.
 
 ### 5.2 `portfolios`
 
@@ -320,15 +326,17 @@ _id, tokenHash (SHA-256 of the session token), userId,
 createdAt, idleExpiresAt, absoluteExpiresAt, revokedAt | null
 ```
 
-Unique index on `tokenHash`. Index on `userId`, which is what serves revoke-all (§7.4).
+Unique index on `tokenHash`. Index on `userId`, which is what serves revoking every session for one user (FR-AUTH-14).
 
-The raw session token is never stored: `gateway` stores the hash and compares hashes (FR-AUTH-10). `idleExpiresAt` carries the 30-day idle window and is refreshed in place when more than an hour stale; `absoluteExpiresAt` is fixed at creation and carries the 90-day ceiling; `revokedAt` is null until the session is revoked, and a revoked session fails resolution (FR-AUTH-11). This is the only collection `gateway` touches, and `api` neither reads nor writes it (FR-AUTH-13).
+The raw session token is never stored: the auth module stores the hash and compares hashes (FR-AUTH-10). `idleExpiresAt` carries the 30-day idle window and is refreshed in place when more than an hour stale; `absoluteExpiresAt` is fixed at creation and carries the 90-day ceiling; `revokedAt` is null until the session is revoked, and a revoked session fails resolution (FR-AUTH-11). This collection and `users` are owned solely by `api`'s auth module; the admin and public surfaces read neither (FR-AUTH-13).
 
 ---
 
 ## 6. Functional requirements
 
 ### 6.1 Authentication and accounts — `FR-AUTH`
+
+`FR-EDGE` in §6.10 specifies the routing and identity-header rules this group depends on.
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -339,12 +347,16 @@ The raw session token is never stored: `gateway` stores the hash and compares ha
 | FR-AUTH-5 | Should | The portfolio-creation screen, reached when an authenticated tenant has no portfolio (FR-AUTH-7), collects display name, desired slug, and preset in a single step and submits them to `POST /admin/portfolio`. Slug availability is checked live, through the session-authenticated availability endpoint (§7.2). |
 | FR-AUTH-6 | Should | A tenant can delete their account. Deletion removes the portfolio, releases the slug after a 30-day hold, and purges media within 7 days. |
 | FR-AUTH-7 | Must | Once authenticated — at sign-in, or on a later visit with a valid session — `admin` branches on whether the tenant has a portfolio, as reported by `GET /admin/me`: to the dashboard if one exists, to the creation screen (FR-AUTH-5) if not. A portfolio is created only by `POST /admin/portfolio`, which requires a session, and at most once per tenant: `portfolios.userId` carries a unique index (§5.2), so a second creation, concurrent or not, is refused (§7.2). |
-| FR-AUTH-8 | Must | The OAuth start and callback endpoints belong to `gateway`, not to the admin app (§7.4). `gateway` generates a `state` value and a PKCE verifier per attempt and stores them in a cookie expiring after 10 minutes. `state` is verified before the code is exchanged. |
-| FR-AUTH-9 | Must | `api` is the sole holder of the OAuth client secret. The code is exchanged through `POST /auth/exchange` (§7.3), authenticated by a shared secret. The exchange returns a user id and nothing else: it creates no session and no portfolio, and it is refused for a suspended user. |
-| FR-AUTH-10 | Must | The session token is 256 bits of cryptographic randomness, and only its SHA-256 hash is stored (§5.8). The raw token never leaves `gateway` except in the cookie sent to the browser. |
-| FR-AUTH-11 | Must | Session resolution happens in `gateway`, on every request: the session must not be revoked, must be inside the 30-day idle window, and must be inside the 90-day absolute window, and its idle expiry is refreshed when more than an hour stale. Any failure is a `401`, and `api` is never called. |
-| FR-AUTH-12 | Must | `gateway` forwards a resolved request to `api` with a JWT carrying the user id as `sub`, a 60-second expiry, and an EdDSA signature made with a private key held only by `gateway`. `api` verifies the signature against the public key it holds, checks audience and expiry, and performs no session lookup. `api` trusts no user-identifying request header. |
-| FR-AUTH-13 | Must | Each collection has exactly one owner. `gateway` reads and writes `sessions` and no other collection; `api` reads and writes every other collection and never `sessions`. When `api` must invalidate a user's sessions — account deletion (FR-AUTH-6), operator suspension — it calls `gateway`'s `POST /api/auth/revoke-all` (§7.4), authenticated by a shared secret. |
+| FR-AUTH-8 | Must | The OAuth start and callback endpoints belong to `api`'s auth module, reached through `edge` at `/api/auth/*` on the admin host (§7.4). The auth module generates a `state` value and a PKCE verifier per attempt and stores them in a cookie scoped `Path=/api/auth`, `SameSite=Lax`, expiring after 10 minutes. `state` is verified before the code is exchanged, and the cookie is cleared on completion or failure. |
+| FR-AUTH-9 | Must | `api`'s auth module is the sole holder of the OAuth client secret, the PKCE verifier, and the redirect URI, and performs the code exchange itself. No inter-service call takes part in the exchange. It is refused for a suspended user. |
+| FR-AUTH-10 | Must | The session token is 256 bits of cryptographic randomness, and only its SHA-256 hash is stored (§5.8). The raw token never leaves `api`'s auth module except in the cookie sent to the browser, and is never forwarded to the admin surface. |
+| FR-AUTH-11 | Must | Session resolution happens in `api`'s auth module, at `GET /auth/resolve`, invoked by `edge` on every admin request before the admin surface is reached: the session must not be revoked, must be inside the 30-day idle window, and must be inside the 90-day absolute window, and its idle expiry is refreshed when more than an hour stale. Any failure is a `401`, and the admin surface is never called. Resolution reads `sessions` only. Account suspension is not checked here — it revokes the user's sessions instead (FR-AUTH-13) — so that resolution costs one read. |
+| FR-AUTH-12 | Must | `edge` conveys the resolved identity to the admin surface as an `X-User-Id` request header, set from the `auth_request` subrequest's response and overwriting any inbound value (FR-EDGE-4). The admin surface rejects a request whose `X-User-Id` is absent or malformed, and accepts no other caller-identifying input from any origin. No signed token, key pair, or shared secret takes part. This requirement is valid only while `api` is not publicly routable (FR-EDGE-5); if that changes, it is replaced by a signed assertion. |
+| FR-AUTH-13 | Must | `users` and `sessions` are owned by `api`'s auth module. The admin and public surfaces read and write neither, and reach account data only through the interface of FR-AUTH-17. Session invalidation on account deletion (FR-AUTH-6) and on operator suspension is an in-process call into the auth module. |
+| FR-AUTH-14 | Must | `POST /auth/logout` revokes the presented session by setting `revokedAt`, clears the session cookie with matching attributes, and answers `204` whether or not the session resolved. It revokes that session only. `POST /auth/logout-all` revokes every session for the resolved user and is offered in admin as "sign out everywhere". |
+| FR-AUTH-15 | Must | The post-callback redirect target is chosen from a fixed allowlist of paths within the admin origin. A `returnTo` value, if carried, is stored in the `state` cookie rather than the query string, and is rejected unless it is a relative path with no scheme, no authority, and no leading `//`. No user-supplied absolute URL is ever redirected to. |
+| FR-AUTH-16 | Must | `/api/auth/*` is rate-limited at `edge`, per IP, independently of FR-API-2, with a stricter limit on start and callback than on the rest. Exceeding it answers `429` without reaching `api`. |
+| FR-AUTH-17 | Must | The auth module exports a declared in-process interface — the only route by which any other module reaches `users` or `sessions`. It provides at minimum: the tenant's display fields for `GET /admin/me`; the decrypted provider token for the GitHub integration (FR-AUTH-4); and session revocation for a given user id. No module outside auth registers a Mongoose model for `users` or `sessions`, and the ESLint zone of §2.1 enforces it. |
 
 ### 6.2 Tenancy and addressing — `FR-TEN`
 
@@ -353,7 +365,7 @@ The raw session token is never stored: `gateway` stores the hash and compares ha
 | FR-TEN-1 | Must | A published portfolio is served at `{slug}.openfolio.site` over a wildcard DNS record and wildcard TLS certificate. |
 | FR-TEN-2 | Must | Tenant identity for public requests derives solely from the `Host` header. |
 | FR-TEN-3 | Must | An unknown, unpublished, or suspended slug returns a branded 404 with `noindex`. It must not disclose whether the slug is registered. |
-| FR-TEN-4 | Must | Every admin data access is scoped by the portfolio id resolved from the user id in the verified `sub` of the gateway-minted JWT (FR-AUTH-12). A portfolio id supplied in a request body or path is ignored, never trusted. |
+| FR-TEN-4 | Must | Every admin data access is scoped by the portfolio id resolved from the user id in the `X-User-Id` header set by `edge` (FR-AUTH-12, FR-EDGE-4). A portfolio id supplied in a request body or path is ignored, never trusted. |
 | FR-TEN-5 | Must | The public surface returns only `published` content. Sections with `enabled: false` are removed when the published tree is built — at publish, by the registry's builder (FR-REG-9) — not at request time, so the stored tree never holds one and the public surface has nothing to strip before serialisation. A disabled section appears in neither `config.sections` nor `data`. |
 | FR-TEN-6 | Could | Custom domain support — deferred, see §10.2. |
 
@@ -527,6 +539,17 @@ FR-INT-11 and FR-INT-13 are not exceptions to FR-INT-1 so much as a different ca
 | FR-ANL-2 | Should | Goal events fire on résumé download, contact link click, and GitHub link click. *(16.2)* |
 | FR-ANL-3 | Must | No analytics script loads when the tenant has not configured one: an unconfigured tenant's published `config` carries no `analytics` key, and `portfolio` injects nothing in its absence. The platform does not inject its own tracking into tenant pages. |
 
+### 6.10 Edge routing and identity — `FR-EDGE`
+
+| ID | Priority | Requirement |
+|---|---|---|
+| FR-EDGE-1 | Must | `edge` matches the request's `Host` before anything else. `admin.openfolio.site` is matched exactly and takes precedence over the `*.openfolio.site` wildcard; the apex is matched exactly. A `Host` matching none of these is answered by closing the connection without a response. |
+| FR-EDGE-2 | Must | On the admin host, `edge` routes `/api/auth/*` to `api`'s `/auth/*` without an identity subrequest; `/api/admin/*` to `api`'s `/admin/*` with the subrequest of FR-EDGE-3; and every other path to the `admin` Next.js app. No other path on `api` is reachable from any public host: `/public/*` is not routable from the admin host, and neither `/admin/*` nor `/auth/*` is routable from the wildcard host. |
+| FR-EDGE-3 | Must | Before proxying any `/api/admin/*` request, `edge` issues an internal subrequest to `api`'s `GET /auth/resolve`, carrying the original request's headers and no body. A `2xx` permits the request to proceed; a `401` or `403` is propagated to the client and the admin surface is not called; any other status is a `502`. |
+| FR-EDGE-4 | Must | `edge` sets `X-User-Id` on every request it proxies to `api` — from the subrequest's response header on authenticated locations, and to the empty value everywhere else. It is set unconditionally, so a client-supplied `X-User-Id` can never reach `api` on any route. |
+| FR-EDGE-5 | Must | `api` has no public DNS record and no public ingress. It is reachable only from `edge` and from internal services. This is the precondition FR-AUTH-12 depends on. |
+| FR-EDGE-6 | Must | `edge`'s configuration is versioned in the monorepo and is the same file in every environment, with upstream addresses supplied by environment variables. The development environment runs the same proxy with the same rules (NFR-OPS-6), because the routing rules are part of the security boundary and a rule that exists only in production is a rule that is never tested. |
+
 ---
 
 ## 7. API surfaces
@@ -609,7 +632,7 @@ GET   /admin/link-health
 
 **Slug change.** `PATCH /admin/portfolio/slug` changes the slug of an existing portfolio and does nothing else. It never creates a portfolio or sets a first slug — that is `POST /admin/portfolio` — and with no portfolio it responds `404` as above. Every successful call is a change and triggers FR-DAT-2: the old slug enters `slugHistory` and its subdomain answers with a 301. A request naming the current slug is rejected with `422 slug_unchanged` rather than accepted as a no-op, so no success skips FR-DAT-2. The new slug is validated, and collides, exactly as at creation.
 
-**FR-API-3 (Must)** — No admin endpoint accepts a portfolio id or user id as a parameter. Scope comes from the verified `sub` of the gateway-minted JWT (FR-AUTH-12).
+**FR-API-3 (Must)** — No admin endpoint accepts a portfolio id or user id as a parameter. Scope comes from the `X-User-Id` header set by `edge` (FR-AUTH-12, FR-EDGE-4).
 
 **FR-API-4 (Must)** — Write endpoints validate against the section registry and return field-level errors.
 
@@ -617,22 +640,27 @@ GET   /admin/link-health
 
 ```
 POST /internal/revalidate      → shared-secret auth, called by api → portfolio
-POST /auth/exchange            → shared-secret auth, called by gateway → api
+GET  /auth/resolve             → subrequest target, called by edge → api
 ```
 
-`POST /auth/exchange` is the only internal endpoint on `api` itself; `/internal/revalidate` belongs to `portfolio`. It is internal by routing as well as by authentication: it is not reachable on `api.openfolio.site`'s public surface, and §2.1's rule that the public and admin surfaces share no controller and no guard extends to it as a third group. No surface of `api` accepts a caller-identity header — `X-User-Id` or any equivalent — from any origin (FR-AUTH-12); on the public surface that would be the same bypass in a different coat.
+`POST /auth/exchange` is **Withdrawn (0.8)** — the code exchange no longer crosses a process boundary, so the endpoint and its shared secret have no purpose.
 
-### 7.4 Gateway (`/api`, admin host)
+`GET /auth/resolve` is internal by routing: `edge` reaches it as an `internal` location no external request can address (FR-EDGE-3), and it is exposed on no public path. It answers `204` with `X-User-Id` on success and `401` otherwise, with no body in either case. `/internal/revalidate` belongs to `portfolio` and is unchanged. No surface of `api` accepts a caller-identity header from any origin other than the one `edge` sets and overwrites.
+
+### 7.4 Auth (`/api/auth`, admin host)
 
 ```
-GET  /api/auth/github/start     → begins sign-in (FR-AUTH-8)
-GET  /api/auth/github/callback  → completes sign-in, sets the session cookie
-POST /api/auth/revoke-all       → shared-secret auth, called by api → gateway
+GET  /api/auth/github/start      → begins sign-in (FR-AUTH-8)
+GET  /api/auth/github/callback   → completes sign-in, sets the session cookie
+GET  /api/auth/google/start
+GET  /api/auth/google/callback
+POST /api/auth/logout            → revokes the presented session (FR-AUTH-14)
+POST /api/auth/logout-all        → revokes every session for the resolved user
 ```
 
-Google OAuth is served by the mirrored `/api/auth/google/start` and `/api/auth/google/callback`, per FR-AUTH-1.
+`POST /api/auth/revoke-all` is **Withdrawn (0.8)** — revocation requested by another part of `api` is an in-process call (FR-AUTH-13), not an HTTP endpoint.
 
-**The proxy rule.** `/api/admin/*` is relayed to `api`'s `/admin/*` with the JWT of FR-AUTH-12 attached. Nothing else is proxied: no other path on `api` is reachable through `gateway`.
+**The proxy rule.** On the admin host, `/api/auth/*` and `/api/admin/*` are the only proxied prefixes. Everything else is the `admin` app.
 
 ---
 
@@ -646,18 +674,20 @@ Google OAuth is served by the mirrored `/api/auth/google/start` and `/api/auth/g
 | NFR-PERF-2 | Must | Largest Contentful Paint under 2.5 s on a 4G connection; Cumulative Layout Shift under 0.1. |
 | NFR-PERF-3 | Must | A public page render performs at most one database read and zero server-side external HTTP calls: no read when the page is served from cache, and on an uncached render exactly one — a single find on `portfolios` keyed by slug. This holds by construction rather than by effort: the published tree is stored in the shape it is served in (§5.2), so there is nothing else to read and nothing to compute. Cards and badges are fetched by the visitor's browser, are excluded from render timing, and are lazy-loaded with reserved dimensions so they cannot spend NFR-PERF-2's layout-shift budget. |
 | NFR-PERF-4 | Should | The system sustains 500 concurrent public page views without degradation. |
+| NFR-PERF-5 | Should | An authenticated admin request completes in under 150 ms at p95, measured at `edge` from request receipt to response completion and therefore excluding the visitor's own network latency. The identity subrequest — `sessions` lookup, idle-expiry refresh, and response — accounts for under 15 ms at p95. Enforcing this requires request timings collected somewhere that computes percentiles; if that is not stood up before launch, this requirement is not met merely because nothing reports a violation. |
 
 ### 8.2 Security and isolation — `NFR-SEC`
 
 | ID | Priority | Requirement |
 |---|---|---|
-| NFR-SEC-1 | Must | Cross-tenant read or write is impossible through any endpoint. This is verified by an automated test suite that attempts every admin endpoint with a second tenant's identifiers. |
+| NFR-SEC-1 | Must | Cross-tenant read or write is impossible through any endpoint. This is verified by an automated test suite that attempts every admin endpoint with a second tenant's identifiers. The suite runs against the deployed topology through `edge`, not against the `api` process directly, because `api` cannot know which hostname the browser used. It additionally asserts, from a real browser context: that `/admin/*` and `/auth/*` are unroutable from the wildcard host; that a client-supplied `X-User-Id` does not reach `api` on any route; that the session cookie carries no `Domain` attribute and `Path=/api`; and that the cookie is not sent on a request to a tenant subdomain. |
 | NFR-SEC-2 | Must | All tenant-supplied text is escaped on render. Rich text, if permitted in any field, passes an allowlist sanitiser server-side before storage. |
-| NFR-SEC-3 | Must | Integration credentials and OAuth tokens are encrypted at rest with a key held outside the database. The same custody rule governs every service-to-service secret and the gateway's EdDSA signing key (FR-AUTH-12): the shared secrets guarding `POST /auth/exchange`, `POST /internal/revalidate`, and `POST /api/auth/revoke-all`, and the signing key itself, are held outside the database and outside the deployment image, and are supplied at run time. |
+| NFR-SEC-3 | Must | Integration credentials and OAuth tokens are encrypted at rest with a key held outside the database. The same custody rule governs every service-to-service secret: the shared secret guarding `POST /internal/revalidate` is held outside the database and outside the deployment image, and is supplied at run time. |
 | NFR-SEC-4 | Must | A strict Content Security Policy is served on public pages, permitting only the platform's own origins, the CDN, a configured analytics origin, GitHub's card service in `img-src`, and Credly's badge host in `frame-src`. No third-party origin is granted `script-src`. *(13.6, 13.9)* |
 | NFR-SEC-5 | Must | Outbound requests from the sync worker are restricted against SSRF: no private ranges, no link-local addresses, redirect chains re-validated at each hop. |
 | NFR-SEC-6 | Should | Content mutations are recorded in `auditLog`. |
-| NFR-SEC-7 | Must | Session tokens are unguessable — 256 bits of cryptographic randomness — and are stored only as SHA-256 hashes, so a database read yields no usable session. The gateway signing key is private to `gateway`, and `api` holds only the corresponding public key, so a compromised `api` can neither mint a session nor forge a caller identity. |
+| NFR-SEC-7 | Must | Session tokens are unguessable — 256 bits of cryptographic randomness — and are stored only as SHA-256 hashes, so a database read yields no usable session. No signing key exists in the system: identity is conveyed over a network boundary closed by construction rather than one secured by cryptography (FR-AUTH-12, NFR-SEC-8), and that trade is recorded in §2.6. |
+| NFR-SEC-8 | Must | No identity-bearing request header reaches `api` from outside the deployment. `edge` sets `X-User-Id` unconditionally on every proxied location (FR-EDGE-4), and `api` is not publicly routable (FR-EDGE-5). These two together are the whole of what makes the header trustworthy, and neither alone is sufficient. |
 
 NFR-SEC-2's rich-text clause was written against a hypothetical. FR-SEC-PROJ-12 is its first concrete instance: the three project `bodies.*` fields are the first rich text the system accepts, and they fix the allowlist — paragraph, lists, strong, emphasis, underline, line break, no attributes — applied server-side before storage. Any rich-text field added later, in any section type, inherits that same allowlist rather than negotiating its own. That inheritance holds only because the allowlist exists in one place: a single constant exported by the registry package (§2.1) and applied by `api` at write time, which a new rich-text field imports rather than declaring its own.
 
@@ -689,7 +719,9 @@ The project modal (FR-SEC-PROJ-13) is the first focus-trapped overlay in the sys
 | NFR-OPS-1 | Must | An outage of the API or database does not take down already-cached public pages. |
 | NFR-OPS-2 | Must | Sync worker failures never affect public page availability. |
 | NFR-OPS-3 | Should | Daily database backups with 30-day retention. |
-| NFR-OPS-4 | Should | Structured logging with a request id propagated across all three deployables. |
+| NFR-OPS-4 | Should | Structured logging with a request id propagated across `edge`, `api`, `admin`, and `portfolio`. `edge` originates the request id when the inbound request carries none. |
+| NFR-OPS-5 | Must | `edge`'s configuration is deployed from the monorepo as part of a release, is reviewed as code, and is covered by the suite of NFR-SEC-1. A change to it is a change to the system, not to its environment. |
+| NFR-OPS-6 | Should | The development environment reproduces the production topology: real hostnames under a subdomain delegated to loopback, a locally-trusted wildcard certificate, and the same `edge` configuration. `localhost` and its subdomains are not sufficient, because browsers refuse `Domain=` cookies on single-label domains and the cookie scoping this design depends on therefore cannot be exercised there. |
 
 ---
 
@@ -761,7 +793,7 @@ Every business requirement maps to at least one software requirement, or is reco
 | 18.6 | FR-CFG-7 |
 | 18.7 | FR-REG-1, FR-CFG-7 — every declared field is editable through generated admin forms, with no developer or agency involvement |
 
-FR-AUTH-7, FR-AUTH-8 … 13, FR-REG-10, NFR-SEC-7, and the `www` deployable (§2.1) trace to no business requirement. The business document describes the content of one portfolio, not how an account comes to hold one, nor how a signed-in tenant's requests are carried to it; like the rest of FR-AUTH, they originate in this specification.
+FR-AUTH-7, FR-AUTH-8 … 17, FR-EDGE-1 … 6, FR-REG-10, NFR-SEC-7, NFR-SEC-8, NFR-OPS-5, NFR-OPS-6, and the `www` and `edge` deployables (§2.1) trace to no business requirement. The business document describes the content of one portfolio, not how an account comes to hold one, nor how a signed-in tenant's requests are carried to it; like the rest of FR-AUTH, they originate in this specification.
 
 ---
 
@@ -796,5 +828,14 @@ FR-AUTH-7, FR-AUTH-8 … 13, FR-REG-10, NFR-SEC-7, and the `www` deployable (§2
 8. **Certification overlap.** A certification is both an achievement (11.1) and the outcome of a training. Business §11a.4 states that a credential is listed once and never in both sections, but does not say how that is upheld: admin needs help text steering the tenant to one section or the other, or entries will be duplicated.
 9. **Testimonials from LinkedIn.** Requirement 8.3 says testimonials "can be pulled from LinkedIn", but 13.4 scopes the LinkedIn import to experience and education only, and FR-INT-10 follows 13.4. The two business requirements disagree with each other. Either 13.4 widens to cover recommendations — which changes the import's scope, its permission requirements, and depends on what LinkedIn actually exposes — or 8.3's clause is dropped and testimonials stay manual. Specified as manual for now, following 13.4. This one belongs to the business document rather than to this specification.
 10. **Apex site rendering.** `www` (§2.1) is client-rendered, and nothing guarantees its content reaches a crawler or link unfurler that does not run JavaScript: FR-PUB-4 covers portfolio pages only. Three options: (a) accept client rendering — the page is marketing copy and the major search crawlers execute JavaScript, at the cost of empty previews wherever one does not; (b) prerender to static HTML at build time — `www` fetches nothing, so its output is fixed per build and it stays static files, at the cost of a prerender step and hydration; (c) extend FR-PUB-4, or add a requirement, to cover `www` with server-side rendering, which makes `www` a server rather than static files. Not decided.
-11. **Gateway runtime and framework.** §2.1 records `gateway`'s technology as `<<TBD>>`. It has to hold the OAuth start and callback endpoints, read and write `sessions`, mint an EdDSA JWT on every admin request, and stream proxied responses through untouched (§2.6). Nothing in the design fixes what it is built on, and no choice has been made.
-12. **Signing key rotation.** FR-AUTH-12 gives `gateway` a private EdDSA key and `api` the matching public key, but nothing specifies how the pair is rotated, how `api` learns the new public key, or whether both keys are honoured during an overlap. Until that is settled a rotation is an outage: the 60-second token lifetime bounds how long a token is valid, not how `api` comes to trust the key that signed it.
+11. **Application gateway — resolved (0.8).** There is no application gateway. Routing moves to `edge`, an nginx reverse proxy the deployment already required in order to terminate the wildcard certificate and separate the admin host from the tenant wildcard; session resolution, OAuth, and account state move into `api` as a third module tree. §2.1, §2.5, §2.6, §7.3, §7.4, the FR-AUTH block, and the new FR-EDGE group are rewritten accordingly.
+12. **Signing key rotation — withdrawn (0.8).** No signing key exists. Identity is an `X-User-Id` header injected by `edge` onto a hop that is not publicly routable (FR-AUTH-12, FR-EDGE-5, NFR-SEC-8). The question returns unchanged the moment `api` becomes publicly reachable for any reason.
+13. **Tenant content on the platform's registrable domain.** `alice.openfolio.site` and `admin.openfolio.site` are the same site, with two consequences the specification has not previously acknowledged. A tenant page can set `Domain=openfolio.site` cookies through `document.cookie`, which are then sent to the admin host alongside the host-only session cookie and are indistinguishable from it at the server — cookie tossing. And `SameSite=Lax` keys on site rather than origin, so it affords no protection between a tenant page and the admin host. The usual defence against the first is the `__Host-` cookie prefix, which requires `Path=/` and is therefore incompatible with FR-AUTH-3. Neither is caused by this amendment; both were equally present in v0.7. The structural fix is to serve tenant portfolios from a second registrable domain, leaving `openfolio.site` to `www`, `admin`, and internal use — the pattern `vercel.app`/`vercel.com` and `github.io`/`github.com` exist for this reason. The cost is a second domain, a second wildcard certificate, and tenant URLs that no longer carry the brand domain, the last of which is a product decision. Not decided; to be decided before launch.
+14. **Identity subrequest cost.** nginx does not cache `auth_request` results, so every admin request costs one internal round trip into `api` and one indexed read of `sessions`. If NFR-PERF-5 is missed, the options are a Redis-backed session store with MongoDB as the record of truth — Redis is already in the stack, and revocation becomes a key delete — or a proxy whose external-authorization filter supports caching. Neither is specified now, because at v1 traffic neither is warranted.
+15. **Account linking across providers.** FR-AUTH-1 offers GitHub and Google, and §5.1 places a unique index on `email` alongside the compound index on `(provider, providerId)`. Together they mean a Google sign-in returning an email already held by a GitHub user cannot create a second user, and nothing specifies what happens instead. Three options: link the identities onto the existing user, so that either provider signs into one account; refuse the sign-in with a message naming the original provider; or drop the unique index on `email` and allow two accounts with one address, which makes the address useless as an identifier and gives one person two portfolios. Not decided. It blocks the sign-in implementation, since the upsert cannot be written without an answer.
+
+### 10.4 Extraction seam
+
+The auth module is a module for reasons of cost, not principle: at one engineer and pre-launch traffic, a separate deployable would buy independent deploys and independent scaling that nothing yet needs, and would cost network calls, partial-failure handling, and a shared release anyway. The boundary it would need is therefore enforced in code now — its own collections, its own guards, no shared DTOs, an ESLint zone, and FR-AUTH-17 as the only way in.
+
+Extraction becomes worthwhile when any of these holds: a second product shares the account system; a compliance boundary requires auth to be deployed and audited separately; or auth must be patched without redeploying the content APIs. The work is then to replace FR-AUTH-17's in-process implementation with an HTTP client, move `users` and `sessions` to the new service, and repoint `edge`'s `auth_request` at it. §2.6 does not otherwise change, and neither does the admin surface.
