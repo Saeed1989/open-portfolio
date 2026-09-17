@@ -16,6 +16,7 @@ portfolio through an admin panel, and publishes it at `{slug}.site.com` — no c
 |---|---|---|
 | `edge` | nginx | `site.com`, `admin.site.com`, `*.site.com` — terminates TLS, routes by host, resolves identity |
 | `api` | NestJS | not publicly routable — public, admin, and auth surfaces, reachable only from `edge` |
+| `api` | NestJS | `api.site.com` — public read-only surface + session-auth + admin surface |
 | `admin` | Next.js | `admin.site.com` — OAuth session required |
 | `portfolio` | Next.js SSR/ISR | `*.site.com` wildcard — fully public |
 | `www` | Static SPA | `site.com` apex — marketing site, fully public |
