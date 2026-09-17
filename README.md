@@ -14,7 +14,7 @@ portfolio through an admin panel, and publishes it at `{slug}.site.com` — no c
 
 | Component | Tech | Exposure |
 |---|---|---|
-| `api` | NestJS | `api.site.com` — public read-only surface + session-auth admin surface |
+| `api` | NestJS | `api.site.com` — public read-only surface + session-auth + admin surface |
 | `admin` | Next.js | `admin.site.com` — OAuth session required |
 | `portfolio` | Next.js SSR/ISR | `*.site.com` wildcard — fully public |
 | `db` | MongoDB | internal |
