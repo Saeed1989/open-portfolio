@@ -8,13 +8,14 @@ import {
 } from '@nestjs/common';
 import {
   ApiOkResponse,
+  ApiHeader,
   ApiOperation,
-  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
 import { ApiKeyGuard } from '../guards/api-key.guard';
+import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
 import { AdminSeoDto } from './dto/admin-seo.dto';
 import { AdminThemeDto } from './dto/admin-theme.dto';
@@ -23,7 +24,8 @@ import { UpdateSlugDto } from './dto/update-slug.dto';
 import { PortfolioService } from './portfolio.service';
 
 @ApiTags('portfolio')
-@ApiSecurity('api-key')
+@ApiHeader(USER_ID_HEADER)
+@ApiHeader(API_KEY_HEADER)
 @ApiUnauthorizedResponse({
   description: 'Missing or invalid API key or user id.',
 })

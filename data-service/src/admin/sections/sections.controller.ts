@@ -16,15 +16,16 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiHeader,
   ApiOperation,
   ApiParam,
-  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SECTION_TYPES, type SectionType } from '@portfolio/registry';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
 import { ApiKeyGuard } from '../guards/api-key.guard';
+import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { AdminSectionDto } from './dto/admin-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { SectionsService } from './sections.service';
@@ -39,7 +40,8 @@ const ITEM_BODY = {
 } as const;
 
 @ApiTags('sections')
-@ApiSecurity('api-key')
+@ApiHeader(USER_ID_HEADER)
+@ApiHeader(API_KEY_HEADER)
 @ApiUnauthorizedResponse({
   description: 'Missing or invalid API key or user id.',
 })

@@ -53,10 +53,6 @@ async function bootstrap(): Promise<void> {
         )
         .setVersion('0.1.0')
         .addServer(serverUrl)
-        .addApiKey(
-          { type: 'apiKey', name: 'X-Api-Key', in: 'header' },
-          'api-key',
-        )
         .build(),
       { include: [AdminModule] },
     );

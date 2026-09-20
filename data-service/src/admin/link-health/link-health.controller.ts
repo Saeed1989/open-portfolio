@@ -6,18 +6,20 @@ import {
 } from '@nestjs/common';
 import {
   ApiOkResponse,
+  ApiHeader,
   ApiOperation,
-  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
 import { ApiKeyGuard } from '../guards/api-key.guard';
+import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { LinkHealthDto } from './dto/link-health.dto';
 import { LinkHealthService } from './link-health.service';
 
 @ApiTags('link-health')
-@ApiSecurity('api-key')
+@ApiHeader(USER_ID_HEADER)
+@ApiHeader(API_KEY_HEADER)
 @ApiUnauthorizedResponse({
   description: 'Missing or invalid API key or user id.',
 })
