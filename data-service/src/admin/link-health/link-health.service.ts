@@ -1,6 +1,6 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { LinkHealth } from '../../schemas/link-health.schema';
 import { LinkHealthDto } from './dto/link-health.dto';
 
@@ -11,7 +11,22 @@ export class LinkHealthService {
     private readonly linkHealth: Model<LinkHealth>,
   ) {}
 
-  list(portfolioId: string): Promise<LinkHealthDto[]> {
-    throw new NotImplementedException();
+  async list(portfolioId: string | null): Promise<LinkHealthDto[]> {
+    if (portfolioId === null)
+      throw new NotFoundException('portfolio_not_found');
+
+    const rows = await this.linkHealth
+      .find({ portfolioId: new Types.ObjectId(portfolioId) })
+      .lean();
+
+    return rows.map((row) => ({
+      sectionType: row.sectionType,
+      itemId: row.itemId,
+      url: row.url,
+      state: row.state,
+      statusCode: row.statusCode,
+      lastCheckedAt: row.lastCheckedAt,
+      consecutiveFailures: row.consecutiveFailures ?? 0,
+    }));
   }
 }

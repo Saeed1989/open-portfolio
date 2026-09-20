@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiHeader,
   ApiOperation,
   ApiParam,
   ApiTags,
@@ -24,7 +24,8 @@ import {
 } from '@nestjs/swagger';
 import { SECTION_TYPES, type SectionType } from '@portfolio/registry';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
+import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { AdminSectionDto } from './dto/admin-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { SectionsService } from './sections.service';
@@ -39,9 +40,12 @@ const ITEM_BODY = {
 } as const;
 
 @ApiTags('sections')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiHeader(USER_ID_HEADER)
+@ApiHeader(API_KEY_HEADER)
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin/portfolio/sections')
 export class SectionsController {
   constructor(private readonly sections: SectionsService) {}
@@ -50,7 +54,7 @@ export class SectionsController {
   @ApiOperation({ summary: 'List the draft sections (FR-CFG-1)' })
   @ApiOkResponse({ type: [AdminSectionDto] })
   list(@Tenant() tenant: TenantScope): Promise<AdminSectionDto[]> {
-    throw new NotImplementedException();
+    return this.sections.list(tenant.portfolioId);
   }
 
   @Patch(':type')

@@ -5,7 +5,26 @@
       "get": {
         "operationId": "PortfolioController_getMe",
         "summary": "Account behind the current session (FR-AUTH-3)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -18,16 +37,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "portfolio"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -35,7 +49,26 @@
       "get": {
         "operationId": "PortfolioController_getDraft",
         "summary": "Full draft of the session's portfolio (FR-TEN-4)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -48,16 +81,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "portfolio"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -65,7 +93,26 @@
       "patch": {
         "operationId": "PortfolioController_updateTheme",
         "summary": "Update the draft theme (FR-THM-1)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -88,16 +135,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "portfolio"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -105,7 +147,26 @@
       "patch": {
         "operationId": "PortfolioController_updateSeo",
         "summary": "Update the draft SEO fields (FR-PUB-1)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -128,16 +189,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "portfolio"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -145,7 +201,26 @@
       "patch": {
         "operationId": "PortfolioController_updateSlug",
         "summary": "Change the portfolio slug (FR-DAT-1)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -168,16 +243,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "portfolio"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -185,7 +255,26 @@
       "get": {
         "operationId": "SectionsController_list",
         "summary": "List the draft sections (FR-CFG-1)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -201,16 +290,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "sections"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -219,6 +303,24 @@
         "operationId": "SectionsController_update",
         "summary": "Toggle, reorder, or replace a section's content (FR-CFG-3)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "type",
             "required": true,
@@ -265,16 +367,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "sections"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -283,6 +380,24 @@
         "operationId": "SectionsController_addItem",
         "summary": "Add an item to a collection section (FR-API-4)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "type",
             "required": true,
@@ -331,16 +446,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "sections"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -349,6 +459,24 @@
         "operationId": "SectionsController_updateItem",
         "summary": "Update an item in a collection section (FR-API-4)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "type",
             "required": true,
@@ -406,22 +534,35 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "sections"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       },
       "delete": {
         "operationId": "SectionsController_removeItem",
         "summary": "Remove an item from a collection section (FR-API-4)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "type",
             "required": true,
@@ -460,16 +601,11 @@
             "description": "Removed."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "sections"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -477,7 +613,26 @@
       "post": {
         "operationId": "MediaController_createUploadUrl",
         "summary": "Issue a signed upload URL (FR-MED-1)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -500,16 +655,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "media"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -518,6 +668,24 @@
         "operationId": "MediaController_remove",
         "summary": "Delete a media asset of the session's portfolio (FR-TEN-4)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "id",
             "required": true,
@@ -533,16 +701,11 @@
             "description": "Deleted."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "media"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -550,7 +713,26 @@
       "get": {
         "operationId": "IntegrationsController_list",
         "summary": "List connections with status and cached payload (FR-INT-3)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -566,16 +748,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "integrations"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -583,7 +760,26 @@
       "post": {
         "operationId": "IntegrationsController_importCredly",
         "summary": "Populate achievements from a public Credly profile (FR-INT-13)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -606,16 +802,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "integrations"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -623,7 +814,26 @@
       "post": {
         "operationId": "IntegrationsController_addCredlyBadge",
         "summary": "Add one badge from a pasted Credly embed code (FR-INT-14)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -646,16 +856,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "integrations"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -664,6 +869,24 @@
         "operationId": "IntegrationsController_connect",
         "summary": "Connect an integration provider (FR-INT-2)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "provider",
             "required": true,
@@ -701,22 +924,35 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "integrations"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       },
       "delete": {
         "operationId": "IntegrationsController_disconnect",
         "summary": "Disconnect an integration provider (FR-INT-6)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "provider",
             "required": true,
@@ -737,16 +973,11 @@
             "description": "Disconnected."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "integrations"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -755,6 +986,24 @@
         "operationId": "IntegrationsController_requestSync",
         "summary": "Request a manual refresh (FR-INT-2)",
         "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "provider",
             "required": true,
@@ -775,16 +1024,11 @@
             "description": "Refresh handed to the sync worker."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "integrations"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -792,7 +1036,26 @@
       "post": {
         "operationId": "PublishController_publish",
         "summary": "Validate and publish the draft (FR-PUB-6)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -805,16 +1068,11 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "publish"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -822,22 +1080,36 @@
       "post": {
         "operationId": "PublishController_unpublish",
         "summary": "Return the subdomain to the 404 state (FR-PUB-8)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "204": {
             "description": "Unpublished."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "publish"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     },
@@ -845,7 +1117,26 @@
       "get": {
         "operationId": "LinkHealthController_list",
         "summary": "Link check results (FR-SEC-PROJ-9)",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -861,23 +1152,18 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
           "link-health"
-        ],
-        "security": [
-          {
-            "cookie": []
-          }
         ]
       }
     }
   },
   "info": {
     "title": "Portfolio API — admin",
-    "description": "Session-authenticated. Reads and writes the draft of the session's portfolio (SRS §7.2).",
+    "description": "API-key authenticated. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
     "version": "0.1.0",
     "contact": {}
   },
@@ -888,14 +1174,29 @@
     }
   ],
   "components": {
-    "securitySchemes": {
-      "cookie": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "session"
-      }
-    },
     "schemas": {
+      "MePortfolioDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "alice"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unpublished",
+              "published",
+              "suspended"
+            ],
+            "example": "published"
+          }
+        },
+        "required": [
+          "slug",
+          "status"
+        ]
+      },
       "MeDto": {
         "type": "object",
         "properties": {
@@ -918,12 +1219,22 @@
           "avatarUrl": {
             "type": "string",
             "example": "https://avatars.githubusercontent.com/u/1"
+          },
+          "portfolio": {
+            "nullable": true,
+            "description": "Null when the tenant has no portfolio yet (FR-AUTH-7).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MePortfolioDto"
+              }
+            ]
           }
         },
         "required": [
           "provider",
           "email",
-          "displayName"
+          "displayName",
+          "portfolio"
         ]
       },
       "AdminSectionDto": {

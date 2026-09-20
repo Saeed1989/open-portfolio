@@ -7,14 +7,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiCookieAuth,
   ApiOkResponse,
+  ApiHeader,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
+import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
 import { AdminSeoDto } from './dto/admin-seo.dto';
 import { AdminThemeDto } from './dto/admin-theme.dto';
@@ -23,9 +24,12 @@ import { UpdateSlugDto } from './dto/update-slug.dto';
 import { PortfolioService } from './portfolio.service';
 
 @ApiTags('portfolio')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiHeader(USER_ID_HEADER)
+@ApiHeader(API_KEY_HEADER)
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin')
 export class PortfolioController {
   constructor(private readonly portfolio: PortfolioService) {}
@@ -34,14 +38,14 @@ export class PortfolioController {
   @ApiOperation({ summary: 'Account behind the current session (FR-AUTH-3)' })
   @ApiOkResponse({ type: MeDto })
   getMe(@Tenant() tenant: TenantScope): Promise<MeDto> {
-    throw new NotImplementedException();
+    return this.portfolio.getMe(tenant.userId);
   }
 
   @Get('portfolio')
   @ApiOperation({ summary: "Full draft of the session's portfolio (FR-TEN-4)" })
   @ApiOkResponse({ type: AdminPortfolioDto })
   getDraft(@Tenant() tenant: TenantScope): Promise<AdminPortfolioDto> {
-    throw new NotImplementedException();
+    return this.portfolio.getDraft(tenant.portfolioId);
   }
 
   @Patch('portfolio/theme')
