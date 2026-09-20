@@ -7,22 +7,24 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiCookieAuth,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
 import { PublishResultDto } from './dto/publish-result.dto';
 import { PublishService } from './publish.service';
 
 @ApiTags('publish')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiSecurity('api-key')
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin')
 export class PublishController {
   constructor(private readonly publishing: PublishService) {}

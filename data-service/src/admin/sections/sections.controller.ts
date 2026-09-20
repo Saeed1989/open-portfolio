@@ -13,18 +13,18 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SECTION_TYPES, type SectionType } from '@portfolio/registry';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
 import { AdminSectionDto } from './dto/admin-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { SectionsService } from './sections.service';
@@ -39,9 +39,11 @@ const ITEM_BODY = {
 } as const;
 
 @ApiTags('sections')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiSecurity('api-key')
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin/portfolio/sections')
 export class SectionsController {
   constructor(private readonly sections: SectionsService) {}

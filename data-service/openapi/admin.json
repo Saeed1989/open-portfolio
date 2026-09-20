@@ -18,7 +18,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -26,7 +26,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -48,7 +48,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -56,7 +56,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -88,7 +88,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -96,7 +96,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -128,7 +128,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -136,7 +136,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -168,7 +168,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -176,7 +176,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -201,7 +201,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -209,7 +209,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -265,7 +265,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -273,7 +273,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -331,7 +331,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -339,7 +339,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -406,7 +406,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -414,7 +414,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       },
@@ -460,7 +460,7 @@
             "description": "Removed."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -468,7 +468,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -500,7 +500,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -508,7 +508,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -533,7 +533,7 @@
             "description": "Deleted."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -541,7 +541,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -566,7 +566,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -574,7 +574,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -606,7 +606,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -614,7 +614,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -646,7 +646,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -654,7 +654,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -701,7 +701,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -709,7 +709,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       },
@@ -737,7 +737,7 @@
             "description": "Disconnected."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -745,7 +745,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -775,7 +775,7 @@
             "description": "Refresh handed to the sync worker."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -783,7 +783,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -805,7 +805,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -813,7 +813,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -828,7 +828,7 @@
             "description": "Unpublished."
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -836,7 +836,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -861,7 +861,7 @@
             }
           },
           "401": {
-            "description": "No valid session."
+            "description": "Missing or invalid API key or user id."
           }
         },
         "tags": [
@@ -869,7 +869,7 @@
         ],
         "security": [
           {
-            "cookie": []
+            "api-key": []
           }
         ]
       }
@@ -877,7 +877,7 @@
   },
   "info": {
     "title": "Portfolio API — admin",
-    "description": "Session-authenticated. Reads and writes the draft of the session's portfolio (SRS §7.2).",
+    "description": "API-key authenticated. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
     "version": "0.1.0",
     "contact": {}
   },
@@ -889,10 +889,10 @@
   ],
   "components": {
     "securitySchemes": {
-      "cookie": {
+      "api-key": {
         "type": "apiKey",
-        "in": "cookie",
-        "name": "session"
+        "in": "header",
+        "name": "X-Api-Key"
       }
     },
     "schemas": {

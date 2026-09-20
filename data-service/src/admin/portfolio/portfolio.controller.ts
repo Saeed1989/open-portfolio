@@ -7,14 +7,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiCookieAuth,
   ApiOkResponse,
   ApiOperation,
+  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
 import { AdminSeoDto } from './dto/admin-seo.dto';
 import { AdminThemeDto } from './dto/admin-theme.dto';
@@ -23,9 +23,11 @@ import { UpdateSlugDto } from './dto/update-slug.dto';
 import { PortfolioService } from './portfolio.service';
 
 @ApiTags('portfolio')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiSecurity('api-key')
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin')
 export class PortfolioController {
   constructor(private readonly portfolio: PortfolioService) {}

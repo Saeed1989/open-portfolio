@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -49,11 +49,14 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('Portfolio API — admin')
         .setDescription(
-          "Session-authenticated. Reads and writes the draft of the session's portfolio (SRS §7.2).",
+          "API-key authenticated. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
         )
         .setVersion('0.1.0')
         .addServer(serverUrl)
-        .addCookieAuth('session')
+        .addApiKey(
+          { type: 'apiKey', name: 'X-Api-Key', in: 'header' },
+          'api-key',
+        )
         .build(),
       { include: [AdminModule] },
     );
@@ -73,7 +76,9 @@ async function bootstrap(): Promise<void> {
     );
   }
 
-  await app.listen(config.getOrThrow<string>('PORT'));
+  const port = config.getOrThrow<string>('PORT');
+  await app.listen(port);
+  Logger.log(`Listening on http://localhost:${port}`, 'Bootstrap');
 }
 
 void bootstrap();

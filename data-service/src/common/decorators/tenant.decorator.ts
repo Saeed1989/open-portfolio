@@ -11,6 +11,6 @@ export interface TenantScope {
  * a path, body or query parameter (FR-API-3).
  */
 export const Tenant = createParamDecorator((): TenantScope => {
-  // TODO: return the scope SessionGuard attaches to the request.
+  // TODO: return the scope ApiKeyGuard attaches to the request.
   throw new NotImplementedException();
 });

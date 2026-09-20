@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -26,7 +26,7 @@ import {
   INTEGRATION_PROVIDERS,
   type IntegrationProvider,
 } from '../../schemas/integration-connection.schema';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
 import { AdminSectionDto } from '../sections/dto/admin-section.dto';
 import { ConnectIntegrationDto } from './dto/connect-integration.dto';
 import { CredlyBadgeDto } from './dto/credly-badge.dto';
@@ -37,9 +37,11 @@ import { IntegrationsService } from './integrations.service';
 const PROVIDER_PARAM = { name: 'provider', enum: [...INTEGRATION_PROVIDERS] };
 
 @ApiTags('integrations')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiSecurity('api-key')
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin/integrations')
 export class IntegrationsController {
   constructor(private readonly integrations: IntegrationsService) {}
