@@ -7,14 +7,18 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { TenantScope } from '../../common/decorators/tenant.decorator';
+import { Portfolio } from '../../schemas/portfolio.schema';
 
 /** The only shape `users._id` serialises to. */
 const USER_ID = /^[0-9a-f]{24}$/i;
 
 /** An admin request, once the guard has resolved who it acts for. */
-export interface AdminRequest extends IncomingMessage {
-  userId: string;
-}
+export interface AdminRequest extends IncomingMessage, Writable<TenantScope> {}
+
+type Writable<T> = { -readonly [K in keyof T]: T[K] };
 
 /**
  * Admin requests carry two headers and the guard reads both. `X-Api-Key`
@@ -23,17 +27,22 @@ export interface AdminRequest extends IncomingMessage {
  * tenant, and the user id is a value any client can set.
  *
  * No cookie is parsed and no session is looked up — the caller already
- * resolved the session (SRS §2.6).
+ * resolved the session (SRS §2.6). Having accepted the identity, the guard
+ * resolves the tenant's portfolio once, so that scope resolution has one
+ * implementation and every query below it is scoped by the result.
  */
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   private readonly keyDigest: Buffer;
 
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    @InjectModel(Portfolio.name) private readonly portfolios: Model<Portfolio>,
+  ) {
     this.keyDigest = digest(config.getOrThrow<string>('ADMIN_API_KEY'));
   }
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AdminRequest>();
 
     const presented = request.headers['x-api-key'];
@@ -49,7 +58,15 @@ export class ApiKeyGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
+    /* One indexed read on a unique index. A tenant with no portfolio is not
+       an error here — §7.2 has three routes that answer without one. */
+    const portfolio = await this.portfolios
+      .findOne({ userId: new Types.ObjectId(userId) })
+      .select('_id')
+      .lean();
+
     request.userId = userId;
+    request.portfolioId = portfolio ? portfolio._id.toHexString() : null;
     return true;
   }
 }

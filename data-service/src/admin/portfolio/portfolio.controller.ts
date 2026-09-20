@@ -38,14 +38,14 @@ export class PortfolioController {
   @ApiOperation({ summary: 'Account behind the current session (FR-AUTH-3)' })
   @ApiOkResponse({ type: MeDto })
   getMe(@Tenant() tenant: TenantScope): Promise<MeDto> {
-    throw new NotImplementedException();
+    return this.portfolio.getMe(tenant.userId);
   }
 
   @Get('portfolio')
   @ApiOperation({ summary: "Full draft of the session's portfolio (FR-TEN-4)" })
   @ApiOkResponse({ type: AdminPortfolioDto })
   getDraft(@Tenant() tenant: TenantScope): Promise<AdminPortfolioDto> {
-    throw new NotImplementedException();
+    return this.portfolio.getDraft(tenant.portfolioId);
   }
 
   @Patch('portfolio/theme')

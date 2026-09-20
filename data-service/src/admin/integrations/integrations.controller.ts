@@ -54,7 +54,7 @@ export class IntegrationsController {
   })
   @ApiOkResponse({ type: [IntegrationDto] })
   list(@Tenant() tenant: TenantScope): Promise<IntegrationDto[]> {
-    throw new NotImplementedException();
+    return this.integrations.list(tenant.portfolioId);
   }
 
   @Post('credly/import')

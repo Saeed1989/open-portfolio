@@ -1,6 +1,10 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Portfolio } from '../../schemas/portfolio.schema';
 import { User } from '../../schemas/user.schema';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
@@ -16,12 +20,63 @@ export class PortfolioService {
     @InjectModel(User.name) private readonly users: Model<User>,
   ) {}
 
-  getMe(userId: string): Promise<MeDto> {
-    throw new NotImplementedException();
+  /* Answers with or without a portfolio, so it takes the user id rather than
+     the scope's portfolio id (§7.2). */
+  async getMe(userId: string): Promise<MeDto> {
+    const [user, portfolio] = await Promise.all([
+      this.users.findById(new Types.ObjectId(userId)).lean(),
+      this.portfolios
+        .findOne({ userId: new Types.ObjectId(userId) })
+        .select('slug status')
+        .lean(),
+    ]);
+    if (!user) throw new NotFoundException('user_not_found');
+
+    /* Allowlisted: `providerId` and `status` stay internal. */
+    return {
+      provider: user.provider,
+      email: user.email,
+      displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      portfolio: portfolio
+        ? { slug: portfolio.slug, status: portfolio.status }
+        : null,
+    };
   }
 
-  getDraft(portfolioId: string): Promise<AdminPortfolioDto> {
-    throw new NotImplementedException();
+  async getDraft(portfolioId: string | null): Promise<AdminPortfolioDto> {
+    if (portfolioId === null)
+      throw new NotFoundException('portfolio_not_found');
+
+    /* `published` is excluded: admin reads and writes `draft` only (§2.4). */
+    const portfolio = await this.portfolios
+      .findById(new Types.ObjectId(portfolioId))
+      .select('-published')
+      .lean();
+    if (!portfolio) throw new NotFoundException('portfolio_not_found');
+
+    const draft = portfolio.draft;
+    return {
+      slug: portfolio.slug,
+      status: portfolio.status,
+      registryVersion: portfolio.registryVersion,
+      presetId: portfolio.presetId,
+      draft: {
+        sections: [...(draft?.sections ?? [])]
+          .sort((a, b) => a.order - b.order)
+          .map((section) => ({
+            type: section.type,
+            enabled: section.enabled,
+            order: section.order,
+            content: section.content ?? {},
+          })),
+        theme: (draft?.theme ?? {}) as AdminThemeDto,
+        seo: (draft?.seo ?? {}) as AdminSeoDto,
+        analytics: draft?.analytics ?? null,
+      },
+      publishedAt: portfolio.publishedAt,
+      version: portfolio.version,
+    };
   }
 
   updateTheme(

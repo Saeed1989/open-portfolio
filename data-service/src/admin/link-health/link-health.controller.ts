@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  NotImplementedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiHeader,
@@ -32,6 +27,6 @@ export class LinkHealthController {
   @ApiOperation({ summary: 'Link check results (FR-SEC-PROJ-9)' })
   @ApiOkResponse({ type: [LinkHealthDto] })
   list(@Tenant() tenant: TenantScope): Promise<LinkHealthDto[]> {
-    throw new NotImplementedException();
+    return this.linkHealth.list(tenant.portfolioId);
   }
 }

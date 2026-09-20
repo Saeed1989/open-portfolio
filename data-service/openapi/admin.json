@@ -1175,6 +1175,28 @@
   ],
   "components": {
     "schemas": {
+      "MePortfolioDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "alice"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unpublished",
+              "published",
+              "suspended"
+            ],
+            "example": "published"
+          }
+        },
+        "required": [
+          "slug",
+          "status"
+        ]
+      },
       "MeDto": {
         "type": "object",
         "properties": {
@@ -1197,12 +1219,22 @@
           "avatarUrl": {
             "type": "string",
             "example": "https://avatars.githubusercontent.com/u/1"
+          },
+          "portfolio": {
+            "nullable": true,
+            "description": "Null when the tenant has no portfolio yet (FR-AUTH-7).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MePortfolioDto"
+              }
+            ]
           }
         },
         "required": [
           "provider",
           "email",
-          "displayName"
+          "displayName",
+          "portfolio"
         ]
       },
       "AdminSectionDto": {

@@ -54,7 +54,7 @@ export class SectionsController {
   @ApiOperation({ summary: 'List the draft sections (FR-CFG-1)' })
   @ApiOkResponse({ type: [AdminSectionDto] })
   list(@Tenant() tenant: TenantScope): Promise<AdminSectionDto[]> {
-    throw new NotImplementedException();
+    return this.sections.list(tenant.portfolioId);
   }
 
   @Patch(':type')
