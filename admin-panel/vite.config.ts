@@ -17,5 +17,8 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    /* `e2e/` belongs to Playwright, which drives a real browser. Vitest would
+       collect those specs and fail on the first Playwright-only global. */
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
   },
 });

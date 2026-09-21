@@ -5,6 +5,7 @@ import type {
   PublishResult,
   SlugAvailabilityResult,
 } from '../api/dto';
+import { draftFor, writeSection } from './draft-store';
 import { mockState } from './state';
 import { NO_PORTFOLIO, TENANTS } from './tenants';
 
@@ -198,17 +199,109 @@ export const handlers = [
       return fail(404, 'portfolio_not_found', 'No portfolio for this account.');
     }
 
+    const draft = draftFor(mockState().tenant);
+
     return HttpResponse.json({
       slug: tenant.me.portfolio.slug,
       status: tenant.me.portfolio.status,
       registryVersion: 1,
       presetId: 'software-engineer',
-      draft: DRAFT,
+      draft: { ...DRAFT, sections: draft.sections },
       publishedAt:
         tenant.me.portfolio.status === 'unpublished'
           ? null
           : '2026-03-02T14:31:00.000Z',
-      version: tenant.me.portfolio.status === 'unpublished' ? 0 : 4,
+      version: draft.version,
+    } satisfies AdminPortfolio);
+  }),
+
+  /*
+   * PATCH one section (§7.2), honouring D3's precondition.
+   *
+   * The order below is the order a server would check in: a fault the
+   * developer switched on, then the precondition, then the content rule, then
+   * the write. Checking `If-Match` before the content rule matters — a stale
+   * write should be reported as stale even when what it carries would also
+   * have been refused.
+   */
+  http.patch('/api/admin/portfolio/sections/:type', async ({ request, params }) => {
+    const blocked = globalFault();
+    if (blocked) return blocked;
+
+    const { fault, tenant: tenantName } = mockState();
+    const tenant = current();
+    if (tenant.me.portfolio === null) {
+      return fail(404, 'portfolio_not_found', 'No portfolio for this account.');
+    }
+
+    const type = String(params['type']);
+    const draft = draftFor(tenantName);
+
+    if (fault === 'save_server_error') {
+      return fail(500, 'internal_error', 'The admin surface failed.');
+    }
+
+    const ifMatch = request.headers.get('If-Match');
+
+    /* `save_stale` moves the document out from under the write, so the 409 is
+       produced by the precondition rather than asserted. */
+    if (fault === 'save_stale') draft.version += 1;
+
+    if (ifMatch !== null && Number(ifMatch) !== draft.version) {
+      return HttpResponse.json(
+        {
+          error: {
+            code: 'stale_write',
+            message:
+              'This portfolio was saved somewhere else since you loaded it.',
+            fields: [],
+            current: {
+              slug: tenant.me.portfolio.slug,
+              status: tenant.me.portfolio.status,
+              registryVersion: 1,
+              presetId: 'software-engineer',
+              draft: { ...DRAFT, sections: draft.sections },
+              publishedAt: '2026-03-02T14:31:00.000Z',
+              version: draft.version,
+            },
+          },
+        },
+        { status: 409 },
+      );
+    }
+
+    if (fault === 'save_refused') {
+      /* A save-time content rule, not a publish gap: the write does not
+         happen and the message names the rule (artboard 39). */
+      return fail(
+        422,
+        'save_rule',
+        'Impact cannot be saved empty — it is the one content rule enforced at save.',
+        [
+          {
+            path: 'impact',
+            code: 'required_at_save',
+            message: 'State what changed. This field cannot be saved empty.',
+          },
+        ],
+      );
+    }
+
+    const body = (await request.json()) as {
+      content?: unknown;
+      enabled?: boolean;
+      order?: number;
+    };
+    const written = writeSection(tenantName, type, body);
+
+    return HttpResponse.json({
+      slug: tenant.me.portfolio.slug,
+      status: tenant.me.portfolio.status,
+      registryVersion: 1,
+      presetId: 'software-engineer',
+      draft: { ...DRAFT, sections: written.sections },
+      publishedAt: '2026-03-02T14:31:00.000Z',
+      version: written.version,
     } satisfies AdminPortfolio);
   }),
 
