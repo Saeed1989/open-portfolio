@@ -42,7 +42,10 @@ test('/dev/fields has no axe violations', async () => {
   );
 
   expect(summary).toEqual([]);
-});
+  /* axe walks every rendered node, and this page renders 11 components x 7
+     states x 2 themes. In jsdom that lands a little either side of Vitest's
+     5s default, so the budget is explicit rather than left to chance. */
+}, 30_000);
 
 test('every component renders in every state, in both themes', async () => {
   await renderPage();

@@ -10,6 +10,7 @@ import type {
   UploadUrl,
 } from './dto';
 import { AdminError, parseError } from './errors';
+import { preconditionHeaders } from './precondition';
 
 /*
  * The one place this app speaks to the server.
@@ -30,6 +31,8 @@ interface RequestInit_ {
   readonly method?: string;
   readonly body?: unknown;
   readonly signal?: AbortSignal | undefined;
+  /** D3: the document version this write was composed against. */
+  readonly ifMatch?: number | undefined;
 }
 
 async function call<T>(path: string, init: RequestInit_ = {}): Promise<T> {
@@ -38,13 +41,13 @@ async function call<T>(path: string, init: RequestInit_ = {}): Promise<T> {
     response = await fetch(path, {
       method: init.method ?? 'GET',
       credentials: 'same-origin',
-      headers:
-        init.body === undefined
-          ? { Accept: 'application/json' }
-          : {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
+      headers: {
+        Accept: 'application/json',
+        ...(init.body === undefined
+          ? {}
+          : { 'Content-Type': 'application/json' }),
+        ...preconditionHeaders(init.ifMatch),
+      },
       ...(init.body === undefined
         ? {}
         : { body: JSON.stringify(init.body) }),
@@ -86,6 +89,24 @@ export const adminApi = {
 
   portfolio: (signal?: AbortSignal) =>
     call<AdminPortfolio>(`${ADMIN}/portfolio`, { signal }),
+
+  /**
+   * Replace a section's content, toggle it, or reorder it (§7.2).
+   *
+   * One PATCH per section, which is what makes D2's per-section save machine
+   * possible: two sections edited in one sitting are two independent writes
+   * with independent failure states.
+   */
+  updateSection: (
+    type: string,
+    body: { content?: unknown; enabled?: boolean; order?: number },
+    ifMatch: number | undefined,
+    signal?: AbortSignal,
+  ) =>
+    call<AdminPortfolio>(
+      `${ADMIN}/portfolio/sections/${encodeURIComponent(type)}`,
+      { method: 'PATCH', body, ifMatch, signal },
+    ),
 
   updateTheme: (body: AdminTheme) =>
     call<AdminPortfolio>(`${ADMIN}/portfolio/theme`, { method: 'PATCH', body }),

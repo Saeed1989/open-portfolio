@@ -1,11 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { PublishAttemptedProvider } from './app-state/publish-attempted';
 import { DevFields } from './routes/DevFields';
+import { SectionEditorPage } from './routes/SectionEditorPage';
+import { SectionManagerPage } from './routes/SectionManagerPage';
 
 /*
- * M0 has one route. The shell navigation, the section editors, the preview and
- * the publish flow are all explicitly out of this milestone, so there is
- * nothing here to route between yet and no layout to hang them in.
+ * Three routes. `/sections/:type` is one page for every section type the
+ * registry declares — there is no route per type and no component per type.
+ *
+ * The section manager, sidebar navigation beyond a link list, section
+ * reordering, the preview and the publish flow are all out of this milestone.
  */
 
 const queryClient = new QueryClient({
@@ -24,12 +29,16 @@ const queryClient = new QueryClient({
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <PublishAttemptedProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/dev/fields" element={<DevFields />} />
-          <Route path="*" element={<Navigate to="/dev/fields" replace />} />
+          <Route path="/sections" element={<SectionManagerPage />} />
+          <Route path="/sections/:type" element={<SectionEditorPage />} />
+          <Route path="*" element={<Navigate to="/sections" replace />} />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </PublishAttemptedProvider>
     </QueryClientProvider>
   );
 }

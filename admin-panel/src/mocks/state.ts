@@ -25,7 +25,15 @@ export type Fault =
   /** The RSS connection is failing: last good payload still served, entry
    *  marked stale (FR-INT-3). Not an HTTP failure — the admin surface answers
    *  200 and the failure is in the payload. */
-  | 'rss_sync_failing';
+  | 'rss_sync_failing'
+  /** D3: the next section PATCH answers 409 stale_write with the current
+   *  document, whatever If-Match it carried. */
+  | 'save_stale'
+  /** D2's `refused`: the next section PATCH answers 422 on a save-time
+   *  content rule, with a field-level error. Nothing to retry. */
+  | 'save_refused'
+  /** D2's `failed`: the next section PATCH answers 500. Retryable. */
+  | 'save_server_error';
 
 export const FAULTS: readonly Fault[] = [
   'none',
@@ -35,6 +43,9 @@ export const FAULTS: readonly Fault[] = [
   'validation',
   'server',
   'rss_sync_failing',
+  'save_stale',
+  'save_refused',
+  'save_server_error',
 ];
 
 export interface MockState {

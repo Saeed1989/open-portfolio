@@ -17,6 +17,8 @@
  * the API as it stands and needs no change when the filter is written.
  */
 
+import { STALE_WRITE_CODE } from './precondition';
+
 export type AdminErrorKind =
   /** No session, or one that failed to resolve. `edge` answers this
    *  before the admin surface is reached (FR-EDGE-3, FR-AUTH-11). */
@@ -24,6 +26,9 @@ export type AdminErrorKind =
   /** The tenant already has a portfolio. Takes precedence over every slug
    *  error (§7.2). */
   | 'portfolio_exists'
+  /** D3: the write's `If-Match` no longer matches the document's version.
+   *  Carries the current document in `payload`. */
+  | 'stale_write'
   /** The slug belongs to another portfolio, is in another's slugHistory, or
    *  is in a deletion hold. A field-level error on `slug`. */
   | 'slug_taken'
@@ -50,6 +55,9 @@ export class AdminError extends Error {
   /** The API's own code when it sent one, e.g. `slug_reserved`. */
   readonly code: string | undefined;
   readonly fields: readonly FieldError[];
+  /** The error envelope's own body, for the codes that carry one — today
+   *  only `stale_write`, which returns the current document (D3). */
+  readonly payload: unknown;
 
   constructor(init: {
     kind: AdminErrorKind;
@@ -57,6 +65,7 @@ export class AdminError extends Error {
     message: string;
     code?: string | undefined;
     fields?: readonly FieldError[] | undefined;
+    payload?: unknown;
   }) {
     super(init.message);
     this.name = 'AdminError';
@@ -64,6 +73,7 @@ export class AdminError extends Error {
     this.status = init.status;
     this.code = init.code;
     this.fields = init.fields ?? [];
+    this.payload = init.payload ?? null;
   }
 
   /** The failures for one field, for rendering beneath its control. */
@@ -110,6 +120,7 @@ function kindFor(status: number, code: string | undefined): AdminErrorKind {
   if (status === 401 || status === 403) return 'unauthorized';
   if (status === 404) return 'portfolio_not_found';
   if (status === 409) {
+    if (code === STALE_WRITE_CODE) return 'stale_write';
     return code === 'slug_taken' ? 'slug_taken' : 'portfolio_exists';
   }
   /* 400 as well as 422: Nest's ValidationPipe answers 400 until FR-API-4's
@@ -145,6 +156,7 @@ export async function parseError(response: Response): Promise<AdminError> {
       message,
       code,
       fields: readFields(specified['fields']),
+      payload: specified,
     });
   }
 

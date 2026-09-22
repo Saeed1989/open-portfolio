@@ -1,6 +1,7 @@
 # admin
 
-The admin panel. M0 — base app, tokens, field system.
+The admin panel. M0 — base app, tokens, field system. M1 — registry-driven
+form renderer.
 
 A pure client-rendered React SPA (D0): Vite + React + TypeScript strict +
 Tailwind v4, built to static files. It has no server of its own, holds no
@@ -18,9 +19,24 @@ npm run build:mock   # same, plus the MSW worker (VITE_MOCKS=on)
 npm run typecheck && npm run lint && npm test
 ```
 
-`/dev/fields` is the only route. Everything else redirects to it, because the
-shell, the section editors, the preview and the publish flow are all out of
-this milestone.
+How the dev server reaches `api` is chosen by `ADMIN_DEV_MODE` — `mock`
+(default, MSW in the browser), `direct` (proxy straight to `api`, presenting
+the same `X-Api-Key` and `X-User-Id` that `edge` does, so it needs no change to
+`api`) or `edge` (no proxy; serve the build through `../edge`). Copy
+`.env.example` to `.env.local`. Nothing in it is `VITE_`-prefixed, so none of it
+can reach the bundle; `npm run build` fails if any of it does.
+
+Routes: `/sections` (the section manager — artboard 01), `/sections/:type`
+(one editor for every
+section type the registry declares), and `/dev/fields` (M0's field-states
+matrix). Sidebar navigation, the preview, publish and onboarding are still out
+of scope.
+
+Playwright drives the built mock bundle:
+
+```bash
+npm run test:e2e
+```
 
 Through `edge`, which is what every environment actually does:
 
@@ -48,6 +64,13 @@ Hosts entries the dev topology expects
 | `src/api/dto.ts` | Hand-written wire types, in one file, ready to be regenerated |
 | `src/api/errors.ts` | The §7.2 error model as one closed set |
 | `src/mocks/` | MSW over the four seed tenants, with runtime-switchable faults |
+| `src/registry/` | The only place the section registry is reached (M1) |
+| `src/renderer/` | Descriptor to form: the kind→component table, gaps, item labels (M1) |
+| `src/save/` | D2's save machine and the artboard-39 indicator (M1) |
+| `src/api/precondition.ts` | D3, whole (M1) |
+| `e2e/` | Playwright: autosave, 5xx retry, 409 (M1) |
+| `dev/` | Dev-server only — modes, the seed-tenant table, never imported from `src/` |
+| `scripts/check-bundle.mjs` | Fails the build if a dev-only value reached the output |
 | `../edge/` | The nginx configuration FR-EDGE-6 requires, and the dev topology |
 
 The `gap` prop is the publish-readiness marker, orthogonal to the five visual
@@ -57,7 +80,7 @@ treatment — only after a publish attempt.
 
 ---
 
-# Report
+# Report — M0
 
 Required by the milestone. **`spec/srs.md` is not edited by any of this.**
 
@@ -291,3 +314,320 @@ resolves alice's portfolio. Point `AUTH_UPSTREAM` at `api` and delete the
 `auth-stub` service when real auth lands — `edge`'s own configuration does not
 change, which is the reason the stub is a service rather than a branch inside
 it.
+
+---
+
+# Report — M1
+
+Required by the milestone. **`spec/srs.md` is not edited by any of this.**
+
+## 1. D2, D3 and D4 as proposed spec deltas
+
+All three are provisional and appear nowhere in `spec/srs.md`. Each is
+implemented in exactly one module, so changing one does not touch the renderer:
+`src/save/machine.ts`, `src/api/precondition.ts`, and
+`src/registry/shim/validate.ts` respectively.
+
+### D2 — autosave. Proposed as `FR-CFG-8`
+
+> **FR-CFG-8 (Should)** — Admin saves the draft automatically. An edit to a
+> section schedules one `PATCH /admin/portfolio/sections/:type` 800 ms after
+> the last change; a further edit within that window replaces the pending
+> write rather than queueing a second. A save is flushed immediately on
+> `Cmd/Ctrl+S` and on leaving the section. There is no discard control: the
+> draft *is* the working copy (§2.4) and `required` is not enforced until
+> publish (FR-REG-8), so a save has nothing to be confirmed against. The
+> tenant is shown one of five states — saving, saved with a timestamp, failed,
+> refused, or conflicted (FR-CFG-9) — and the indicator never blocks typing and
+> never opens a dialog. A failed save holds the edits in the tab and retries
+> with exponential backoff to a 30-second ceiling; a save the server refuses on
+> a content rule is not retried, because the only remedy is to change the
+> content. Publish is unavailable while a write is in flight, so a publish
+> cannot race a save.
+
+Note what "saved" does *not* mean, which artboard 39 is explicit about and a
+requirement should be too: shape and type were validated, `required` was not,
+so an incomplete draft still reads as saved.
+
+### D3 — optimistic concurrency. Proposed as `FR-CFG-9`, plus an amendment to §7.2
+
+> **FR-CFG-9 (Should)** — Every admin write carries `If-Match` set to the
+> `version` of the portfolio document it was composed against (§5.2). The admin
+> surface compares it to the stored `version` before writing, and refuses a
+> mismatch with `409 stale_write` carrying the current document. Admin neither
+> discards the tenant's edits nor overwrites the server's copy on that refusal:
+> it reports the conflict, keeps the local edits editable and copyable, and
+> takes up the server's version only on an explicit action.
+
+§7.2's endpoint list would gain the header and the response code; `409` there
+currently means only `portfolio_exists` and `slug_taken`.
+
+Why the document's `version` rather than a per-section ETag: §5.2 gives the
+portfolio one `version`, already incremented by every write including the sync
+fold (FR-INT-15). A section PATCH writes the portfolio, so two sections edited
+in two tabs are two writes to one document — and the second one should be told
+about the first.
+
+### D4 — browser-side publish validation. Proposed as an amendment to FR-PUB-6
+
+> **FR-PUB-6 (amended)** — … reports every failure at once, per field, rather
+> than stopping at the first. Each failure is `{ path, code, message }`, where
+> `path` addresses the field within the section's content object (`name`,
+> `items[2].company`). The registry exports the same validation as a pure
+> function over a descriptor and a content object, so admin can evaluate it in
+> the browser and produce identical failures without a round trip — one
+> function deciding for both, on the model of FR-REG-9.
+
+The `code` is the part the package does not have: its `FieldError` is
+`{ path, message }`, which forces a caller to match on prose to branch on a
+rule.
+
+## 2. What `packages/registry` is missing, and what the shim stands in for
+
+The package is in better shape than the brief's "if missing" branch assumes —
+**it declares all thirteen section types, including `hero` and `contact`**,
+with `emptyCondition`, `REGISTRY_VERSION`, a sanitiser allowlist, and Credly
+parsing. What it cannot yet express is the M1 feature set. Of the four things
+the brief says to check: descriptors **present**, `validateForPublish`
+**projects-only**, item label templates **absent**, `hideable` **absent**.
+
+| Missing | Why M1 needs it | Shim stands in with |
+|---|---|---|
+| A generic `validateForPublish(descriptor, content)` | D4, and the FR-REG-3 proof — a new section type must validate with no code change | `shim/validate.ts`, a generic walk of `required`/`requiredWhen`/`hideable`/`min`/`max` |
+| `code` on `FieldError` | D4's `{ path, code, message }` | `ValidationError` in `shim/types.ts` |
+| `requiredWhen` on a field descriptor | FR-SEC-HERO-2's CTA target following the CTA type, evaluated generically | `RequiredWhen` — `{ field, present }` or `{ field, oneOf }` |
+| `hideable` on a field descriptor | FR-SEC-CON-2's per-link toggle, FR-SEC-EDU-1's four hideable fields | `hideable: true`, whose value is stored as `{ value, visible }` |
+| `itemLabel` on a collection descriptor | The mock's rule that no section supplies its own row renderer | `itemLabel` / `itemLabelFallback` / `itemNoun` |
+| Date precision on a `date` field | FR-SEC-EXP-1 wants a month, FR-SEC-SPK-1 a full date; one kind cannot say which | **Not shimmed** — every date renders at month precision, noted in `field-map.ts` |
+| A way to mark an enum as needing a sentence per option | `EnumCards` exists and no descriptor can ask for it, so every enum renders as a `Select` | **Not shimmed** — noted in `field-map.ts` |
+| The FR-REG-9 builder entrypoint | FR-CFG-5's preview (out of M1 scope) | **Not shimmed** — carried over from the M0 report, still absent |
+
+`FieldDescriptor.hidden` already exists in the package and is **not** the same
+concern: it means admin draws no input because the value is recorded rather
+than asked for. The shim keeps that meaning untouched and adds `hideable`
+beside it.
+
+**Two package descriptors are not reused, and this is the part worth arguing
+about.** The shim writes `hero` and `contact` from `srs.md` instead, because:
+
+- `hero.ctas` is declared `{ kind: 'list', max: 2 }`. A descriptor-driven
+  renderer cannot turn that into FR-SEC-HERO-2's typed choice — and the package
+  *already disagrees with itself* here: `content.ts` exports
+  `Cta { kind, label, href }` and `HeroContent.ctas`, so the TypeScript side has
+  the typed choice while the descriptor has a free-text list. FR-REG-1 makes the
+  descriptor the runtime source of truth, so the descriptor is the one that is
+  wrong. The `max: 2` also contradicts FR-SEC-HERO-1's singular "primary CTA"
+  and the mock's "Primary CTA".
+- `contact`'s links carry no `hideable`, so nothing tells a generic renderer to
+  draw FR-SEC-CON-2's toggle — even though `ContactLink` in `content.ts` already
+  has `visible: boolean`. The same type/descriptor split.
+- `contact`'s descriptor declares an `intro` longtext that neither FR-SEC-CON-1
+  nor the mock's Contact artboard has.
+
+The shim's types mirror the package's field for field, so the swap is an import
+change in `src/registry/index.ts` and nothing else. `IS_SHIMMED` is exported and
+rendered as a banner on the editor, so nobody mistakes two hand-written
+descriptors for the registry.
+
+### One defect M1 surfaced in this app
+
+`src/api/dto.ts` hard-coded the thirteen section types as a TypeScript union.
+That makes adding a section type an edit to `admin`, which FR-REG-3 forbids in
+terms. It is now `SectionType = string`: the registry owns the vocabulary, and
+this app never validates a section type — it asks for a descriptor and renders
+what comes back, or renders nothing.
+
+## 3. Where the mock and the SRS disagree, for hero and contact
+
+| # | Field | SRS | Mock | Shipped | Why |
+|---|---|---|---|---|---|
+| 1 | `hero.bio` | FR-SEC-HERO-1 lists it, marks only name and title required | Editor label draws **`Bio *`** — but the mock's own registry panel beside it shows `bio textarea` with no `*publish`, and its field-coverage list shows `bio` unmarked | **Not required** | The mock contradicts *itself*; the SRS breaks the tie |
+| 2 | `hero` CTA | FR-SEC-HERO-2 gives it a type, a label and a target; FR-SEC-HERO-1 marks neither required | `ctaType*`, `ctaLabel*`, `ctaTarget*` (conditional on type) | CTA optional as a whole; **label and target required once a type is chosen** | Satisfies both — nothing is forced, and a half-filled CTA is still invalid. This is the conditional-required case the milestone asks for |
+| 3 | `hero.emptyCondition` | FR-SEC-HERO-1 makes name and title the required pair | Registry panel: `!name && !title` | **The mock's** | The package instead requires all six fields blank, so a hero holding only a bio would render with no heading |
+| 4 | `hero.bio` length | "soft character guidance shown", no number | "Soft guidance, 600 characters" | **600** | The package says 400; the SRS gives no number, so the mock decides |
+| 5 | `hero` field count | — | Prose says "nine fields"; its own registry panel and readiness rail both say eight | **Eight** | The prose is off by one |
+| 6 | `contact.email` | FR-SEC-CON-1 marks nothing required | **`Email *`** | **Not required** | SRS wins. FR-SEC-CON-3 governs only how a published address is rendered, not whether one exists |
+| 7 | `contact.intro` | Not in FR-SEC-CON-1 | Not in the artboard | **Omitted** | Only the package has it |
+| 8 | `contact` layout | — | A four-column table: Channel / Value / **Link health** / Show on page | **Generic label + control + switch** | "No editor other than the generic page" is a DO-NOT-BUILD item; the table is per-section tuning |
+| 9 | `contact` link health | FR-SEC-PROJ-9 scopes weekly link checking to **project** links | Draws a link-health column on contact links | **Not built** | The mock extends FR-SEC-PROJ-9 beyond its stated scope — flagged rather than implemented |
+| 10 | Save model | Silent: §2.4 defines draft/publish and nothing about saving | Top bar says "All changes saved" **and** the footer has "Discard changes" + "Save draft" | **Autosave, no discard** (D2) | The mock is internally inconsistent; D2 resolves it |
+
+Items 1, 3 and 10 are cases where the mock disagrees with *itself* rather than
+with the SRS, which is worth separating from the rest.
+
+## 4. Stopping conditions
+
+| Condition | Status |
+|---|---|
+| `/sections/hero` and `/sections/contact` fully editable and autosaving | **Met.** Verified in Chrome: hero shows conditional required firing (`CTA label *` appears once a type is chosen; the rail reads "Blocking publish 1 — CTA target is required to publish, because another field is set to 'resume'"); contact shows five hideable links; an edit goes `No changes yet → Unsaved changes → Saved 10:17 PM` and the server holds the value |
+| …through `edge` against MSW | **Not verified through `edge`.** Docker and nginx are still absent on this machine (unchanged from M0). Verified against MSW behind `vite preview`, which serves the same built bundle `edge` serves from disk |
+| No `hero`/`contact` outside `src/registry/`, except tests and fixtures | **Met.** The only two remaining hits were the `SectionType` union in `src/api/dto.ts`, now `string` — see §2 |
+| The fake-descriptor test passes | **Met.** `src/renderer/fake-descriptor.test.tsx` invents two section types that exist nowhere else and asserts they render every kind, get a visibility switch, validate, produce readiness counts, bind gaps, label collapsed rows, and enforce min/max — with no change outside that file |
+| Every save state reachable through the MSW toggles | **Met.** `idle`, `saving`, `saved`, `failed`, `refused`, `stale` all reached in the browser via `save_server_error`, `save_refused`, `save_stale` |
+
+**Tests:** 67 Vitest across 7 files, 6 Playwright. Typecheck and lint clean.
+
+Also verified by hand in the browser, since these are the claims a unit test
+can assert without being true of the running app: `If-Match` moved the document
+5 → 6 on a fresh write, and replaying version 5 returned `409 stale_write`
+carrying the current document at version 6; hiding a contact link persisted
+`{ value: "danavilla.dev", visible: false }`, keeping the value rather than
+clearing it.
+
+One verification artefact worth recording. Driving the MSW faults from the
+console *after* issuing raw `fetch` writes produced `stale` where `refused` was
+expected. That is correct behaviour on both sides — the handler checks
+`If-Match` before the content rule, so a stale write is reported as stale even
+when its payload would also have been refused, and the raw writes had desynced
+the client's version. Re-running after a reload gives `refused`.
+
+---
+
+# Report — dev-only direct mode
+
+Required by the task. **`spec/srs.md` is not edited by any of this, and neither
+is `data-service`.**
+
+## 0. Admin-panel only, and what that decided
+
+The original brief specified a new `X-Dev-Api-Key` header with matching
+api-side support: a guard change, a production boot refusal, and a loopback
+bind. That version was built and then **reverted in full** — `data-service` is
+to stay untouched, so every line of it is back at `HEAD`.
+
+That constraint settles the design rather than blocking it, because **`api`'s
+existing contract is already what a dev proxy needs**:
+
+> `X-Api-Key` proves the caller is trusted; `X-User-Id` names the tenant. The
+> admin guard reads both and accepts neither alone.
+
+So direct mode presents that pair. It is *what `edge` does, minus the identity
+subrequest* — and it needs no change to `api` at all.
+
+Two consequences worth stating plainly:
+
+- **There is no dev-only key any more.** `ADMIN_API_KEY` is `api`'s real admin
+  key, the same secret `edge` holds. A developer's `.env.local` therefore holds
+  a production-shaped credential, and whoever holds it can act as any tenant on
+  whatever database the api points at. `.env.example` says so; point direct
+  mode at a local database, never a shared one.
+- **The api-side safety rails went with the revert.** There is no boot refusal
+  for a key set in production and no loopback default, because both lived in
+  `data-service`. What remains is admin-side only, and is listed in §3.
+
+## 1. Delta against FR-AUTH-12 and NFR-SEC-8
+
+**Direct mode introduces no new delta against either.** That is the main thing
+to take from this section.
+
+FR-AUTH-12 says "no signed token, key pair, or shared secret takes part", and
+NFR-SEC-8 says `edge` setting `X-User-Id` plus `api` being unroutable is "the
+whole of what makes the header trustworthy". `api` already deviates from both:
+`ApiKeyGuard` has required `X-Api-Key` since before this task, and the M0
+report records that as an unresolved contradiction with FR-AUTH-12. Direct mode
+uses that existing mechanism rather than adding a second one.
+
+What it *does* change is who presents the key:
+
+| | Production (FR-EDGE-4 + FR-EDGE-5) | Direct mode |
+|---|---|---|
+| Who sets `X-User-Id` | `edge`, unconditionally | the Vite dev-server proxy, unconditionally |
+| Can a client supply it | No — overwritten on every location | No — stripped, then set |
+| Who presents `X-Api-Key` | `edge` | the Vite dev-server proxy |
+| Where identity is decided | session resolution at `/auth/resolve` | one environment variable, fixed at dev-server start |
+| Why the hop is trusted | `api` is not publicly routable (FR-EDGE-5) | the developer's own machine |
+
+The one standing recommendation this leaves: **the `X-Api-Key` contradiction
+with FR-AUTH-12 should be resolved in the SRS one way or the other.** Direct
+mode now depends on it, so it is no longer only `edge`'s business. Either
+FR-AUTH-12 gains the key, or `api` loses it and direct mode needs another
+answer.
+
+## 2. Delta against NFR-OPS-6
+
+> **NFR-OPS-6 (Should)** — The development environment reproduces the
+> production topology: real hostnames under a subdomain delegated to loopback,
+> a locally-trusted wildcard certificate, and the same `edge` configuration.
+
+**Direct mode does not satisfy this, and is not meant to.** It bypasses `edge`
+entirely, so nothing `edge` owns is exercised:
+
+| Exercised by `edge` mode | In direct mode |
+|---|---|
+| FR-EDGE-1 host matching, `return 444` on an unmatched Host | not exercised — one origin, `localhost:5174` |
+| FR-EDGE-2's three-way split on the admin host | partly — the `/api/admin` rewrite is reproduced; the SPA fallback is Vite's dev server |
+| FR-EDGE-3's `auth_request` subrequest | not exercised — no subrequest at all |
+| FR-EDGE-4's unconditional identity header | **reproduced** — stripped then set, on every proxied request |
+| FR-AUTH-16's rate limit on `/api/auth/*` | not exercised — `/api/auth/*` answers 501 |
+| FR-AUTH-3's cookie scoping, `Path=/api`, host-only | not exercised — no cookie exists |
+| TLS, the wildcard certificate | not exercised — plain HTTP |
+
+Proposed amendment, which keeps NFR-OPS-6 intact while admitting the second
+environment:
+
+> **NFR-OPS-6 (amended)** — The development environment reproduces the
+> production topology: real hostnames under a subdomain delegated to loopback,
+> a locally-trusted wildcard certificate, and the same `edge` configuration.
+> A second, faster arrangement may exist for application work — `admin`'s dev
+> server proxying directly to `api` and presenting the same headers `edge`
+> presents — provided it reproduces FR-EDGE-4's unconditional identity header.
+> It does not satisfy this requirement, and any change to routing, identity
+> resolution, cookie scoping, or rate limiting must be exercised against `edge`
+> before it is considered done.
+
+That last clause is the one that matters. The M0 report already records
+FR-EDGE-6's reasoning — "a rule that exists only in production is a rule that
+is never tested" — and direct mode is precisely the thing that makes it easy to
+stop testing them. `ADMIN_DEV_MODE=edge` keeps the `edge` path one environment
+variable away, and the startup banner names which arrangement is running so it
+is never a guess.
+
+## 3. What keeps the key out of the bundle
+
+All four are admin-side, and all four survive the api revert:
+
+1. **Nothing is `VITE_`-prefixed.** Vite exposes only `VITE_*` to client code,
+   so `ADMIN_API_KEY` and `DEV_USER_ID` cannot be compiled in. `loadEnv` is
+   called with an empty prefix in exactly one place, `vite.config.ts`.
+2. **`scripts/check-bundle.mjs` runs on every build** and fails it if the
+   output contains the configured `ADMIN_API_KEY`, the configured
+   `DEV_USER_ID`, or the literals `X-Api-Key` / `ADMIN_API_KEY`. Six tests
+   prove it fails on a seeded bundle and passes a clean one.
+3. **`dev/` is never imported from `src/`.** The seed-tenant table lives beside
+   `vite.config.ts` precisely so it cannot become a tenant switcher in the UI.
+4. **`.env.local` is gitignored**; `.env.example` is the committed template and
+   carries no value.
+
+## 4. What was verified, and what was not
+
+MongoDB is not running on this machine and Docker is still absent, so **no live
+`api` was available**. The two stopping conditions that need one are
+unverified. Everything else was exercised.
+
+| Condition | Status |
+|---|---|
+| All three modes start cleanly | **Met.** `mock`, `edge` and `direct` each start and announce themselves |
+| Direct mode fails fast on missing config | **Met.** `ADMIN_DEV_MODE=direct` alone aborts with `needs API_URL, ADMIN_API_KEY, DEV_TENANT (or DEV_USER_ID)` — every missing variable at once |
+| The proxy presents both headers and strips client values | **Met**, against an echo upstream standing in for `api`: `/api/admin/me` arrives as `/admin/me` carrying `X-User-Id: <alice>` and `X-Api-Key: <configured>`, and a request sending **bob's** id plus its own api key arrives carrying **alice's id and the configured key** |
+| `DEV_TENANT=dave` after a restart shows dave | **Met** at the transport level — the proxy injects `5eed00000000000001040001`. Whether dave's *state* then renders is the unverified half |
+| `/api/auth/*` answers 501 | **Met**, with a body explaining why |
+| Build guard fails on a seeded bundle | **Met.** 6 unit tests, plus a real `dist/` seeded by hand: it named the file and redacted the value |
+| Edits alice's draft against a running `api` | **Not verified** — needs MongoDB |
+| Switching tenant shows dave's *state* | **Not verified** — needs MongoDB |
+| `data-service` untouched | **Met.** `git status` and `git clean -nd` are both empty for it; it typechecks and lints as it did at `HEAD` |
+
+The api-side stopping conditions from the original brief — guard behaviour with
+and without a dev key, and the production boot refusal — **no longer apply**,
+because there is no api-side change.
+
+### To run the two unverified checks
+
+```bash
+cd data-service && docker compose up -d && npm run seed && npm run start:dev
+
+cd ../admin-panel
+cp .env.example .env.local     # set ADMIN_DEV_MODE=direct and ADMIN_API_KEY
+npm run dev                    # http://localhost:5174
+```
+
+`ADMIN_API_KEY` must match the value in `data-service/.env`.

@@ -24,20 +24,22 @@ export type IntegrationProvider = 'github' | 'rss' | 'x' | 'linkedin';
 export type IntegrationStatus = 'ok' | 'failing' | 'revoked';
 export type LinkState = 'ok' | 'broken' | 'unchecked';
 
-export type SectionType =
-  | 'hero'
-  | 'projects'
-  | 'skills'
-  | 'contact'
-  | 'experience'
-  | 'education'
-  | 'blog'
-  | 'testimonials'
-  | 'opensource'
-  | 'speaking'
-  | 'achievements'
-  | 'trainings'
-  | 'gallery';
+/**
+ * A section type, as it travels on the wire.
+ *
+ * Deliberately `string` and not a union of the thirteen declared types. The
+ * registry is the single source of truth for which types exist (FR-REG-1), and
+ * FR-REG-3 requires that adding one costs a registry entry and no change to
+ * `admin` — a union here would make every new section type an edit to this
+ * file, which is the opposite of that.
+ *
+ * `api`'s OpenAPI document does enumerate them, because `api` validates
+ * against the enum. This app does not validate section types: it asks the
+ * registry for a descriptor and renders what comes back, or renders nothing.
+ * The narrower type would buy checking that this app has no use for and cost
+ * the property the registry exists to provide.
+ */
+export type SectionType = string;
 
 /** What `admin` branches on to choose dashboard or creation screen (FR-AUTH-7). */
 export interface MePortfolio {

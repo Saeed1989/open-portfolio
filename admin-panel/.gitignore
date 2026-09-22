@@ -1,3 +1,11 @@
 node_modules/
 dist/
 *.tsbuildinfo
+test-results/
+playwright-report/
+
+# Local development environment. Holds ADMIN_DEV_API_KEY, which is a real
+# credential: anyone with it can act as any tenant. .env.example is the
+# committed template.
+.env.local
+.env.*.local
