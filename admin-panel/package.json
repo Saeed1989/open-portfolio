@@ -16,6 +16,7 @@
     "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
+    "@portfolio/registry": "file:../packages/registry",
     "@tanstack/react-query": "5.66.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",

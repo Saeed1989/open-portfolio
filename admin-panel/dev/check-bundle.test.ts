@@ -68,6 +68,11 @@ afterEach(() => {
   }
 });
 
+/* Each case spawns a node child that imports vite, which costs a few seconds
+   on its own — comfortably past vitest's 5s default once the machine is busy.
+   The budget is explicit rather than left to how loaded the box happens to be. */
+const SPAWN_TIMEOUT = 30_000;
+
 describe('check-bundle', () => {
   test('fails on a bundle carrying the admin key', () => {
     const root = sandbox(
@@ -79,7 +84,7 @@ describe('check-bundle', () => {
     expect(output).toContain('leaked');
     /* And it does not reprint the secret while complaining about it. */
     expect(output).not.toContain(KEY);
-  });
+  }, SPAWN_TIMEOUT);
 
   test('fails on the header name alone, with no key configured', () => {
     /* The name is as good as a confession: nothing in the bundle has any
@@ -89,7 +94,7 @@ describe('check-bundle', () => {
       {},
     );
     expect(run(root)).toContain('X-Api-Key');
-  });
+  }, SPAWN_TIMEOUT);
 
   test('fails on a leaked DEV_USER_ID', () => {
     const root = sandbox(
@@ -97,7 +102,7 @@ describe('check-bundle', () => {
       { DEV_USER_ID: USER_ID },
     );
     expect(run(root)).not.toBeNull();
-  });
+  }, SPAWN_TIMEOUT);
 
   test('passes a clean bundle', () => {
     const root = sandbox(
@@ -108,7 +113,7 @@ describe('check-bundle', () => {
       { ADMIN_API_KEY: KEY },
     );
     expect(run(root)).toBeNull();
-  });
+  }, SPAWN_TIMEOUT);
 
   test('fails when there is no build output to check', () => {
     /* Otherwise a build that emitted nothing would pass silently, which is
@@ -116,7 +121,7 @@ describe('check-bundle', () => {
     const root = mkdtempSync(join(tmpdir(), 'bundle-guard-empty-'));
     made.push(root);
     expect(run(root)).toContain('no build output');
-  });
+  }, SPAWN_TIMEOUT);
 
   test('ignores a key too short to be meaningful', () => {
     /* A three-character key would match minified output everywhere, and is
@@ -126,5 +131,5 @@ describe('check-bundle', () => {
       { ADMIN_API_KEY: 'abc' },
     );
     expect(run(root)).toBeNull();
-  });
+  }, SPAWN_TIMEOUT);
 });
