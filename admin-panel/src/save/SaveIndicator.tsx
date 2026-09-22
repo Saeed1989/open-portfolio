@@ -99,6 +99,23 @@ export function SaveIndicator({
         </>
       ) : null}
 
+      {state.status === 'unsupported' ? (
+        <>
+          {/* Not a failure the tenant caused or can clear. No retry is
+              offered, because nothing about waiting or clicking will make an
+              unbuilt endpoint appear. The edits stay in the form and stay
+              copyable. */}
+          <Pill tone="warn">Not supported yet</Pill>
+          <span className="font-sans text-[11.5px] text-ink2">
+            This server does not implement saving this section yet. Your edits
+            are still here and have not been sent.
+          </span>
+          <Button sm onClick={onCopyEdits}>
+            Copy my edits
+          </Button>
+        </>
+      ) : null}
+
       {state.status === 'stale' ? (
         <>
           {/* D3. Neither copy is thrown away: the tenant's edits stay in the
