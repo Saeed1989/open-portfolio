@@ -19,6 +19,13 @@ npm run build:mock   # same, plus the MSW worker (VITE_MOCKS=on)
 npm run typecheck && npm run lint && npm test
 ```
 
+How the dev server reaches `api` is chosen by `ADMIN_DEV_MODE` — `mock`
+(default, MSW in the browser), `direct` (proxy straight to `api`, presenting
+the same `X-Api-Key` and `X-User-Id` that `edge` does, so it needs no change to
+`api`) or `edge` (no proxy; serve the build through `../edge`). Copy
+`.env.example` to `.env.local`. Nothing in it is `VITE_`-prefixed, so none of it
+can reach the bundle; `npm run build` fails if any of it does.
+
 Routes: `/sections` (a link list), `/sections/:type` (one editor for every
 section type the registry declares), and `/dev/fields` (M0's field-states
 matrix). The section manager, sidebar navigation beyond that link list, section
@@ -62,6 +69,8 @@ Hosts entries the dev topology expects
 | `src/save/` | D2's save machine and the artboard-39 indicator (M1) |
 | `src/api/precondition.ts` | D3, whole (M1) |
 | `e2e/` | Playwright: autosave, 5xx retry, 409 (M1) |
+| `dev/` | Dev-server only — modes, the seed-tenant table, never imported from `src/` |
+| `scripts/check-bundle.mjs` | Fails the build if a dev-only value reached the output |
 | `../edge/` | The nginx configuration FR-EDGE-6 requires, and the dev topology |
 
 The `gap` prop is the publish-readiness marker, orthogonal to the five visual
@@ -471,3 +480,154 @@ expected. That is correct behaviour on both sides — the handler checks
 `If-Match` before the content rule, so a stale write is reported as stale even
 when its payload would also have been refused, and the raw writes had desynced
 the client's version. Re-running after a reload gives `refused`.
+
+---
+
+# Report — dev-only direct mode
+
+Required by the task. **`spec/srs.md` is not edited by any of this, and neither
+is `data-service`.**
+
+## 0. Admin-panel only, and what that decided
+
+The original brief specified a new `X-Dev-Api-Key` header with matching
+api-side support: a guard change, a production boot refusal, and a loopback
+bind. That version was built and then **reverted in full** — `data-service` is
+to stay untouched, so every line of it is back at `HEAD`.
+
+That constraint settles the design rather than blocking it, because **`api`'s
+existing contract is already what a dev proxy needs**:
+
+> `X-Api-Key` proves the caller is trusted; `X-User-Id` names the tenant. The
+> admin guard reads both and accepts neither alone.
+
+So direct mode presents that pair. It is *what `edge` does, minus the identity
+subrequest* — and it needs no change to `api` at all.
+
+Two consequences worth stating plainly:
+
+- **There is no dev-only key any more.** `ADMIN_API_KEY` is `api`'s real admin
+  key, the same secret `edge` holds. A developer's `.env.local` therefore holds
+  a production-shaped credential, and whoever holds it can act as any tenant on
+  whatever database the api points at. `.env.example` says so; point direct
+  mode at a local database, never a shared one.
+- **The api-side safety rails went with the revert.** There is no boot refusal
+  for a key set in production and no loopback default, because both lived in
+  `data-service`. What remains is admin-side only, and is listed in §3.
+
+## 1. Delta against FR-AUTH-12 and NFR-SEC-8
+
+**Direct mode introduces no new delta against either.** That is the main thing
+to take from this section.
+
+FR-AUTH-12 says "no signed token, key pair, or shared secret takes part", and
+NFR-SEC-8 says `edge` setting `X-User-Id` plus `api` being unroutable is "the
+whole of what makes the header trustworthy". `api` already deviates from both:
+`ApiKeyGuard` has required `X-Api-Key` since before this task, and the M0
+report records that as an unresolved contradiction with FR-AUTH-12. Direct mode
+uses that existing mechanism rather than adding a second one.
+
+What it *does* change is who presents the key:
+
+| | Production (FR-EDGE-4 + FR-EDGE-5) | Direct mode |
+|---|---|---|
+| Who sets `X-User-Id` | `edge`, unconditionally | the Vite dev-server proxy, unconditionally |
+| Can a client supply it | No — overwritten on every location | No — stripped, then set |
+| Who presents `X-Api-Key` | `edge` | the Vite dev-server proxy |
+| Where identity is decided | session resolution at `/auth/resolve` | one environment variable, fixed at dev-server start |
+| Why the hop is trusted | `api` is not publicly routable (FR-EDGE-5) | the developer's own machine |
+
+The one standing recommendation this leaves: **the `X-Api-Key` contradiction
+with FR-AUTH-12 should be resolved in the SRS one way or the other.** Direct
+mode now depends on it, so it is no longer only `edge`'s business. Either
+FR-AUTH-12 gains the key, or `api` loses it and direct mode needs another
+answer.
+
+## 2. Delta against NFR-OPS-6
+
+> **NFR-OPS-6 (Should)** — The development environment reproduces the
+> production topology: real hostnames under a subdomain delegated to loopback,
+> a locally-trusted wildcard certificate, and the same `edge` configuration.
+
+**Direct mode does not satisfy this, and is not meant to.** It bypasses `edge`
+entirely, so nothing `edge` owns is exercised:
+
+| Exercised by `edge` mode | In direct mode |
+|---|---|
+| FR-EDGE-1 host matching, `return 444` on an unmatched Host | not exercised — one origin, `localhost:5174` |
+| FR-EDGE-2's three-way split on the admin host | partly — the `/api/admin` rewrite is reproduced; the SPA fallback is Vite's dev server |
+| FR-EDGE-3's `auth_request` subrequest | not exercised — no subrequest at all |
+| FR-EDGE-4's unconditional identity header | **reproduced** — stripped then set, on every proxied request |
+| FR-AUTH-16's rate limit on `/api/auth/*` | not exercised — `/api/auth/*` answers 501 |
+| FR-AUTH-3's cookie scoping, `Path=/api`, host-only | not exercised — no cookie exists |
+| TLS, the wildcard certificate | not exercised — plain HTTP |
+
+Proposed amendment, which keeps NFR-OPS-6 intact while admitting the second
+environment:
+
+> **NFR-OPS-6 (amended)** — The development environment reproduces the
+> production topology: real hostnames under a subdomain delegated to loopback,
+> a locally-trusted wildcard certificate, and the same `edge` configuration.
+> A second, faster arrangement may exist for application work — `admin`'s dev
+> server proxying directly to `api` and presenting the same headers `edge`
+> presents — provided it reproduces FR-EDGE-4's unconditional identity header.
+> It does not satisfy this requirement, and any change to routing, identity
+> resolution, cookie scoping, or rate limiting must be exercised against `edge`
+> before it is considered done.
+
+That last clause is the one that matters. The M0 report already records
+FR-EDGE-6's reasoning — "a rule that exists only in production is a rule that
+is never tested" — and direct mode is precisely the thing that makes it easy to
+stop testing them. `ADMIN_DEV_MODE=edge` keeps the `edge` path one environment
+variable away, and the startup banner names which arrangement is running so it
+is never a guess.
+
+## 3. What keeps the key out of the bundle
+
+All four are admin-side, and all four survive the api revert:
+
+1. **Nothing is `VITE_`-prefixed.** Vite exposes only `VITE_*` to client code,
+   so `ADMIN_API_KEY` and `DEV_USER_ID` cannot be compiled in. `loadEnv` is
+   called with an empty prefix in exactly one place, `vite.config.ts`.
+2. **`scripts/check-bundle.mjs` runs on every build** and fails it if the
+   output contains the configured `ADMIN_API_KEY`, the configured
+   `DEV_USER_ID`, or the literals `X-Api-Key` / `ADMIN_API_KEY`. Six tests
+   prove it fails on a seeded bundle and passes a clean one.
+3. **`dev/` is never imported from `src/`.** The seed-tenant table lives beside
+   `vite.config.ts` precisely so it cannot become a tenant switcher in the UI.
+4. **`.env.local` is gitignored**; `.env.example` is the committed template and
+   carries no value.
+
+## 4. What was verified, and what was not
+
+MongoDB is not running on this machine and Docker is still absent, so **no live
+`api` was available**. The two stopping conditions that need one are
+unverified. Everything else was exercised.
+
+| Condition | Status |
+|---|---|
+| All three modes start cleanly | **Met.** `mock`, `edge` and `direct` each start and announce themselves |
+| Direct mode fails fast on missing config | **Met.** `ADMIN_DEV_MODE=direct` alone aborts with `needs API_URL, ADMIN_API_KEY, DEV_TENANT (or DEV_USER_ID)` — every missing variable at once |
+| The proxy presents both headers and strips client values | **Met**, against an echo upstream standing in for `api`: `/api/admin/me` arrives as `/admin/me` carrying `X-User-Id: <alice>` and `X-Api-Key: <configured>`, and a request sending **bob's** id plus its own api key arrives carrying **alice's id and the configured key** |
+| `DEV_TENANT=dave` after a restart shows dave | **Met** at the transport level — the proxy injects `5eed00000000000001040001`. Whether dave's *state* then renders is the unverified half |
+| `/api/auth/*` answers 501 | **Met**, with a body explaining why |
+| Build guard fails on a seeded bundle | **Met.** 6 unit tests, plus a real `dist/` seeded by hand: it named the file and redacted the value |
+| Edits alice's draft against a running `api` | **Not verified** — needs MongoDB |
+| Switching tenant shows dave's *state* | **Not verified** — needs MongoDB |
+| `data-service` untouched | **Met.** `git status` and `git clean -nd` are both empty for it; it typechecks and lints as it did at `HEAD` |
+
+The api-side stopping conditions from the original brief — guard behaviour with
+and without a dev key, and the production boot refusal — **no longer apply**,
+because there is no api-side change.
+
+### To run the two unverified checks
+
+```bash
+cd data-service && docker compose up -d && npm run seed && npm run start:dev
+
+cd ../admin-panel
+cp .env.example .env.local     # set ADMIN_DEV_MODE=direct and ADMIN_API_KEY
+npm run dev                    # http://localhost:5174
+```
+
+`ADMIN_API_KEY` must match the value in `data-service/.env`.
