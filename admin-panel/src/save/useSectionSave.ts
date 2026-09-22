@@ -25,6 +25,8 @@ import {
 export function classify(error: unknown): FailureKind {
   if (!(error instanceof AdminError)) return 'retryable';
   if (error.kind === 'stale_write') return 'stale';
+  /* Permanent: the endpoint is unbuilt, so a retry is a loop. */
+  if (error.kind === 'unsupported') return 'unsupported';
   /* A 422 on a *save* is a save-time content rule — the 3–5 project cap
      (FR-SEC-PROJ-2), an emptied impact field (FR-SEC-PROJ-5). It is not a
      publish gap, and there is nothing to retry. */

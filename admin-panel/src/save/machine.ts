@@ -11,7 +11,7 @@ import type { FieldError } from '../api/errors';
  * (SRS §2.4) and the publish is the gate (FR-REG-8), so a save has nothing to
  * be confirmed against and nothing to be taken back from.
  *
- * The states are artboard 39's, plus one:
+ * The states are artboard 39's, plus two:
  *
  *   idle     nothing sent this session
  *   saving   a PATCH is in flight; Publish is held so it cannot race a write
@@ -24,6 +24,9 @@ import type { FieldError } from '../api/errors';
  *            a publish gap. Nothing to retry, something to change
  *   stale    D3: the precondition failed. The server moved. Neither copy is
  *            thrown away
+ *   unsupported  the server does not implement this write — every admin write
+ *            on the current api answers 501. Nothing to retry and nothing to
+ *            change; the edits are held and stay copyable
  *
  * This file is pure. Timers, fetches and React live in `useSectionSave`, so
  * every transition below is reachable in a test without either.
@@ -35,7 +38,10 @@ export type SaveStatus =
   | 'saved'
   | 'failed'
   | 'refused'
-  | 'stale';
+  | 'stale'
+  /** The server does not implement this write. Nothing to retry, and nothing
+   *  the tenant can change — see `FailureKind`. */
+  | 'unsupported';
 
 export interface StaleSnapshot {
   /** The document as the server now holds it. */
@@ -91,8 +97,14 @@ export function backoffMs(attempt: number): number {
   return Math.min(30_000, 1000 * 2 ** Math.max(0, attempt - 1));
 }
 
-/** Why a save failed, already classified by the transport. */
-export type FailureKind = 'retryable' | 'refused' | 'stale';
+/**
+ * Why a save failed, already classified by the transport.
+ *
+ * `retryable` is the only one that earns a retry. `refused` has a remedy the
+ * tenant controls (change the content); `unsupported` and `stale` do not, and
+ * retrying either is a loop rather than a recovery.
+ */
+export type FailureKind = 'retryable' | 'refused' | 'stale' | 'unsupported';
 
 export type SaveEvent =
   /** The tenant changed something. */
@@ -169,6 +181,19 @@ export function reduce(state: SaveState, event: SaveEvent): SaveState {
         };
       }
 
+      if (event.kind === 'unsupported') {
+        /* The edits stay pending and stay copyable — the tenant's work is
+           not at fault and must not be thrown away because the server is
+           incomplete. No backoff: this will not start working. */
+        return {
+          ...base,
+          status: 'unsupported',
+          fields: [],
+          attempt: 0,
+          retryDelayMs: undefined,
+        };
+      }
+
       if (event.kind === 'stale') {
         return {
           ...base,
@@ -240,6 +265,7 @@ export function hasUnsavedWork(state: SaveState): boolean {
     state.dirty ||
     state.status === 'failed' ||
     state.status === 'refused' ||
-    state.status === 'stale'
+    state.status === 'stale' ||
+    state.status === 'unsupported'
   );
 }

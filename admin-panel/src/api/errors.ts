@@ -39,6 +39,15 @@ export type AdminErrorKind =
   | 'validation'
   /** The API reached, and failed. */
   | 'server'
+  /**
+   * The endpoint exists in the contract but this build does not implement it
+   * — `501`, or `405` for a method the route does not accept.
+   *
+   * Distinct from `server` because it is permanent: retrying cannot make an
+   * unimplemented endpoint appear, and a client that retries anyway spends
+   * the rest of the session asking.
+   */
+  | 'unsupported'
   /** The API not reached at all: offline, DNS, abort. */
   | 'network';
 
@@ -126,6 +135,9 @@ function kindFor(status: number, code: string | undefined): AdminErrorKind {
   /* 400 as well as 422: Nest's ValidationPipe answers 400 until FR-API-4's
      filter narrows it, and both mean the same thing to a form. */
   if (status === 422 || status === 400) return 'validation';
+  /* 501 is what a NestJS `NotImplementedException` answers, which is how
+     every unbuilt admin write currently responds. */
+  if (status === 501 || status === 405) return 'unsupported';
   return 'server';
 }
 

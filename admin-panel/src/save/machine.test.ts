@@ -212,7 +212,7 @@ describe('stale — D3', () => {
 });
 
 describe('every status is reachable', () => {
-  test('all six', () => {
+  test('all seven', () => {
     const reached = new Set<string>();
     reached.add(INITIAL.status);
     reached.add(reduce(INITIAL, { type: 'saveStarted' }).status);
@@ -237,6 +237,12 @@ describe('every status is reachable', () => {
         { type: 'saveFailed', kind: 'stale', message: '' },
       ]).status,
     );
+    reached.add(
+      run([
+        { type: 'saveStarted' },
+        { type: 'saveFailed', kind: 'unsupported', message: '' },
+      ]).status,
+    );
 
     expect([...reached].sort()).toEqual([
       'failed',
@@ -245,6 +251,43 @@ describe('every status is reachable', () => {
       'saved',
       'saving',
       'stale',
+      'unsupported',
     ]);
+  });
+});
+
+describe('unsupported — the server does not implement this write', () => {
+  test('holds the edits and schedules no retry', () => {
+    /* Every admin write on the current api answers 501
+       (NotImplementedException), so this is the state a real save reaches
+       today. Treating it as retryable meant retrying forever. */
+    const state = run([
+      { type: 'edit' },
+      { type: 'saveStarted' },
+      {
+        type: 'saveFailed',
+        kind: 'unsupported',
+        message: 'Not Implemented',
+      },
+    ]);
+    expect(state.status).toBe('unsupported');
+    expect(state.retryDelayMs).toBeUndefined();
+    expect(state.attempt).toBe(0);
+    /* The tenant's work is not at fault and is not discarded. */
+    expect(state.dirty).toBe(true);
+    expect(hasUnsavedWork(state)).toBe(true);
+  });
+
+  test('does not escalate a backoff across repeats', () => {
+    let state = run([{ type: 'edit' }, { type: 'saveStarted' }]);
+    for (let i = 0; i < 3; i += 1) {
+      state = reduce(state, {
+        type: 'saveFailed',
+        kind: 'unsupported',
+        message: 'Not Implemented',
+      });
+      expect(state.retryDelayMs).toBeUndefined();
+      expect(state.attempt).toBe(0);
+    }
   });
 });
