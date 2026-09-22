@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
+  isFieldHidden,
   isRequiredNow,
   readFieldValue,
   readiness,
@@ -113,33 +114,116 @@ const hideable = {
 } satisfies SingleSectionDescriptor;
 
 describe('hideable fields', () => {
-  test('the value is read from inside the { value, visible } wrapper', () => {
+  test('the value type is unchanged — no wrapper around it', () => {
+    /* Model A: visibility sits beside the values, so a hideable field reads
+       back exactly what a non-hideable one would. */
+    expect(readFieldValue(hideableLink, { link: 'a.dev' })).toBe('a.dev');
+  });
+
+  test('a field with no visibility entry is visible', () => {
+    /* Absent means visible: a draft written before the field became hideable
+       shows its content rather than silently withholding it. */
+    expect(isFieldHidden(hideableLink, { link: 'a.dev' })).toBe(false);
     expect(
-      readFieldValue(hideableLink, { link: { value: 'a.dev', visible: true } }),
-    ).toBe('a.dev');
+      isFieldHidden(hideableLink, { link: 'a.dev', visibility: {} }),
+    ).toBe(false);
   });
 
   test('a visible hideable field is still required', () => {
     const errors = validateForPublish(hideable, {
-      link: { value: '', visible: true },
+      link: '',
+      visibility: { link: true },
     });
     expect(errors.map((error) => error.path)).toEqual(['link']);
   });
 
   test('a hidden field is not required — it will not be rendered', () => {
     const errors = validateForPublish(hideable, {
-      link: { value: '', visible: false },
+      link: '',
+      visibility: { link: false },
     });
     expect(errors).toEqual([]);
   });
 
   test('hiding retains the value rather than clearing it', () => {
-    /* The reducer half of this lives in SectionForm; here we assert the
-       contract the validator relies on: a hidden field with a value still
-       reads that value back. */
-    const hidden = { link: { value: 'kept.dev', visible: false } };
+    const hidden = { link: 'kept.dev', visibility: { link: false } };
     expect(readFieldValue(hideableLink, hidden)).toBe('kept.dev');
     expect(isRequiredNow(hideableLink, hidden)).toBe(false);
+  });
+
+  test('visibility on a field that is not hideable is ignored', () => {
+    /* Only the descriptor decides what may be hidden. A stray map entry is
+       content the tenant cannot have produced and must not be honoured. */
+    const notHideable = {
+      key: 'link',
+      label: 'Link',
+      kind: 'link',
+      required: true,
+    } satisfies FieldDescriptor;
+    expect(
+      isFieldHidden(notHideable, { link: '', visibility: { link: false } }),
+    ).toBe(false);
+  });
+});
+
+describe('items with a publish flag', () => {
+  const badges = {
+    type: 'invented-badges',
+    label: 'Badges',
+    description: '',
+    priority: 'should',
+    businessRef: '—',
+    cardinality: 'collection',
+    min: 2,
+    itemNoun: 'badge',
+    itemPublishFlag: true,
+    itemFields: [{ key: 'title', label: 'Title', kind: 'text', required: true }],
+    emptyCondition: () => false,
+  } satisfies CollectionSectionDescriptor;
+
+  test('an unpublished item is not validated', () => {
+    /* FR-SEC-ACH-5: an imported badge the tenant has not promoted must not
+       block a publish for want of a field they were never asked to fill. */
+    const errors = validateForPublish(badges, {
+      items: [
+        { title: 'a' },
+        { title: 'b' },
+        { title: '', published: false },
+      ],
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('a published item with the same gap does block', () => {
+    const errors = validateForPublish(badges, {
+      items: [{ title: 'a' }, { title: 'b' }, { title: '' }],
+    });
+    expect(errors.map((error) => error.path)).toEqual(['items[2].title']);
+  });
+
+  test('unpublished items do not count toward min', () => {
+    /* Two items of which one is unpublished publishes one, and one is the
+       number a minimum of two is about. */
+    const errors = validateForPublish(badges, {
+      items: [{ title: 'a' }, { title: 'b', published: false }],
+    });
+    expect(errors.map((error) => error.code)).toContain('min_items');
+  });
+
+  test('error paths still address the row the form renders', () => {
+    const errors = validateForPublish(badges, {
+      items: [{ title: '', published: false }, { title: '' }, { title: 'c' }],
+    });
+    /* Index 1, not 0 — the unpublished row was skipped, not removed. */
+    expect(errors.map((error) => error.path)).toContain('items[1].title');
+  });
+
+  test('the flag is ignored on a collection that does not declare it', () => {
+    const plain = { ...badges, itemPublishFlag: false };
+    const errors = validateForPublish(plain, {
+      items: [{ title: 'a' }, { title: '', published: false }],
+    });
+    expect(errors.map((error) => error.path)).toContain('items[1].title');
   });
 });
 

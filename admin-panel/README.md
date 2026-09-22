@@ -26,11 +26,11 @@ the same `X-Api-Key` and `X-User-Id` that `edge` does, so it needs no change to
 `.env.example` to `.env.local`. Nothing in it is `VITE_`-prefixed, so none of it
 can reach the bundle; `npm run build` fails if any of it does.
 
-Routes: `/sections` (a link list), `/sections/:type` (one editor for every
+Routes: `/sections` (the section manager — artboard 01), `/sections/:type`
+(one editor for every
 section type the registry declares), and `/dev/fields` (M0's field-states
-matrix). The section manager, sidebar navigation beyond that link list, section
-reordering, the preview, publish and onboarding are all out of these
-milestones.
+matrix). Sidebar navigation, the preview, publish and onboarding are still out
+of scope.
 
 Playwright drives the built mock bundle:
 

@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { PublishAttemptedProvider } from './app-state/publish-attempted';
 import { DevFields } from './routes/DevFields';
 import { SectionEditorPage } from './routes/SectionEditorPage';
-import { SectionIndexPage } from './routes/SectionIndexPage';
+import { SectionManagerPage } from './routes/SectionManagerPage';
 
 /*
  * Three routes. `/sections/:type` is one page for every section type the
@@ -33,7 +33,7 @@ export function App() {
         <BrowserRouter>
         <Routes>
           <Route path="/dev/fields" element={<DevFields />} />
-          <Route path="/sections" element={<SectionIndexPage />} />
+          <Route path="/sections" element={<SectionManagerPage />} />
           <Route path="/sections/:type" element={<SectionEditorPage />} />
           <Route path="*" element={<Navigate to="/sections" replace />} />
         </Routes>

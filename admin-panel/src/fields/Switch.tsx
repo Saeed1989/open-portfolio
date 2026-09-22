@@ -25,6 +25,15 @@ export interface SwitchProps {
   readonly gap?: Gap | undefined;
   readonly gapNote?: string | undefined;
   readonly demoFocus?: boolean | undefined;
+  /**
+   * Keeps the label as the control's accessible name without drawing it.
+   *
+   * For a switch in a table column whose header already names it — repeating
+   * "Enable Hero" thirteen times down the Enabled column would be noise on
+   * screen, but removing the name entirely would leave a screen reader with
+   * thirteen unlabelled switches.
+   */
+  readonly labelHidden?: boolean | undefined;
 }
 
 export function Switch({
@@ -38,6 +47,7 @@ export function Switch({
   gap = 'none',
   gapNote,
   demoFocus,
+  labelHidden,
 }: SwitchProps) {
   const invalid = isInvalid({ disabled, error, gap });
   const message = error ?? (gap === 'blocking' ? gapNote : undefined);
@@ -78,7 +88,11 @@ export function Switch({
         </button>
         <label
           htmlFor={id}
-          className="font-sans text-[12px] font-medium leading-[1.2] text-ink"
+          className={
+            labelHidden
+              ? 'sr-only'
+              : 'font-sans text-[12px] font-medium leading-[1.2] text-ink'
+          }
         >
           {label}
         </label>

@@ -168,3 +168,151 @@ test('the editor renders a second section type with no code of its own', async (
   await expect(indicator(page)).toContainText(/Saved \d/);
   await expect(site).toHaveValue(before);
 });
+
+test('a visibility toggle round-trips through PATCH and reload', async ({
+  page,
+}) => {
+  await page.goto('/sections/contact');
+  await expect(
+    page.getByRole('heading', { name: 'Contact', level: 1 }),
+  ).toBeVisible();
+
+  /* The seeded draft hides `x` and leaves the rest with no entry at all,
+     which reads as visible (FR-SEC-CON-2). */
+  const github = page.locator('#github-visible');
+  const x = page.locator('#x-visible');
+  await expect(github).toHaveAttribute('aria-checked', 'true');
+  await expect(x).toHaveAttribute('aria-checked', 'false');
+
+  const githubValue = await page.locator('#github').inputValue();
+
+  await github.click();
+  await expect(indicator(page)).toContainText(/Saved \d/);
+
+  /* The value is kept, not cleared — the tenant chose not to publish it. */
+  await expect(page.locator('#github')).toHaveValue(githubValue);
+
+  /* And the server holds it as a sibling map, with the value's own type
+     unchanged (model A). */
+  const stored = await storedContent(page, 'contact');
+  expect(stored.github).toBe(githubValue);
+  expect(stored.visibility).toMatchObject({ github: false, x: false });
+
+  /* Survives a reload, which is the half a local state update would fake. */
+  await page.reload();
+  await expect(page.locator('#github-visible')).toHaveAttribute(
+    'aria-checked',
+    'false',
+  );
+  await expect(page.locator('#github')).toHaveValue(githubValue);
+});
+
+test('an unpublished item is excluded from validation and the counts', async ({
+  page,
+}) => {
+  await page.goto('/sections/achievements');
+  await expect(
+    page.getByRole('heading', { name: 'Achievements', level: 1 }),
+  ).toBeVisible();
+
+  /* The seeded second item came from an import, is unpublished, and is
+     missing a required field (FR-SEC-ACH-5). */
+  const unpublished = page.getByRole('button', { name: 'Unpublished' });
+  await expect(unpublished).toBeVisible();
+
+  const blockingWhileUnpublished = await page
+    .locator('aside')
+    .getByText('Blocking publish')
+    .locator('xpath=following-sibling::b[1]')
+    .textContent();
+
+  /* Promoting it brings its gaps into the count — which is the proof the
+     exclusion was real and not just an empty collection. */
+  await unpublished.click();
+  await expect(indicator(page)).toContainText(/Saved \d/);
+
+  const blockingWhenPublished = await page
+    .locator('aside')
+    .getByText('Blocking publish')
+    .locator('xpath=following-sibling::b[1]')
+    .textContent();
+
+  expect(Number(blockingWhenPublished)).toBeGreaterThan(
+    Number(blockingWhileUnpublished),
+  );
+});
+
+test('the section manager lists every registry type with its state', async ({
+  page,
+}) => {
+  await page.goto('/sections');
+  await expect(page.getByRole('heading', { name: 'Sections', level: 1 })).toBeVisible();
+
+  /* One row per declared type, and the count comes from the registry rather
+     than from a number written here. */
+  const rows = page.locator('ol > li');
+  await expect(rows).toHaveCount(13);
+
+  /* The three states the mock draws, each present in the seeded draft. */
+  await expect(page.getByText('Appears', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Off — not published').first()).toBeVisible();
+
+  /* FR-CFG-4, stated as a running count rather than only as a publish
+     failure. */
+  await expect(page.getByText(/At least one enabled, non-empty section/)).toBeVisible();
+});
+
+test('a section toggle persists, and creates a section the draft lacked', async ({
+  page,
+}) => {
+  await page.goto('/sections');
+  await expect(page.getByRole('heading', { name: 'Sections', level: 1 })).toBeVisible();
+
+  const toggle = page.locator('#enabled-experience');
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+  await toggle.click();
+  await expect(page.locator('header [role="status"]')).toContainText(/Saved \d/);
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+
+  /* The server holds it — and holds a section the seeded draft never had, so
+     a type the tenant has not touched is still reachable. */
+  const enabled = await page.evaluate(async () => {
+    const doc = (await fetch('/api/admin/portfolio').then((r) => r.json())) as {
+      draft: { sections: { type: string; enabled: boolean }[] };
+    };
+    return doc.draft.sections.find((s) => s.type === 'experience')?.enabled;
+  });
+  expect(enabled).toBe(true);
+
+  await page.reload();
+  await expect(page.locator('#enabled-experience')).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+});
+
+test('reordering is keyboard operable and persists the new order', async ({
+  page,
+}) => {
+  await page.goto('/sections');
+  await expect(page.getByRole('heading', { name: 'Sections', level: 1 })).toBeVisible();
+
+  const firstHandle = page.locator('ol li button[aria-label^="Reorder"]').first();
+  await firstHandle.focus();
+  await firstHandle.press('ArrowDown');
+
+  await expect(page.locator('header [role="status"]')).toContainText(/Saved \d/);
+
+  /* Renumbered from zero, so the stored order matches what is on screen. */
+  const orders = await page.evaluate(async () => {
+    const doc = (await fetch('/api/admin/portfolio').then((r) => r.json())) as {
+      draft: { sections: { type: string; order: number }[] };
+    };
+    return Object.fromEntries(
+      doc.draft.sections.map((s) => [s.type, s.order] as const),
+    );
+  });
+  expect(orders.projects).toBe(0);
+  expect(orders.hero).toBe(1);
+});

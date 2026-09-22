@@ -75,10 +75,14 @@ export interface FieldDescriptor {
   /**
    * The field carries its own visibility toggle (FR-SEC-CON-2, FR-SEC-EDU-1).
    *
-   * Its stored value becomes `{ value, visible }`. Hiding keeps the value —
-   * the tenant is choosing not to publish it, not deleting it — and a hidden
-   * field is not required at publish, because insisting on a value that will
-   * not be rendered is a demand with no consequence.
+   * The value's type is unchanged; visibility is recorded beside it, in the
+   * content object's `visibility` map. Hiding keeps the value — the tenant is
+   * choosing not to publish it, not deleting it — and a hidden field is not
+   * required at publish, because insisting on a value that will not be
+   * rendered is a demand with no consequence.
+   *
+   * A field may not be both `hideable` and publish-`required`; the invariant
+   * is asserted over every descriptor in `capabilities.test.ts`.
    */
   readonly hideable?: boolean;
   /** Placeholder shown when the field is empty. */
@@ -124,6 +128,19 @@ export interface CollectionSectionDescriptor extends DescriptorBase {
   readonly itemLabelFallback?: string;
   /** Singular noun for the Add control, e.g. 'role' gives "+ Add role". */
   readonly itemNoun?: string;
+  /**
+   * Items in this collection carry their own `published: boolean` (§5.2).
+   *
+   * True for `achievements`, because a Credly import cannot judge which badges
+   * are high-signal and so arrives unpublished for the tenant to promote
+   * (FR-SEC-ACH-5) — and for `trainings`, which reuses that field schema
+   * verbatim (§4.1, FR-SEC-TRN-1) and therefore inherits the flag whether or
+   * not it has an importer of its own.
+   *
+   * Absent means the collection has no per-item flag and every item publishes
+   * with the section.
+   */
+  readonly itemPublishFlag?: boolean;
 }
 
 export type SectionDescriptor =

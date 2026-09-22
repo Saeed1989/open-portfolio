@@ -27,29 +27,64 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * A hideable field stores `{ value, visible }`; every other field stores its
- * value directly. One accessor so the renderer and the validator cannot
- * disagree about where a value lives.
+ * The key holding a content object's per-field visibility.
+ *
+ * Visibility sits *beside* the values rather than wrapping them, so a field's
+ * value type is the same whether or not it is hideable. A wrapper would make
+ * `email` a string in one section and `{ value, visible }` in another, and
+ * every consumer — the api's shape validation, the builder, the portfolio
+ * components — would have to know which.
+ */
+export const VISIBILITY_KEY = 'visibility';
+
+/**
+ * A field's value, read the same way whether or not it is hideable.
+ *
+ * One accessor so the renderer and the validator cannot disagree about where
+ * a value lives.
  */
 export function readFieldValue(
   field: FieldDescriptor,
   content: unknown,
 ): unknown {
   if (!isRecord(content)) return undefined;
-  const raw = content[field.key];
-  if (!field.hideable) return raw;
-  return isRecord(raw) ? raw.value : undefined;
+  return content[field.key];
 }
 
-/** A hideable field the tenant has switched off. Defaults to visible. */
+/**
+ * A hideable field the tenant has switched off.
+ *
+ * Absent means visible: a draft written before this field became hideable, or
+ * one the tenant has never touched, shows its content rather than silently
+ * withholding it. Hiding is the deliberate act, so it is the one that has to
+ * be recorded.
+ */
 export function isFieldHidden(
   field: FieldDescriptor,
   content: unknown,
 ): boolean {
   if (!field.hideable) return false;
   if (!isRecord(content)) return false;
-  const raw = content[field.key];
-  return isRecord(raw) ? raw.visible === false : false;
+  const map = content[VISIBILITY_KEY];
+  if (!isRecord(map)) return false;
+  return map[field.key] === false;
+}
+
+/**
+ * An item the tenant has not promoted, in a collection that carries the flag.
+ *
+ * Only meaningful where the descriptor sets `itemPublishFlag`. Absent means
+ * published: a hand-entered item is published by default, and only an import
+ * arrives unpublished (FR-SEC-ACH-5).
+ */
+export function isItemUnpublished(
+  descriptor: SectionDescriptor,
+  item: unknown,
+): boolean {
+  if (descriptor.cardinality !== 'collection') return false;
+  if (!descriptor.itemPublishFlag) return false;
+  if (!isRecord(item)) return false;
+  return item.published === false;
 }
 
 /** True when a value carries something publishable. */
@@ -154,7 +189,23 @@ export function validateForPublish(
     return validateFields(descriptor.fields, content, '');
   }
 
-  const rows = items(content);
+  /*
+   * Unpublished items leave the set entirely: they are not validated, and they
+   * do not count toward `min` or `max`.
+   *
+   * Both halves matter. An imported badge the tenant has not promoted must not
+   * block a publish for want of a field they were never asked to fill; and a
+   * collection of five items where two are unpublished publishes three, so
+   * three is the number a bound is about.
+   *
+   * `index` is kept from the original array so error paths still address the
+   * row the form renders.
+   */
+  const allRows = items(content);
+  const counted = allRows
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => !isItemUnpublished(descriptor, row));
+  const rows = counted.map(({ row }) => row);
   const errors: ValidationError[] = [];
 
   /* A collection's minimum is a publish rule, never a save rule: a tenant
@@ -177,7 +228,7 @@ export function validateForPublish(
     });
   }
 
-  for (const [index, row] of rows.entries()) {
+  for (const { row, index } of counted) {
     errors.push(
       ...validateFields(
         descriptor.itemFields,
@@ -227,7 +278,12 @@ export function readiness(
   if (descriptor.cardinality === 'single') {
     count(descriptor.fields, content);
   } else {
-    for (const row of items(content)) count(descriptor.itemFields, row);
+    for (const row of items(content)) {
+      /* An unpublished row is not part of what a publish would carry, so
+         counting its empty fields would report a gap that is not one. */
+      if (isItemUnpublished(descriptor, row)) continue;
+      count(descriptor.itemFields, row);
+    }
     if (descriptor.sectionFields) count(descriptor.sectionFields, content);
   }
 

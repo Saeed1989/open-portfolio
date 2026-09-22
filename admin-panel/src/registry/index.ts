@@ -1,4 +1,5 @@
 import { REGISTRY } from '@portfolio/registry';
+import { applyCapabilities } from './shim/capabilities';
 import type { SectionDescriptor } from './shim/types';
 
 /*
@@ -21,9 +22,9 @@ import type { SectionDescriptor } from './shim/types';
  *
  *   itemLabel     a collapsed collection row reads "Untitled 1" instead of
  *                 "{company} — {title}"
- *   hideable      no per-field visibility toggle, so FR-SEC-EDU-1's four
- *                 hideable fields and FR-SEC-CON-2's five links render as
- *                 plain fields
+ *   hideable      supplied locally by ./shim/capabilities, which is a marked
+ *                 violation of FR-REG-3 and the first thing to delete
+ *   itemPublishFlag  supplied the same way, for the same reason
  *   requiredWhen  no conditional requirement, so FR-SEC-HERO-2's CTA target
  *                 is never required
  *   date precision  every date renders at month precision; FR-SEC-BLOG-1 and
@@ -48,10 +49,12 @@ export type {
 export {
   hasValue,
   isFieldHidden,
+  isItemUnpublished,
   isRequiredNow,
   readFieldValue,
   readiness,
   validateForPublish,
+  VISIBILITY_KEY,
   type SectionReadiness,
 } from './shim/validate';
 
@@ -61,8 +64,9 @@ export {
  * Registry order is the default section order (SRS §4.1), so the list below
  * is also the order the sections index presents them in.
  */
-export const DESCRIPTORS: readonly SectionDescriptor[] =
-  Object.values(REGISTRY);
+export const DESCRIPTORS: readonly SectionDescriptor[] = Object.values(
+  REGISTRY,
+).map((descriptor) => applyCapabilities(descriptor));
 
 /** The descriptor for a section type, or undefined for one we do not declare. */
 export function descriptorFor(

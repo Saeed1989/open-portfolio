@@ -46,25 +46,95 @@ function seed(): MockDraft {
         type: 'contact',
         enabled: true,
         order: 3,
+        /* Model A: values keep their own type, and visibility sits beside
+           them. `x` is hidden and keeps its value (FR-SEC-CON-2); the other
+           four have no entry, which reads as visible. */
         content: {
-          email: { value: 'dana@villalobos.dev', visible: true },
-          github: { value: 'github.com/dvilla', visible: true },
-          linkedin: { value: 'linkedin.com/in/danavillalobos', visible: true },
-          x: { value: 'x.com/dvilla', visible: false },
-          site: { value: 'danavilla.dev', visible: true },
+          email: 'dana@villalobos.dev',
+          github: 'github.com/dvilla',
+          linkedin: 'linkedin.com/in/danavillalobos',
+          x: 'x.com/dvilla',
+          site: 'danavilla.dev',
+          visibility: { x: false },
+        },
+      },
+      {
+        type: 'education',
+        enabled: true,
+        order: 5,
+        content: {
+          items: [
+            {
+              degree: 'BSc Computer Science',
+              institution: 'University of Leeds',
+              graduated: '2016-07',
+              gpa: '3.8',
+              coursework: ['Distributed Systems', 'Compilers'],
+              /* Hidden, and the value is kept — FR-SEC-EDU-1's four fields
+                 are hideable per entry, so the map belongs to the entry. */
+              visibility: { gpa: false },
+            },
+          ],
+        },
+      },
+      {
+        type: 'achievements',
+        enabled: true,
+        order: 10,
+        content: {
+          items: [
+            { title: 'AWS Solutions Architect', issuer: 'Amazon', type: 'certification' },
+            /* Arrived from a Credly import, not yet promoted (FR-SEC-ACH-5).
+               Its `title` is empty, and `title` is the descriptor's one
+               required field — so promoting it is what turns a gap on, which
+               is how a test proves the exclusion was real. */
+            { title: '', issuer: 'CNCF', type: 'certification', published: false },
+          ],
         },
       },
     ],
   };
 }
 
-const drafts = new Map<string, MockDraft>();
+/*
+ * Persisted across reloads, because a server would be.
+ *
+ * The store was in-memory to begin with, which made a page reload silently
+ * reseed it — so "the edit survived a reload" was untestable and, worse, a
+ * developer's work vanished on refresh in mock mode. sessionStorage rather
+ * than localStorage: a fixture should not outlive the tab that created it.
+ */
+const STORAGE_KEY = 'openfolio.mock-drafts';
+
+const drafts = new Map<string, MockDraft>(restore());
+
+function restore(): Array<[string, MockDraft]> {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (raw === null) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Array<[string, MockDraft]>) : [];
+  } catch {
+    /* Private mode, disabled storage, or a shape from an older build. A
+       fixture that cannot be restored is reseeded, never fatal. */
+    return [];
+  }
+}
+
+function persist(): void {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...drafts]));
+  } catch {
+    /* The store still works in memory for this page. */
+  }
+}
 
 export function draftFor(tenant: string): MockDraft {
   let draft = drafts.get(tenant);
   if (!draft) {
     draft = seed();
     drafts.set(tenant, draft);
+    persist();
   }
   return draft;
 }
@@ -96,6 +166,7 @@ export function writeSection(
   /* Every write to the document increments `version`, which is what makes it
      usable as a precondition. */
   draft.version += 1;
+  persist();
   return draft;
 }
 
@@ -107,9 +178,15 @@ export function writeSection(
 export function bumpElsewhere(tenant: string): MockDraft {
   const draft = draftFor(tenant);
   draft.version += 1;
+  persist();
   return draft;
 }
 
 export function resetDrafts(): void {
   drafts.clear();
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    /* Nothing to clear. */
+  }
 }

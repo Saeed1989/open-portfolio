@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import type {
-  CollectionSectionDescriptor,
-  FieldDescriptor,
-  SectionDescriptor,
+import {
+  isItemUnpublished,
+  VISIBILITY_KEY,
+  type CollectionSectionDescriptor,
+  type FieldDescriptor,
+  type SectionDescriptor,
 } from '../registry';
 import { Button, Pill } from '../ui/primitives';
 import { FieldRenderer } from './FieldRenderer';
@@ -139,23 +141,16 @@ function SingleForm({
     onChange({ ...record, [key]: value });
   };
 
-  /* A hideable field stores `{ value, visible }`. Toggling visibility keeps
-     whatever value is there — FR-SEC-CON-2's "a hidden link keeps its value". */
+  /* Visibility lives beside the values, never wrapped around them, so a
+     field's value type is the same whether or not it is hideable. Toggling
+     touches only the map — FR-SEC-CON-2's "a hidden link keeps its value" is
+     then true by construction rather than by care. */
   const setVisibility = (key: string, visible: boolean) => {
-    const existing = record[key];
-    const value = isRecord(existing) ? existing.value : undefined;
-    onChange({ ...record, [key]: { value, visible } });
+    onChange({
+      ...record,
+      [VISIBILITY_KEY]: { ...asObject(record[VISIBILITY_KEY]), [key]: visible },
+    });
   };
-
-  const setHideableValue = (key: string, value: unknown) => {
-    const existing = record[key];
-    const visible = isRecord(existing) ? existing.visible !== false : true;
-    onChange({ ...record, [key]: { value, visible } });
-  };
-
-  const hideableKeys = new Set(
-    descriptor.fields.filter((field) => field.hideable).map((field) => field.key),
-  );
 
   return (
     <div className="flex flex-col gap-[18px]">
@@ -166,10 +161,7 @@ function SingleForm({
         gaps={gaps}
         refusedErrors={refusedErrors}
         disabled={disabled}
-        onFieldChange={(key, value) => {
-          if (hideableKeys.has(key)) setHideableValue(key, value);
-          else setField(key, value);
-        }}
+        onFieldChange={setField}
         onVisibilityChange={setVisibility}
       />
     </div>
@@ -195,29 +187,30 @@ function CollectionForm({
     onChange({ ...record, items: next });
   };
 
-  const hideableKeys = new Set(
-    descriptor.itemFields.filter((field) => field.hideable).map((f) => f.key),
-  );
-
   const setItemField = (index: number, key: string, value: unknown) => {
     const next = [...rows];
-    const item = asObject(next[index]);
-    if (hideableKeys.has(key)) {
-      const existing = item[key];
-      const visible = isRecord(existing) ? existing.visible !== false : true;
-      next[index] = { ...item, [key]: { value, visible } };
-    } else {
-      next[index] = { ...item, [key]: value };
-    }
+    next[index] = { ...asObject(next[index]), [key]: value };
     writeRows(next);
   };
 
+  /* Per-item visibility, in the item's own map — FR-SEC-EDU-1's four fields
+     are hideable per entry, so the map belongs to the entry, not the
+     section. */
   const setItemVisibility = (index: number, key: string, visible: boolean) => {
     const next = [...rows];
     const item = asObject(next[index]);
-    const existing = item[key];
-    const value = isRecord(existing) ? existing.value : undefined;
-    next[index] = { ...item, [key]: { value, visible } };
+    next[index] = {
+      ...item,
+      [VISIBILITY_KEY]: { ...asObject(item[VISIBILITY_KEY]), [key]: visible },
+    };
+    writeRows(next);
+  };
+
+  /* FR-SEC-ACH-5: an imported badge arrives unpublished and the tenant
+     promotes it. Absent means published, so only the demotion is recorded. */
+  const setItemPublished = (index: number, published: boolean) => {
+    const next = [...rows];
+    next[index] = { ...asObject(next[index]), published };
     writeRows(next);
   };
 
@@ -327,7 +320,31 @@ function CollectionForm({
                     index,
                   )}
                 </button>
-                {rowGaps > 0 ? (
+                {descriptor.itemPublishFlag ? (
+                  /* Not a Switch: this is a two-state control whose off
+                     position is a real, named state the tenant chose, and the
+                     mock's rule is that such a state "reads as its own word
+                     with the consequence spelled out". */
+                  <Button
+                    sm
+                    disabled={disabled}
+                    variant={isItemUnpublished(descriptor, row) ? 'default' : 'primary'}
+                    aria-pressed={!isItemUnpublished(descriptor, row)}
+                    title={
+                      isItemUnpublished(descriptor, row)
+                        ? 'Not on the published page. Click to publish it.'
+                        : 'On the published page. Click to hold it back.'
+                    }
+                    onClick={() => {
+                      setItemPublished(index, isItemUnpublished(descriptor, row));
+                    }}
+                  >
+                    {isItemUnpublished(descriptor, row)
+                      ? 'Unpublished'
+                      : 'Published'}
+                  </Button>
+                ) : null}
+                {isItemUnpublished(descriptor, row) ? null : rowGaps > 0 ? (
                   <Pill tone="warn">
                     {rowGaps} {rowGaps === 1 ? 'gap' : 'gaps'}
                   </Pill>
@@ -406,9 +423,13 @@ function CollectionForm({
               onChange({ ...record, [key]: value });
             }}
             onVisibilityChange={(key, visible) => {
-              const existing = record[key];
-              const value = isRecord(existing) ? existing.value : undefined;
-              onChange({ ...record, [key]: { value, visible } });
+              onChange({
+                ...record,
+                [VISIBILITY_KEY]: {
+                  ...asObject(record[VISIBILITY_KEY]),
+                  [key]: visible,
+                },
+              });
             }}
           />
         </div>
