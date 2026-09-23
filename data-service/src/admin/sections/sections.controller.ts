@@ -3,34 +3,52 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   NotImplementedException,
   Param,
   Patch,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { ServerResponse } from 'node:http';
 import {
+  ApiBadRequestResponse,
   ApiBody,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiHeader,
   ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { SECTION_TYPES, type SectionType } from '@portfolio/registry';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
+import { etag, parseIfMatch } from '../etag';
 import { ApiKeyGuard } from '../guards/api-key.guard';
 import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
-import { AdminSectionDto } from './dto/admin-section.dto';
+import {
+  AdminSectionDto,
+  AdminSectionsDto,
+  UpdatedSectionDto,
+} from './dto/admin-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { SectionsService } from './sections.service';
 
 const TYPE_PARAM = { name: 'type', enum: [...SECTION_TYPES] };
+
+const IF_MATCH_HEADER = {
+  name: 'If-Match',
+  required: true,
+  description: 'The ETag of the last read, e.g. "3".',
+};
 
 /* An item's fields are declared by the registry for its section type, so the
    body is an open object here rather than a field list (FR-REG-1). */
@@ -52,23 +70,56 @@ export class SectionsController {
 
   @Get()
   @ApiOperation({ summary: 'List the draft sections (FR-CFG-1)' })
-  @ApiOkResponse({ type: [AdminSectionDto] })
-  list(@Tenant() tenant: TenantScope): Promise<AdminSectionDto[]> {
-    return this.sections.list(tenant.portfolioId);
+  @ApiOkResponse({
+    type: AdminSectionsDto,
+    description: 'The `ETag` header carries `draftRevision`.',
+  })
+  async list(
+    @Tenant() tenant: TenantScope,
+    @Res({ passthrough: true }) response: ServerResponse,
+  ): Promise<AdminSectionsDto> {
+    const result = await this.sections.list(tenant.portfolioId);
+    response.setHeader('ETag', etag(result.draftRevision));
+    return result;
   }
 
   @Patch(':type')
   @ApiOperation({
-    summary: "Toggle, reorder, or replace a section's content (FR-CFG-3)",
+    summary: 'Toggle a section or replace its content (FR-CFG-1)',
   })
   @ApiParam(TYPE_PARAM)
-  @ApiOkResponse({ type: AdminSectionDto })
-  update(
+  @ApiHeader(IF_MATCH_HEADER)
+  @ApiOkResponse({
+    type: UpdatedSectionDto,
+    description: 'The `ETag` header carries the new `draftRevision`.',
+  })
+  @ApiBadRequestResponse({ description: '`invalid_if_match`.' })
+  @ApiNotFoundResponse({
+    description:
+      '`portfolio_not_found`, `section_type_not_found`, or `section_not_found`.',
+  })
+  @ApiConflictResponse({
+    description:
+      '`stale_write`: If-Match absent or not the current revision. The body carries `draftRevision`.',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: '`validation_failed`, with every failing field path.',
+  })
+  async update(
     @Tenant() tenant: TenantScope,
-    @Param('type') type: SectionType,
+    @Param('type') type: string,
+    @Headers('if-match') ifMatch: string | undefined,
     @Body() dto: UpdateSectionDto,
-  ): Promise<AdminSectionDto> {
-    throw new NotImplementedException();
+    @Res({ passthrough: true }) response: ServerResponse,
+  ): Promise<UpdatedSectionDto> {
+    const result = await this.sections.update(
+      tenant,
+      type,
+      dto,
+      parseIfMatch(ifMatch),
+    );
+    response.setHeader('ETag', etag(result.draftRevision));
+    return result;
   }
 
   @Post(':type/items')
