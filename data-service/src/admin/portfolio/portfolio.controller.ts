@@ -4,8 +4,10 @@ import {
   Get,
   NotImplementedException,
   Patch,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { ServerResponse } from 'node:http';
 import {
   ApiOkResponse,
   ApiHeader,
@@ -14,6 +16,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
+import { etag } from '../etag';
 import { ApiKeyGuard } from '../guards/api-key.guard';
 import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
@@ -43,9 +46,17 @@ export class PortfolioController {
 
   @Get('portfolio')
   @ApiOperation({ summary: "Full draft of the session's portfolio (FR-TEN-4)" })
-  @ApiOkResponse({ type: AdminPortfolioDto })
-  getDraft(@Tenant() tenant: TenantScope): Promise<AdminPortfolioDto> {
-    return this.portfolio.getDraft(tenant.portfolioId);
+  @ApiOkResponse({
+    type: AdminPortfolioDto,
+    description: 'The `ETag` header carries `draftRevision`.',
+  })
+  async getDraft(
+    @Tenant() tenant: TenantScope,
+    @Res({ passthrough: true }) response: ServerResponse,
+  ): Promise<AdminPortfolioDto> {
+    const draft = await this.portfolio.getDraft(tenant.portfolioId);
+    response.setHeader('ETag', etag(draft.draftRevision));
+    return draft;
   }
 
   @Patch('portfolio/theme')

@@ -1,0 +1,185 @@
+# edge — the one nginx configuration, for every environment.
+#
+# FR-EDGE-6 and NFR-OPS-5: this file is versioned in the monorepo, deployed as
+# part of a release, and identical in development and production. Only the
+# upstream addresses differ, and they arrive as environment variables — the
+# nginx image expands this template at start-up. A routing rule that exists
+# only in production is a rule that is never tested, and these rules are part
+# of the security boundary rather than part of the environment.
+#
+# Variables:
+#   ADMIN_ROOT      directory holding admin's built static files
+#   API_UPSTREAM    host:port of api          (never publicly routable)
+#   AUTH_UPSTREAM   host:port of the identity resolver
+#   PORTFOLIO_UPSTREAM  host:port of the portfolio app
+#   WWW_UPSTREAM    host:port of the marketing site
+#   ADMIN_API_KEY   the key api's admin guard checks alongside X-User-Id
+#   ROOT_DOMAIN     openfolio.site in production, openfolio.test in dev
+
+# FR-AUTH-16 and FR-API-2. Two zones, because the auth limit is stricter and
+# independent: exceeding it answers 429 without reaching api.
+limit_req_zone $binary_remote_addr zone=auth_edge:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=public_edge:10m rate=60r/s;
+limit_req_status 429;
+
+upstream api        { server ${API_UPSTREAM};       keepalive 16; }
+upstream auth       { server ${AUTH_UPSTREAM};      keepalive 16; }
+upstream portfolio  { server ${PORTFOLIO_UPSTREAM}; keepalive 16; }
+upstream www        { server ${WWW_UPSTREAM};       keepalive 16; }
+
+# NFR-OPS-4: edge originates the request id when the inbound request carries
+# none, and every downstream log line carries it.
+map $http_x_request_id $request_id_final {
+    ""      $request_id;
+    default $http_x_request_id;
+}
+
+# FR-EDGE-1. A Host matching none of the three server blocks below reaches this
+# one and the connection is closed without a response. It is the default_server
+# so that an unmatched Host cannot fall through to whichever block nginx
+# happens to have first.
+server {
+    listen 80 default_server;
+    server_name _;
+    return 444;
+}
+
+# ---------------------------------------------------------------------------
+# admin.${ROOT_DOMAIN} — matched exactly, and ahead of the wildcard.
+# ---------------------------------------------------------------------------
+server {
+    listen 80;
+    server_name admin.${ROOT_DOMAIN};
+
+    # The identity subrequest (FR-EDGE-3). `internal` so no external request
+    # can address it; §7.3 relies on exactly that for /auth/resolve.
+    location = /_edge/auth/resolve {
+        internal;
+        proxy_pass              http://auth/auth/resolve;
+        proxy_pass_request_body off;
+        proxy_set_header        Content-Length "";
+        proxy_set_header        Host $host;
+        proxy_set_header        X-Request-Id $request_id_final;
+        proxy_http_version      1.1;
+        proxy_set_header        Connection "";
+    }
+
+    # FR-EDGE-2, second clause: /api/admin/* to api's /admin/*, behind the
+    # subrequest.
+    location /api/admin/ {
+        auth_request     /_edge/auth/resolve;
+
+        # FR-EDGE-4. The value comes from the subrequest's response header and
+        # replaces whatever the client sent. `auth_request_set` runs only when
+        # the subrequest succeeded, and proxy_set_header below is
+        # unconditional, so a client-supplied X-User-Id can never survive.
+        auth_request_set $resolved_user_id $upstream_http_x_user_id;
+        proxy_set_header X-User-Id $resolved_user_id;
+
+        # api's admin guard checks this alongside X-User-Id. It is held in the
+        # environment, never in the image and never in the database
+        # (NFR-SEC-3).
+        proxy_set_header X-Api-Key ${ADMIN_API_KEY};
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Request-Id $request_id_final;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        # FR-EDGE-3: 401 and 403 are propagated to the client untouched and the
+        # admin surface is never called; any other subrequest status is a 502,
+        # which is nginx's own behaviour for auth_request.
+        proxy_intercept_errors off;
+
+        # The trailing slashes strip the /api prefix: /api/admin/me reaches api
+        # as /admin/me (§2.6 step 6).
+        proxy_pass http://api/admin/;
+    }
+
+    # FR-EDGE-2, first clause: /api/auth/* to api's /auth/*, with no identity
+    # subrequest — there is no session to resolve yet (§2.5 step 1).
+    location /api/auth/ {
+        limit_req zone=auth_edge burst=5 nodelay;
+
+        # FR-EDGE-4 again: set unconditionally on every location edge proxies,
+        # to the empty value where no identity was resolved. Without this line
+        # a client could send X-User-Id to an unauthenticated location and have
+        # it reach api.
+        proxy_set_header X-User-Id "";
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Request-Id $request_id_final;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_pass http://api/auth/;
+    }
+
+    # FR-EDGE-2, third clause: every other path is the admin app.
+    #
+    # D0 makes that app a client-rendered SPA built to static files, so it is
+    # served from disk here rather than proxied to a Next.js server — see the
+    # diff against FR-EDGE-2 in admin-panel/README.md. The fallback is what
+    # makes a deep link like /sections/projects reach the app rather than a
+    # 404; the router resolves it in the browser.
+    location / {
+        root ${ADMIN_ROOT};
+        try_files $uri $uri/ /index.html;
+
+        # The built assets are content-hashed, so they may be cached
+        # indefinitely; index.html must not be, or a deploy is invisible.
+        location = /index.html {
+            add_header Cache-Control "no-cache" always;
+        }
+        location /assets/ {
+            add_header Cache-Control "public, max-age=31536000, immutable" always;
+        }
+    }
+
+    # FR-EDGE-2, last clause: no other path on api is reachable from this host.
+    # /public/* is not routed here at all, so it 404s against the SPA fallback
+    # rather than reaching api.
+}
+
+# ---------------------------------------------------------------------------
+# *.${ROOT_DOMAIN} — the tenant wildcard. Matched after the exact names above.
+# ---------------------------------------------------------------------------
+server {
+    listen 80;
+    server_name *.${ROOT_DOMAIN};
+
+    location / {
+        # FR-EDGE-4: unconditionally, on every location edge proxies.
+        proxy_set_header X-User-Id "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Request-Id $request_id_final;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        # FR-TEN-2: the tenant is resolved from Host by the portfolio app.
+        proxy_pass http://portfolio;
+    }
+
+    # FR-EDGE-2: neither /admin/* nor /auth/* is routable from the wildcard
+    # host. They are not declared here, so they reach the portfolio app and
+    # 404 — they never reach api.
+}
+
+# ---------------------------------------------------------------------------
+# ${ROOT_DOMAIN} — the apex. Matched exactly.
+# ---------------------------------------------------------------------------
+server {
+    listen 80;
+    server_name ${ROOT_DOMAIN};
+
+    location / {
+        proxy_set_header X-User-Id "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Request-Id $request_id_final;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+
+        proxy_pass http://www;
+    }
+}

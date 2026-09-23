@@ -76,6 +76,7 @@ export class PortfolioService {
       },
       publishedAt: portfolio.publishedAt,
       version: portfolio.version,
+      draftRevision: portfolio.draftRevision ?? 0,
     };
   }
 

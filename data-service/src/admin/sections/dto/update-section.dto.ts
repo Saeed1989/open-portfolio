@@ -1,24 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsObject, IsOptional } from 'class-validator';
+import { IsBoolean, IsObject, IsOptional } from 'class-validator';
 
-/** Toggle, reorder, or replace content — any combination (FR-CFG-1, FR-CFG-3). */
+/*
+ * Toggle, replace content, or both (FR-CFG-1). At least one is required.
+ * `order` is not accepted: reordering is not implemented, so the global pipe
+ * rejects it as an unknown key.
+ */
 export class UpdateSectionDto {
   @ApiProperty({ type: Boolean, required: false, example: true })
   @IsOptional()
   @IsBoolean()
   enabled?: boolean;
 
-  @ApiProperty({ type: Number, required: false, example: 2 })
-  @IsOptional()
-  @IsInt()
-  order?: number;
-
   @ApiProperty({
     type: 'object',
     additionalProperties: true,
     required: false,
     description:
-      "Replacement content, shaped by the registry's descriptor for :type.",
+      "Replacement content, shaped by the registry's descriptor for :type. Replaces the stored content in full.",
     example: { items: [] },
   })
   @IsOptional()

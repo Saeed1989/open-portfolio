@@ -71,7 +71,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The `ETag` header carries `draftRevision`.",
             "content": {
               "application/json": {
                 "schema": {
@@ -277,14 +277,11 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The `ETag` header carries `draftRevision`.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AdminSectionDto"
-                  }
+                  "$ref": "#/components/schemas/AdminSectionsDto"
                 }
               }
             }
@@ -301,7 +298,7 @@
     "/admin/portfolio/sections/{type}": {
       "patch": {
         "operationId": "SectionsController_update",
-        "summary": "Toggle, reorder, or replace a section's content (FR-CFG-3)",
+        "summary": "Toggle a section or replace its content (FR-CFG-1)",
         "parameters": [
           {
             "name": "X-Api-Key",
@@ -343,6 +340,15 @@
               ],
               "type": "string"
             }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "The ETag of the last read, e.g. \"3\".",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -357,17 +363,29 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "The `ETag` header carries the new `draftRevision`.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdminSectionDto"
+                  "$ref": "#/components/schemas/UpdatedSectionDto"
                 }
               }
             }
           },
+          "400": {
+            "description": "`invalid_if_match`."
+          },
           "401": {
             "description": "Missing or invalid API key or user id."
+          },
+          "404": {
+            "description": "`portfolio_not_found`, `section_type_not_found`, or `section_not_found`."
+          },
+          "409": {
+            "description": "`stale_write`: If-Match absent or not the current revision. The body carries `draftRevision`."
+          },
+          "422": {
+            "description": "`validation_failed`, with every failing field path."
           }
         },
         "tags": [
@@ -1422,6 +1440,11 @@
           "version": {
             "type": "number",
             "example": 3
+          },
+          "draftRevision": {
+            "type": "number",
+            "example": 7,
+            "description": "Also sent as the `ETag` header; draft writes echo it in `If-Match`."
           }
         },
         "required": [
@@ -1429,7 +1452,8 @@
           "status",
           "registryVersion",
           "draft",
-          "version"
+          "version",
+          "draftRevision"
         ]
       },
       "UpdateSlugDto": {
@@ -1444,6 +1468,25 @@
           "slug"
         ]
       },
+      "AdminSectionsDto": {
+        "type": "object",
+        "properties": {
+          "draftRevision": {
+            "type": "number",
+            "example": 3
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminSectionDto"
+            }
+          }
+        },
+        "required": [
+          "draftRevision",
+          "sections"
+        ]
+      },
       "UpdateSectionDto": {
         "type": "object",
         "properties": {
@@ -1451,19 +1494,31 @@
             "type": "boolean",
             "example": true
           },
-          "order": {
-            "type": "number",
-            "example": 2
-          },
           "content": {
             "type": "object",
             "additionalProperties": true,
-            "description": "Replacement content, shaped by the registry's descriptor for :type.",
+            "description": "Replacement content, shaped by the registry's descriptor for :type. Replaces the stored content in full.",
             "example": {
               "items": []
             }
           }
         }
+      },
+      "UpdatedSectionDto": {
+        "type": "object",
+        "properties": {
+          "draftRevision": {
+            "type": "number",
+            "example": 4
+          },
+          "section": {
+            "$ref": "#/components/schemas/AdminSectionDto"
+          }
+        },
+        "required": [
+          "draftRevision",
+          "section"
+        ]
       },
       "CreateUploadUrlDto": {
         "type": "object",

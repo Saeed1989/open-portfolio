@@ -93,6 +93,7 @@ async function seedTenant(tenant: SeedTenant): Promise<void> {
     published,
     publishedAt: tenant.publish ? PUBLISHED_AT : null,
     version: tenant.version,
+    draftRevision: 0,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
   });

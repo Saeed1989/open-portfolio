@@ -1,0 +1,31 @@
+# The auth_request stub of D8.
+#
+# Real auth does not exist yet: `api` has no `auth` module and therefore no
+# `GET /auth/resolve`. This stands in for it, and deliberately stands in for it
+# as a *service* rather than as a branch inside edge's own configuration — so
+# edge's rules are the production rules, exercised unchanged, and switching to
+# real auth is one environment variable (`AUTH_UPSTREAM`) rather than an edit
+# to the file the security boundary lives in.
+#
+# It answers what §7.3 specifies the real endpoint answers: 204 with the
+# resolved user id in an X-User-Id response header, and no body. It performs no
+# session lookup, because there is no session — which is exactly the thing this
+# stub must be replaced before anyone relies on.
+#
+#   STUB_USER_ID  the seeded users._id this stub resolves every request to
+
+server {
+    listen 80;
+    server_name _;
+
+    location = /auth/resolve {
+        add_header X-User-Id "${STUB_USER_ID}" always;
+        return 204;
+    }
+
+    # Anything else is a mistake in edge's routing rather than a request the
+    # stub should answer.
+    location / {
+        return 404;
+    }
+}
