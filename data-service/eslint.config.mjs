@@ -3,11 +3,11 @@ import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 /*
- * public, admin and worker are separate surfaces in one process (SRS §2.1) and
+ * public and admin are separate surfaces in one process (SRS §2.1) and
  * may not import from each other. schemas, common, external and
  * @portfolio/registry are shared.
  */
-const surfaces = ['public', 'admin', 'worker'];
+const surfaces = ['public', 'admin'];
 
 const boundaries = surfaces.map((surface) => ({
   files: [`src/${surface}/**/*.ts`],

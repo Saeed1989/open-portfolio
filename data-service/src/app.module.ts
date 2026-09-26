@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AdminModule } from './admin/admin.module';
 import { PublicModule } from './public/public.module';
-import { WorkerModule } from './worker/worker.module';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { WorkerModule } from './worker/worker.module';
     }),
     PublicModule,
     AdminModule,
-    WorkerModule,
   ],
 })
 export class AppModule {}

@@ -66,7 +66,7 @@ Rules for using it:
 ```
 src/
   main.ts
-  app.module.ts               mounts PublicModule, AdminModule, WorkerModule
+  app.module.ts               mounts PublicModule, AdminModule
 
   public/
     public.module.ts          forFeature([Portfolio]) — and nothing else
@@ -83,11 +83,6 @@ src/
     integrations/             "
     publish/                  "
     link-health/              "
-
-  worker/
-    worker.module.ts          forFeature([IntegrationConnection, IntegrationCache, LinkHealth])
-    sync/
-    link-health/
 
   schemas/                    plain @Schema definitions — no providers, no module
   external/                   revalidator/, storage-signer/
