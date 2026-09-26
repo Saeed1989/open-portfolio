@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { AuthAccountService } from '../../auth/auth-account.service';
 import { Portfolio } from '../../schemas/portfolio.schema';
-import { User } from '../../schemas/user.schema';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
 import { AdminSeoDto } from './dto/admin-seo.dto';
 import { AdminThemeDto } from './dto/admin-theme.dto';
@@ -17,14 +17,14 @@ import { UpdateSlugDto } from './dto/update-slug.dto';
 export class PortfolioService {
   constructor(
     @InjectModel(Portfolio.name) private readonly portfolios: Model<Portfolio>,
-    @InjectModel(User.name) private readonly users: Model<User>,
+    private readonly accounts: AuthAccountService,
   ) {}
 
   /* Answers with or without a portfolio, so it takes the user id rather than
      the scope's portfolio id (§7.2). */
   async getMe(userId: string): Promise<MeDto> {
     const [user, portfolio] = await Promise.all([
-      this.users.findById(new Types.ObjectId(userId)).lean(),
+      this.accounts.getDisplayFields(userId),
       this.portfolios
         .findOne({ userId: new Types.ObjectId(userId) })
         .select('slug status')

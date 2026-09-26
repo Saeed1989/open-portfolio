@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from '../auth/auth.module';
 import { revalidatorProvider } from '../external/revalidator/revalidator.provider';
 import { storageSignerProvider } from '../external/storage-signer/storage-signer.provider';
 import {
@@ -13,7 +14,6 @@ import {
 import { LinkHealth, LinkHealthSchema } from '../schemas/link-health.schema';
 import { Media, MediaSchema } from '../schemas/media.schema';
 import { Portfolio, PortfolioSchema } from '../schemas/portfolio.schema';
-import { User, UserSchema } from '../schemas/user.schema';
 import { IntegrationsController } from './integrations/integrations.controller';
 import { IntegrationsService } from './integrations/integrations.service';
 import { LinkHealthController } from './link-health/link-health.controller';
@@ -29,9 +29,9 @@ import { SectionsService } from './sections/sections.service';
 
 @Module({
   imports: [
+    AuthModule,
     MongooseModule.forFeature([
       { name: Portfolio.name, schema: PortfolioSchema },
-      { name: User.name, schema: UserSchema },
       { name: Media.name, schema: MediaSchema },
       { name: IntegrationConnection.name, schema: IntegrationConnectionSchema },
       { name: IntegrationCache.name, schema: IntegrationCacheSchema },

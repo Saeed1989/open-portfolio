@@ -34,6 +34,11 @@ export class User {
 
   @Prop({ type: String, enum: USER_STATUSES })
   status: UserStatus;
+
+  /** The provider's OAuth token, AES-256-GCM encrypted (NFR-SEC-3). Read
+      only through the auth module's interface (FR-AUTH-4, FR-AUTH-17). */
+  @Prop()
+  encryptedProviderToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
