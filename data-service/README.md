@@ -9,11 +9,12 @@ shape, and documented, and every handler returns `501 Not Implemented`.
 ## Setup
 
 This directory is its own npm root. `@portfolio/registry` is a `file:`
-dependency consumed as built output, so build it first:
+dependency on `vendor/registry`, a committed build of `packages/registry`.
+After changing the registry, rebuild and re-vendor it:
 
 ```bash
-cd ../packages/registry && npm install && npm run build
-cd ../../data-service && npm install
+npm run vendor:registry   # builds packages/registry, copies it into vendor/registry
+npm install
 cp .env.example .env
 docker compose up -d      # or point MONGODB_URI at an existing MongoDB
 npm run start:dev         # http://localhost:3001
