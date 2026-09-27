@@ -128,6 +128,15 @@ export class Portfolio {
   @Prop()
   version: number;
 
+  /**
+   * The draft's concurrency token, served as the admin ETag. Every draft
+   * write increments it in the same conditional update. Not in §5.2:
+   * `version` cannot serve, because it moves only on writes to `published`
+   * (FR-INT-15) and so cannot see two draft writes racing.
+   */
+  @Prop({ default: 0 })
+  draftRevision: number;
+
   createdAt: Date;
 
   updatedAt: Date;

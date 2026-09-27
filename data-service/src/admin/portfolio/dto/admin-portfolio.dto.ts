@@ -71,4 +71,13 @@ export class AdminPortfolioDto {
 
   @ApiProperty({ type: Number, required: true, example: 3 })
   version: number;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    example: 7,
+    description:
+      'Also sent as the `ETag` header; draft writes echo it in `If-Match`.',
+  })
+  draftRevision: number;
 }

@@ -1,0 +1,112 @@
+/*
+ * The only file in this app that may hold a literal colour.
+ *
+ * Every value below is transcribed from the `.ab` and `.ab.dark` custom-
+ * property blocks of spec/uiDesign/admin-panel.html. The mock scopes them to
+ * an artboard class because it draws light and dark side by side on one page;
+ * here they sit on :root and are re-declared under a class on <html>, which is
+ * the same set of values reached the way a real document reaches them.
+ *
+ * Dark mode is class-strategy, not media-query: FR-THM-1 gives the tenant
+ * light / dark / system as an explicit choice, and a preference the app cannot
+ * override is not a choice. `system` is resolved to a class in JS.
+ *
+ * These are admin's own chrome. The tenant's accent (FR-THM-1, FR-THM-3)
+ * themes the *public* page and does not recolour this panel.
+ */
+
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-surface2: #f8f9fa;
+  --color-field: #ffffff;
+  --color-line: #e4e7eb;
+  --color-line-strong: #c9cfd7;
+  --color-ink: #14171c;
+  --color-ink2: #4c535e;
+  /* Darkened from the mock's #7E8693.
+     The mock's value renders muted text at 3.67:1 on white and 3.40:1 on
+     --bg, below the 4.5:1 WCAG AA requires at the 10–11.5px sizes this token
+     is used at. NFR-A11Y-5 holds the admin panel to AA and the SRS outranks
+     the mock, so the token moves rather than the requirement.
+     #676D78 is the smallest hue-preserving darkening that clears 4.5:1 on
+     every background this token can land on — not just the page surfaces but
+     the five soft fills too, since a muted label inside a field keeps its
+     colour when that field turns invalid. Worst case is accentSoft at 4.53. */
+  --color-ink3: #676d78;
+  --color-accent: #2f54eb;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #eaefff;
+  --color-accent-line: #b9c6ff;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fdecea;
+  --color-warn: #8a5a06;
+  --color-warn-soft: #fff4e0;
+  --color-ok: #166e43;
+  --color-ok-soft: #e5f3eb;
+  --color-tag-bg: #eef0f3;
+  --color-tag-ink: #333a44;
+  --color-scrim: rgb(20 23 28 / 0.42);
+
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --shadow-panel:
+    0 1px 2px rgb(16 20 28 / 0.07), 0 10px 30px rgb(16 20 28 / 0.1);
+
+  --radius-field: 5px;
+  --radius-card: 7px;
+  --radius-modal: 9px;
+}
+
+/*
+ * Tailwind v4 resolves @theme values at build time, so a dark override cannot
+ * live in a second @theme block — it would not win at runtime. The dark values
+ * are therefore re-declared as plain custom properties on the same names the
+ * utilities compile to, which is what makes a single `bg-surface` class follow
+ * the theme rather than needing a `dark:` twin on every element.
+ */
+.dark {
+  --color-bg: #0c0e11;
+  --color-surface: #14171c;
+  --color-surface2: #1a1e24;
+  --color-field: #101317;
+  --color-line: #252a32;
+  --color-line-strong: #3a424e;
+  --color-ink: #e9ecf1;
+  --color-ink2: #a9b2bf;
+  /* Lightened from the mock's #79818E, for the reason the light value is
+     darkened. The mock's value clears AA on --surface, --field and --bg but
+     reaches only 4.26:1 on --surface2 and less on the soft fills. #868F9D
+     clears 4.5:1 on all nine; worst case is tagBg at 4.53. */
+  --color-ink3: #868f9d;
+  --color-accent: #8ca2ff;
+  --color-accent-ink: #0c0e11;
+  --color-accent-soft: #1b2340;
+  --color-accent-line: #33407a;
+  --color-danger: #ff9186;
+  --color-danger-soft: #2c1512;
+  --color-warn: #e5b357;
+  --color-warn-soft: #2a2010;
+  --color-ok: #63ce95;
+  --color-ok-soft: #10261b;
+  --color-tag-bg: #232831;
+  --color-tag-ink: #c6cdd8;
+  --color-scrim: rgb(4 5 7 / 0.62);
+
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 34px rgb(0 0 0 / 0.5);
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}

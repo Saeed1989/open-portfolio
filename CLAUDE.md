@@ -4,7 +4,9 @@
 
 Read every file in `spec/` and the root `README.md` to get project context. Do this at the start of each session before answering questions or writing code.
 
-The specs are the source of truth — if a request conflicts with them, say so instead of guessing.
+Start with `spec/architecture.md` — the one-page map of components, topology, and flows. It is derived from `spec/srs.md`, so read it for orientation, never as the answer.
+
+The specs are the source of truth — if a request conflicts with them, say so instead of guessing. Between them, `spec/srs.md` wins: `spec/architecture.md` and `spec/adminRequestFlow.md` are both derived from it and say so in their own headers. If a derived file disagrees with the SRS, that is a defect in the derived file — report it rather than following it.
 
 
 ## 1. Think Before Coding

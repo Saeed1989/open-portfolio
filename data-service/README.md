@@ -1,7 +1,7 @@
 # api
 
-NestJS API for the portfolio generator: a public read-only surface and a
-session-authenticated admin surface in one deployable (SRS §2.1).
+NestJS API for the portfolio generator: a public read-only surface and an
+API-key authenticated admin surface in one deployable (SRS §2.1).
 
 **Status: skeleton.** Every route in SRS §7.1 and §7.2 is wired, validated for
 shape, and documented, and every handler returns `501 Not Implemented`.
@@ -75,7 +75,7 @@ where the open question lives.
 
 - **`/docs/admin` is mounted only when `NODE_ENV !== 'production'`.** The admin
   contract is not published from production. Revisit if a staging or
-  production client needs it, or once it can sit behind the session guard.
+  production client needs it, or once it can sit behind the API key guard.
 - **`POST /internal/revalidate` (§7.3) is not served here.** It belongs to
   `portfolio`; this service calls it through `Revalidator`.
 - **`POST /admin/integrations/:provider/sync` returns 202.** Admin code may not

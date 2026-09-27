@@ -1,5 +1,6 @@
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import { cn } from './cn';
+import { linkTargetProps } from './linkTarget';
 
 /**
  * An anchor in one of the link treatments the design uses.
@@ -44,12 +45,11 @@ export function Link({
   children,
   ...rest
 }: LinkProps) {
-  const external = /^https?:\/\//i.test(href);
   return (
     <a
       href={href}
       aria-current={current ? 'true' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
+      {...linkTargetProps(href)}
       className={cn(
         VARIANT[variant],
         current && variant === 'nav' && 'text-text border-accent',

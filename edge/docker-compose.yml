@@ -1,0 +1,59 @@
+# The development topology (NFR-OPS-6).
+#
+# It runs the monorepo's own edge configuration — the same file production
+# runs, with different upstream addresses — because the routing rules are part
+# of the security boundary and a rule that exists only in production is a rule
+# that is never tested (FR-EDGE-6).
+#
+# What is faithful here:
+#   - edge is the only thing with a published port. `api` has none, so it is
+#     not reachable from the host at all (FR-EDGE-5).
+#   - admin is static files behind an SPA fallback, exactly as in production
+#     (D0). Rebuild with `npm run build` in admin-panel/ to see a change; run
+#     `npm run dev` there instead when you want HMR and do not need edge.
+#   - the identity subrequest runs on every /api/admin/* request.
+#
+# What is not, and must not be mistaken for it:
+#   - the identity is a stub (D8). It resolves every request to one fixed user
+#     id and reads no session.
+#   - plain HTTP. FR-TEN-1's wildcard certificate and NFR-OPS-6's locally
+#     trusted equivalent are not set up here yet.
+#
+# Hosts entries this expects (Windows: C:\Windows\System32\drivers\etc\hosts):
+#   127.0.0.1  openfolio.test admin.openfolio.test alice.openfolio.test
+
+services:
+  edge:
+    image: nginx:1.27-alpine
+    depends_on:
+      - auth-stub
+    ports:
+      - '8080:80'
+    environment:
+      ROOT_DOMAIN: openfolio.test
+      ADMIN_ROOT: /srv/admin
+      API_UPSTREAM: host.docker.internal:3000
+      AUTH_UPSTREAM: auth-stub:80
+      PORTFOLIO_UPSTREAM: host.docker.internal:3001
+      WWW_UPSTREAM: host.docker.internal:5173
+      # The key api's admin guard checks alongside X-User-Id. Supplied at run
+      # time, never baked into an image (NFR-SEC-3). Override it to match
+      # data-service's ADMIN_API_KEY.
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-dev-admin-key}
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - ./templates:/etc/nginx/templates:ro
+      - ../admin-panel/dist:/srv/admin:ro
+
+  # D8. Replaced by api's own /auth/resolve — point AUTH_UPSTREAM at api and
+  # delete this service. edge's configuration does not change.
+  auth-stub:
+    image: nginx:1.27-alpine
+    environment:
+      # alice — the happy-path seed tenant. Any of the four seeded ids works:
+      #   alice 5eed00000000000001010001   bob   5eed00000000000001020001
+      #   carol 5eed00000000000001030001   dave  5eed00000000000001040001
+      STUB_USER_ID: ${STUB_USER_ID:-5eed00000000000001010001}
+    volumes:
+      - ./auth-stub:/etc/nginx/templates:ro

@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ValidationPipe } from '@nestjs/common';
+import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -20,6 +20,8 @@ async function bootstrap(): Promise<void> {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      /* A malformed body is 422 with field-level errors (§7.2, FR-API-4). */
+      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     }),
   );
   app.useGlobalFilters(
@@ -49,11 +51,10 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('Portfolio API — admin')
         .setDescription(
-          "Session-authenticated. Reads and writes the draft of the session's portfolio (SRS §7.2).",
+          "API-key authenticated. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
         )
         .setVersion('0.1.0')
         .addServer(serverUrl)
-        .addCookieAuth('session')
         .build(),
       { include: [AdminModule] },
     );
@@ -73,7 +74,9 @@ async function bootstrap(): Promise<void> {
     );
   }
 
-  await app.listen(config.getOrThrow<string>('PORT'));
+  const port = config.getOrThrow<string>('PORT');
+  await app.listen(port);
+  Logger.log(`Listening on http://localhost:${port}`, 'Bootstrap');
 }
 
 void bootstrap();

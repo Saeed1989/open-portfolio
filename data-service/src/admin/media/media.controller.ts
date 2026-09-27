@@ -10,24 +10,28 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiCookieAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiHeader,
   ApiOperation,
   ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { SessionGuard } from '../guards/session.guard';
+import { ApiKeyGuard } from '../guards/api-key.guard';
+import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { CreateUploadUrlDto } from './dto/create-upload-url.dto';
 import { UploadUrlDto } from './dto/upload-url.dto';
 import { MediaService } from './media.service';
 
 @ApiTags('media')
-@ApiCookieAuth()
-@ApiUnauthorizedResponse({ description: 'No valid session.' })
-@UseGuards(SessionGuard)
+@ApiHeader(USER_ID_HEADER)
+@ApiHeader(API_KEY_HEADER)
+@ApiUnauthorizedResponse({
+  description: 'Missing or invalid API key or user id.',
+})
+@UseGuards(ApiKeyGuard)
 @Controller('admin/media')
 export class MediaController {
   constructor(private readonly media: MediaService) {}
