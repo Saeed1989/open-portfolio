@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/*.test.ts"
+    "test": "node --experimental-strip-types --test lib/*.test.ts",
+    "vendor:registry": "node scripts/vendor-registry.mjs"
   },
   "dependencies": {
-    "@portfolio/registry": "file:../packages/registry",
+    "@portfolio/registry": "file:./vendor/registry",
     "next": "15.5.25",
     "react": "19.1.1",
     "react-dom": "19.1.1"
