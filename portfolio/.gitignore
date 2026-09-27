@@ -1,0 +1,3 @@
+
+# Vendored build of packages/registry — committed so the app builds on its own
+!vendor/registry/dist/

@@ -1,0 +1,33 @@
+{
+  "name": "@portfolio/registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "import":  { "types": "./dist/index.d.ts",       "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts",      "default": "./dist/index.cjs" }
+    },
+    "./validation": {
+      "import":  { "types": "./dist/validation.d.ts",  "default": "./dist/validation.js" },
+      "require": { "types": "./dist/validation.d.cts", "default": "./dist/validation.cjs" }
+    },
+    "./sanitize": {
+      "import":  { "types": "./dist/sanitize.d.ts",    "default": "./dist/sanitize.js" },
+      "require": { "types": "./dist/sanitize.d.cts",   "default": "./dist/sanitize.cjs" }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsup": "8.5.0",
+    "typescript": "5.7.3"
+  }
+}
