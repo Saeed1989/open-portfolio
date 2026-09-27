@@ -6,6 +6,8 @@
  * header. Nothing here reads a query parameter, a cookie, or a client-supplied
  * header, and middleware strips any inbound `x-portfolio-slug` before setting
  * its own — a visitor cannot ask to be served as another tenant.
+ *
+ * This is the only place in the app that parses a Host header for a tenant.
  */
 
 /** The header middleware sets for the container to read. */
@@ -45,53 +47,26 @@ export function isValidSlug(candidate: string): boolean {
 }
 
 /**
- * What a Host header resolved to.
+ * `alice.openfolio.site` → `alice`, for base domain `openfolio.site`
+ * (FR-TEN-1). Anything that is not exactly `{label}.{PORTFOLIO_BASE_DOMAIN}` —
+ * the apex, another domain, a nested subdomain, a reserved or malformed label —
+ * is null, and all of those render the same 404 (FR-TEN-3).
  *
- * `rejected` and `noLabel` are kept apart on purpose. Both produce the same
- * 404 for a visitor, but they must not be treated alike internally: the
- * development DEV_SLUG fallback applies only to a host that carries no tenant
- * label at all. Collapsing them would let `admin.localhost` fall through to
- * the fallback and serve a portfolio from a reserved label.
+ * `edge` overwrites `Host` on every proxied request, so the header read here is
+ * the one nginx set. Set PORTFOLIO_BASE_DOMAIN=localhost to test
+ * `alice.localhost:3000` locally.
  */
-export type HostResolution =
-  | { readonly kind: 'slug'; readonly slug: string }
-  /** A label was present and is not usable — reserved, or malformed. */
-  | { readonly kind: 'rejected' }
-  /** The apex domain, a bare `localhost`, or an IP address. */
-  | { readonly kind: 'noLabel' };
+export function resolveSlugFromHost(host: string | null): string | null {
+  const baseDomain = process.env.PORTFOLIO_BASE_DOMAIN?.trim().toLowerCase();
+  if (!baseDomain) throw new Error('PORTFOLIO_BASE_DOMAIN is not set.');
 
-const IPV4 = /^\d{1,3}(?:\.\d{1,3}){3}$/;
+  if (!host) return null;
 
-/** Hosts that carry no tenant and may use the development fallback. */
-export function isLoopbackHost(host: string | null): boolean {
-  if (!host) return false;
-  const hostname = host.split(':')[0].trim().toLowerCase();
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
-}
+  const hostname = host.trim().toLowerCase().replace(/:\d+$/, '');
+  const suffix = `.${baseDomain}`;
+  if (!hostname.endsWith(suffix)) return null;
 
-/**
- * `alice.site.com` → `alice`. The apex `site.com` and a bare `localhost` carry
- * no tenant label. `alice.localhost` is recognised so local multi-tenant
- * testing needs no hosts-file edit.
- */
-export function resolveHost(host: string | null): HostResolution {
-  if (!host) return { kind: 'noLabel' };
-
-  const hostname = host.split(':')[0].trim().toLowerCase();
-  if (!hostname) return { kind: 'noLabel' };
-
-  /* `127.0.0.1` splits into four labels and would otherwise yield the slug
-     `127`. An address is never a tenant. */
-  if (IPV4.test(hostname) || hostname.startsWith('[')) {
-    return { kind: 'noLabel' };
-  }
-
-  const labels = hostname.split('.');
-  const hasTenantLabel =
-    labels.length >= 3 || (labels.length === 2 && labels[1] === 'localhost');
-
-  if (!hasTenantLabel) return { kind: 'noLabel' };
-
-  const label = labels[0];
-  return isValidSlug(label) ? { kind: 'slug', slug: label } : { kind: 'rejected' };
+  /* A nested subdomain leaves a dot in the label, which isValidSlug rejects. */
+  const label = hostname.slice(0, -suffix.length);
+  return isValidSlug(label) ? label : null;
 }

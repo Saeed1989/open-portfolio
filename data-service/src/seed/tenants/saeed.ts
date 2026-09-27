@@ -1,0 +1,485 @@
+import { MEDIA_HOST } from '../ids';
+import type { SeedTenant } from '../tenant';
+
+/*
+ * Ported verbatim from portfolio/fixtures/portfolios/saeed.json, the fixture
+ * the portfolio app develops against, so that the same content is reachable
+ * through the API rather than only through USE_FIXTURES.
+ *
+ * Published, with the four Must sections: hero, five projects (at FR-SEC-PROJ's
+ * three-to-five cap), twenty-four skills of which seven are prominent (inside
+ * FR-SEC-SKILL-3's five-to-eight band), and contact.
+ *
+ * **This tenant is not publish-ready, on purpose.** The fixture carries
+ * eighteen `TODO` placeholders and they are reproduced here unchanged rather
+ * than invented, because they stand in for one real person's contact details
+ * and a plausible-looking guess would be worse than an obvious gap:
+ *
+ *   hero.ctas[0].href                     résumé download
+ *   projects.items[0..2].demoUrl          live demo links
+ *   projects.items[0..3].tools[0]         the tools list on four projects
+ *   contact.{email,github,linkedin,x,site} value and href on all five
+ *
+ * Only `title`, `problem`, `impact`, `designation`, `bodies.*`,
+ * `stackWorkedOn`, `tools` and `fullStack` are required of a project, so every
+ * item here clears the registry's publish validation despite carrying no
+ * screenshot, year, or repository link. What the placeholders cost is a
+ * rendered page with dead links, not a refused publish.
+ *
+ * `media` is empty and `hero.avatar` is null because the fixture references no
+ * image at all. `user.avatarUrl` is an account-level field from OAuth, never
+ * part of the public payload (§2.1), so it points at the placeholder host like
+ * every other seeded tenant. `seo.ogImageAlt` is carried through even though
+ * the fixture sets no `ogImageUrl` and `PublicSeoDto` would not serve the alt
+ * text on its own — FR-PUB-3 expects the image to be generated at publish.
+ */
+export const saeed: SeedTenant = {
+  name: 'saeed',
+  user: {
+    provider: 'github',
+    providerId: 'gh-saeed-1005',
+    email: 'saeed@example.com',
+    displayName: 'MD. Saeed Sharman',
+    avatarUrl: `${MEDIA_HOST}/saeed/avatar.png`,
+    status: 'active',
+  },
+  slug: 'saeed',
+  status: 'published',
+  presetId: 'software-engineer',
+  version: 1,
+  publish: true,
+  media: [],
+  draft: {
+    theme: {
+      accent: '#2f5bff',
+      accentInk: '#1b3ac2',
+      accentOn: '#ffffff',
+      mode: 'light',
+      fontPairing: 'grotesk-spline',
+    },
+    seo: {
+      title: 'MD. Saeed Sharman — Technical Project Manager',
+      description:
+        'Twelve years in IT, from software engineer to Technical Project Manager. Four years on enterprise systems in Japan, and three-plus managing delivery for USA and Singapore-based companies.',
+      keywords: [
+        'technical project manager',
+        'technical business analyst',
+        'agile delivery',
+        'enterprise systems',
+      ],
+      ogImageAlt: 'MD. Saeed Sharman — Technical Project Manager',
+    },
+    analytics: null,
+    sections: [
+      {
+        type: 'hero',
+        enabled: true,
+        order: 0,
+        content: {
+          name: 'MD. Saeed Sharman',
+          title: 'Technical Project Manager / Technical Business Analyst',
+          tagline:
+            'I bridge business and technical teams, and deliver enterprise systems end to end.',
+          bio: 'Over twelve years in the IT industry, starting as a software engineer and evolving into a Technical Project Manager. Four years of professional experience in Japan working on enterprise systems, three-plus years managing projects for USA and Singapore-based companies, and currently leading development of a Unified Logistics Platform.',
+          ctas: [
+            {
+              kind: 'resume',
+              label: 'Download résumé',
+              href: 'TODO',
+            },
+            {
+              kind: 'schedule',
+              label: 'Get in touch',
+              href: '#contact',
+            },
+          ],
+          avatar: null,
+        },
+      },
+      {
+        type: 'projects',
+        enabled: true,
+        order: 1,
+        content: {
+          categories: ['Logistics', 'Fintech', 'Real estate', 'Data'],
+          items: [
+            {
+              id: 'unified-logistics-platform',
+              title: 'Unified Logistics Platform',
+              category: 'Logistics',
+              screenshot: null,
+              problem:
+                'Sales order processing, warehouse operations and delivery management ran as three disconnected processes, with conflicting workflows across departments.',
+              solution:
+                'A unified platform integrating web and mobile applications with a centralized database, giving every department one view of the same order.',
+              impact:
+                'Real-time visibility of orders, inventory and last-mile delivery, and manual coordination between teams largely removed.',
+              role: 'Project Manager with end-to-end ownership of scope, roadmap and delivery.',
+              stack: ['React', 'Flutter', 'Laravel', 'MySQL'],
+              demoUrl: 'TODO',
+              bodies: {
+                business:
+                  '<p>Sales order processing, warehouse operations and delivery management ran as three disconnected processes. Each department had built its own way of working, and every handoff between them was manual.</p><ul><li>No real-time visibility of orders, inventory or last-mile delivery</li><li>Conflicting workflows across the sales, warehouse and delivery teams</li><li>Coordination between departments done by hand at every step</li></ul>',
+                solution:
+                  '<p>A unified logistics system integrating web and mobile applications with a centralized database, so every department works from one view of the same order.</p><ul><li>Ran stakeholder alignment sessions across all three departments</li><li>Standardized the conflicting workflows into one agreed process</li><li>Designed a unified system architecture around that process</li></ul><p>The outcome was <strong>improved collaboration</strong> between departments and higher adoption of the system itself.</p>',
+                role: '<p>I owned this project end to end as <strong>Project Manager</strong>, from scope through rollout.</p><ul><li>Owned project scope, roadmap and delivery</li><li>Gathered and prioritized requirements from the sales, warehouse and delivery teams</li><li>Defined the user journeys and workflows</li><li>Led Agile teams across development, QA, UI/UX and infrastructure</li><li>Coordinated system design decisions with the technical leads</li><li>Managed UAT, training and rollout</li></ul>',
+              },
+              designation: 'Project Manager (End-to-End Ownership)',
+              stackWorkedOn: ['REVIEW — see notes'],
+              tools: ['TODO — add the tools you used'],
+              fullStack: [
+                'React',
+                'Flutter',
+                'Laravel',
+                'MySQL',
+                'REST APIs',
+                'Microservices',
+              ],
+            },
+            {
+              id: 'digital-payment-system',
+              title: 'Digital Payment System for a Self-Service Platform',
+              category: 'Fintech',
+              screenshot: null,
+              problem:
+                'A self-service SaaS platform had no way to take payment, so it could not turn its users into subscribers.',
+              solution:
+                'A payment gateway module integrated into the platform, letting users subscribe and pay online.',
+              impact:
+                'Approximately 20% increase in revenue, and the platform became a revenue-generating product.',
+              role: 'Technical Project Manager and feature owner, from business requirements through delivery.',
+              stack: ['Stripe', 'Node.js', 'React'],
+              demoUrl: 'TODO',
+              bodies: {
+                business:
+                  '<p>A self-service SaaS platform had no way to take money. Users could sign themselves up but not subscribe, which capped the product short of being a business.</p><ul><li>No online payment path, so no self-service revenue</li><li>Friction in the subscription process</li><li>Security and reliability both non-negotiable for anything handling payment</li></ul>',
+                solution:
+                  '<p>A payment gateway module integrated into the platform, turning it into a <strong>revenue-generating product</strong> with a seamless digital payment experience.</p><ul><li>Translated business needs into clear technical specifications</li><li>Coordinated closely with the development team through delivery</li><li>Reduced friction in the subscription process</li></ul><p>The result was a reliable, user-friendly payment flow and roughly <strong>20% more revenue</strong>.</p>',
+                role: '<p>I acted as <strong>Technical Project Manager and feature owner</strong> for the payment work.</p><ul><li>Communicated with stakeholders to define the business requirements</li><li>Created the functional specification documents</li><li>Planned and managed the Agile sprints</li><li>Defined tasks for the development and QA teams</li><li>Led feature delivery</li><li>Ran training for the marketing team</li></ul>',
+              },
+              designation: 'Technical Project Manager / Feature Owner',
+              stackWorkedOn: ['REVIEW — see notes'],
+              tools: ['TODO — add the tools you used'],
+              fullStack: [
+                'Stripe',
+                'Node.js',
+                'Express.js',
+                'React',
+                'JavaScript',
+              ],
+            },
+            {
+              id: 'realtime-3d-digital-twin',
+              title: 'Real-Time 3D Digital Twin for Real Estate',
+              category: 'Real estate',
+              screenshot: null,
+              problem:
+                'Prospective buyers had to visit properties in person, and delivering a real-time 3D experience over the web normally demands high-end hardware.',
+              solution:
+                'Digital twins of real estate buildings, explored through an interactive web experience built on pixel streaming.',
+              impact:
+                'Remote property showcasing with no need for high-end user hardware, reducing physical visits and improving engagement.',
+              role: 'Technical Project Manager, owning client communication, requirements and delivery.',
+              stack: ['Unreal Engine', 'WebRTC', 'Node.js', 'React'],
+              demoUrl: 'TODO',
+              bodies: {
+                business:
+                  '<p>Showing a property meant getting people to it. Remote viewing existed, but a real-time 3D walkthrough of a building normally asks the viewer for hardware they do not have.</p><ul><li>Physical visits required to evaluate a property</li><li>High-quality 3D environments too heavy for an ordinary machine</li><li>Delivering that experience over the web was the open technical question</li></ul>',
+                solution:
+                  '<p>A real-time 3D platform that builds <em>digital twins</em> of real estate buildings and lets people explore them from a browser, using <strong>pixel streaming</strong> so the rendering happens server-side.</p><ul><li>Implemented a pixel streaming architecture</li><li>Coordinated system performance optimization across the team</li><li>Delivered a scalable real-time 3D solution</li></ul><p>The result was smooth real-time interaction and a property accessible to anyone with a browser.</p>',
+                role: '<p>I ran this as <strong>Technical Project Manager</strong>, between the client and the delivery team.</p><ul><li>Managed client communication and requirement definition</li><li>Documented the functional requirements</li><li>Planned and managed the Agile sprints</li><li>Coordinated tasks for the development and QA teams</li><li>Led the feature delivery process</li></ul>',
+              },
+              designation: 'Technical Project Manager',
+              stackWorkedOn: ['REVIEW — see notes'],
+              tools: ['TODO — add the tools you used'],
+              fullStack: [
+                'Unreal Engine',
+                'Pixel Streaming',
+                'WebRTC',
+                'Node.js',
+                'Express.js',
+                'React',
+              ],
+            },
+            {
+              id: 'epos-system-japan',
+              title: 'ePOS System',
+              category: 'Fintech',
+              screenshot: null,
+              problem:
+                'A web-based point-of-sale system in Japan handles high-value financial transactions for hundreds of daily users, where any instability is a direct business risk.',
+              solution:
+                'Feature development and production hardening of the SPA inside a distributed enterprise platform.',
+              impact:
+                'Reduced production issues, with improved reliability and user trust in a critical financial system.',
+              role: 'Front-end engineer on the team: features, requirement analysis, production investigation and mentoring.',
+              stack: ['Angular', 'TypeScript', 'NgRx', 'RxJS'],
+              confidential: true,
+              bodies: {
+                business:
+                  '<p>A web-based ePOS system used in Japan for managing <strong>high-value financial transactions</strong>. It forms part of a distributed enterprise platform and is used daily by hundreds of people.</p><ul><li>High reliability and accuracy required of every transaction</li><li>Instability in a financial system costs trust, not just time</li><li>Production issues needed diagnosis without disrupting daily operations</li></ul>',
+                solution:
+                  '<p>Sustained feature delivery alongside production hardening, keeping a critical system stable while it continued to change.</p><ul><li>Performed root cause analysis on production issues</li><li>Collaborated closely with the QA and backend teams</li><li>Supported continuous delivery without compromising quality</li></ul><p>The outcome was <strong>fewer production issues</strong> and improved reliability for financial operations.</p>',
+                role: '<p>I worked as a <strong>front-end engineer</strong> and team contributor on the single-page application.</p><ul><li>Developed new features for the SPA</li><li>Performed requirement analysis and approach design</li><li>Investigated and fixed production issues</li><li>Mentored junior team members</li></ul>',
+              },
+              designation: 'Frontend Engineer / Team Contributor',
+              stackWorkedOn: ['Angular', 'TypeScript', 'NgRx', 'RxJS'],
+              tools: ['TODO — add the tools you used'],
+              fullStack: [
+                'Angular',
+                'TypeScript',
+                'NgRx',
+                'RxJS',
+                'HTML',
+                'CSS',
+                'Bootstrap',
+              ],
+            },
+            {
+              id: 'data-visualization-app',
+              title: 'Data Visualization Web Application',
+              category: 'Data',
+              screenshot: null,
+              problem:
+                'Large volumes of data had to be made explorable on both desktop and mobile, without the interface slowing to a crawl.',
+              solution:
+                'A structured web application for filtering and analysing data, sitting inside a larger cloud-based architecture.',
+              impact:
+                'Improved data accessibility and usability, enabling faster decision-making from the same data.',
+              role: 'Front-end developer across teams: UI components, API integration and test specifications.',
+              stack: ['Angular', 'TypeScript', 'AWS'],
+              confidential: true,
+              bodies: {
+                business:
+                  '<p>A large volume of data existed but was not usable. It needed to be presented in a structured, readable way, on desktop and on mobile, as part of a larger cloud-based architecture.</p><ul><li>Data too voluminous to browse without filtering</li><li>Both desktop and mobile interfaces to support</li><li>Rendering large datasets efficiently was the core constraint</li></ul>',
+                solution:
+                  '<p>A web application that presents data in a structured, user-friendly way and lets people filter and analyse it directly.</p><ul><li>Optimized data fetching and rendering for large datasets</li><li>Built reusable UI components across the interface</li><li>Ensured quality through structured unit and integration testing</li></ul><p>The result was a smooth, efficient experience and <strong>faster decision-making</strong> from data that had been sitting unread.</p>',
+                role: '<p>I worked as a <strong>front-end developer</strong> contributing across teams.</p><ul><li>Developed the UI components and layouts</li><li>Integrated APIs and handled data processing</li><li>Created a mock UI for client validation</li><li>Prepared the test specifications and reports</li><li>Performed unit and integration testing</li></ul>',
+              },
+              designation: 'Frontend Developer (Cross-Team Contributor)',
+              stackWorkedOn: ['Angular', 'TypeScript', 'HTML', 'CSS'],
+              tools: ['Jasmine', 'Karma'],
+              fullStack: [
+                'Angular',
+                'TypeScript',
+                'HTML',
+                'CSS',
+                'AWS',
+                'Jasmine',
+                'Karma',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        type: 'skills',
+        enabled: true,
+        order: 2,
+        content: {
+          legend:
+            'Rated out of 10: 9–10 I have owned and debugged it in production, 7–8 I work in it regularly, 5–6 I am actively building on it.',
+          categories: [
+            'Delivery & analysis',
+            'Frontend',
+            'Backend',
+            'Cloud & data',
+            'Quality',
+          ],
+          items: [
+            {
+              id: 'sk1',
+              name: 'End-to-end project delivery',
+              category: 'Delivery & analysis',
+              rating: 9,
+              prominent: true,
+            },
+            {
+              id: 'sk2',
+              name: 'Stakeholder communication',
+              category: 'Delivery & analysis',
+              rating: 9,
+              prominent: true,
+            },
+            {
+              id: 'sk3',
+              name: 'Requirement analysis',
+              category: 'Delivery & analysis',
+              rating: 9,
+              prominent: true,
+            },
+            {
+              id: 'sk4',
+              name: 'Agile / Scrum execution',
+              category: 'Delivery & analysis',
+              rating: 9,
+              prominent: true,
+            },
+            {
+              id: 'sk5',
+              name: 'Functional documentation',
+              category: 'Delivery & analysis',
+              rating: 8,
+            },
+            {
+              id: 'sk6',
+              name: 'User journey & workflow design',
+              category: 'Delivery & analysis',
+              rating: 8,
+            },
+            {
+              id: 'sk7',
+              name: 'UAT, training & rollout',
+              category: 'Delivery & analysis',
+              rating: 8,
+            },
+            {
+              id: 'sk8',
+              name: 'Angular',
+              category: 'Frontend',
+              rating: 8,
+              prominent: true,
+            },
+            {
+              id: 'sk9',
+              name: 'TypeScript',
+              category: 'Frontend',
+              rating: 8,
+              prominent: true,
+            },
+            {
+              id: 'sk10',
+              name: 'React',
+              category: 'Frontend',
+              rating: 7,
+              prominent: true,
+            },
+            {
+              id: 'sk11',
+              name: 'NgRx / RxJS',
+              category: 'Frontend',
+              rating: 7,
+            },
+            {
+              id: 'sk12',
+              name: 'JavaScript',
+              category: 'Frontend',
+              rating: 8,
+            },
+            {
+              id: 'sk13',
+              name: 'HTML & CSS',
+              category: 'Frontend',
+              rating: 8,
+            },
+            {
+              id: 'sk14',
+              name: 'Flutter',
+              category: 'Frontend',
+              rating: 6,
+            },
+            {
+              id: 'sk15',
+              name: 'Node.js / Express.js',
+              category: 'Backend',
+              rating: 7,
+            },
+            {
+              id: 'sk16',
+              name: 'REST API design',
+              category: 'Backend',
+              rating: 7,
+            },
+            {
+              id: 'sk17',
+              name: 'Laravel',
+              category: 'Backend',
+              rating: 6,
+            },
+            {
+              id: 'sk18',
+              name: 'Microservices',
+              category: 'Backend',
+              rating: 6,
+            },
+            {
+              id: 'sk19',
+              name: 'Stripe integration',
+              category: 'Backend',
+              rating: 6,
+            },
+            {
+              id: 'sk20',
+              name: 'MySQL',
+              category: 'Cloud & data',
+              rating: 7,
+            },
+            {
+              id: 'sk21',
+              name: 'AWS',
+              category: 'Cloud & data',
+              rating: 6,
+            },
+            {
+              id: 'sk22',
+              name: 'Root cause analysis',
+              category: 'Quality',
+              rating: 8,
+            },
+            {
+              id: 'sk23',
+              name: 'Unit & integration testing',
+              category: 'Quality',
+              rating: 7,
+            },
+            {
+              id: 'sk24',
+              name: 'Test specification & reporting',
+              category: 'Quality',
+              rating: 7,
+            },
+          ],
+        },
+      },
+      {
+        type: 'contact',
+        enabled: true,
+        order: 3,
+        content: {
+          intro:
+            'I bring technical expertise, project management experience and business understanding together. With experience in Japan and with global teams, I focus on delivering solutions that create real business impact while keeping stakeholders and technical teams aligned.',
+          email: {
+            label: 'Email',
+            value: 'TODO — your email address',
+            href: 'mailto:TODO',
+            visible: true,
+          },
+          github: {
+            label: 'GitHub',
+            value: 'TODO — your GitHub',
+            href: 'TODO',
+            visible: true,
+          },
+          linkedin: {
+            label: 'LinkedIn',
+            value: 'TODO — your LinkedIn',
+            href: 'TODO',
+            visible: true,
+          },
+          x: {
+            label: 'X',
+            value: 'TODO',
+            href: 'TODO',
+            visible: false,
+          },
+          site: {
+            label: 'Personal site',
+            value: 'TODO',
+            href: 'TODO',
+            visible: false,
+          },
+        },
+      },
+    ],
+  },
+};

@@ -66,6 +66,16 @@ async function currentTheme(): Promise<PortfolioTheme | undefined> {
   const slug = (await headers()).get(SLUG_HEADER);
   if (!slug) return undefined;
 
-  const portfolio = await getPortfolio(slug);
-  return portfolio?.theme;
+  /* The same argument covers a data layer that throws — an API that is down,
+     unreachable, or returning something malformed. The theme is decoration;
+     the page is what actually needs the payload. Failing the document here
+     would replace the branded error state with an unstyled one, so this falls
+     back to the default theme and lets the page's own call to `getPortfolio`
+     — the memoised one, which rethrows — surface it through app/error.tsx. */
+  try {
+    const portfolio = await getPortfolio(slug);
+    return portfolio?.theme;
+  } catch {
+    return undefined;
+  }
 }

@@ -1,10 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import {
-  isLoopbackHost,
-  isValidSlug,
-  resolveHost,
-  SLUG_HEADER,
-} from '@/lib/tenant';
+import { isValidSlug, resolveSlugFromHost, SLUG_HEADER } from '@/lib/tenant';
 
 /**
  * Resolves the tenant from the Host header and forwards it on
@@ -33,31 +28,21 @@ export function middleware(request: NextRequest) {
 }
 
 function resolveSlug(request: NextRequest): string | null {
-  const host = request.headers.get('host');
-  const resolution = resolveHost(host);
-
-  if (resolution.kind === 'slug') return resolution.slug;
-
   /*
-   * A label that was present and rejected — `admin.site.com`, a malformed one —
-   * stops here. It must never reach the fallback below, or a reserved label
-   * would serve a portfolio in development.
+   * Development only: TENANT_SOURCE=env names the tenant outright via DEV_SLUG,
+   * so localhost:3000 serves one tenant at the root with no subdomain. Guarded
+   * by NODE_ENV, so it cannot pin a production deployment to one tenant —
+   * there, FR-TEN-2 holds and the Host header alone decides.
    */
-  if (resolution.kind === 'rejected') return null;
-
-  /*
-   * Development only: `localhost:3000` carries no tenant label, so DEV_SLUG
-   * names the fixture to serve. It is a fallback, not an override —
-   * `alice.localhost` still resolves to `alice`, so multi-tenant behaviour
-   * stays testable. Restricted to loopback hosts and guarded by NODE_ENV, so
-   * it cannot influence a production deployment even if the variable is set.
-   */
-  if (process.env.NODE_ENV !== 'production' && isLoopbackHost(host)) {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    process.env.TENANT_SOURCE?.trim().toLowerCase() === 'env'
+  ) {
     const devSlug = process.env.DEV_SLUG?.trim().toLowerCase();
-    if (devSlug && isValidSlug(devSlug)) return devSlug;
+    return devSlug && isValidSlug(devSlug) ? devSlug : null;
   }
 
-  return null;
+  return resolveSlugFromHost(request.headers.get('host'));
 }
 
 export const config = {
