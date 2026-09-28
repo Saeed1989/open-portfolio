@@ -1,16 +1,24 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { join } from 'node:path';
 import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import express from 'express';
 import { AdminModule } from './admin/admin.module';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { PublicModule } from './public/public.module';
 
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+/* One Express instance serves both entry points: Vercel calls the default
+   export per request, while `node dist/main.js` listens on it directly. */
+const server = express();
+
+async function bootstrap(): Promise<ConfigService> {
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  server.set('trust proxy', true);
   const config = app.get(ConfigService);
   const isProduction = config.get<string>('NODE_ENV') === 'production';
   const serverUrl = config.getOrThrow<string>('API_BASE_URL');
@@ -74,9 +82,31 @@ async function bootstrap(): Promise<void> {
     );
   }
 
-  const port = config.getOrThrow<string>('PORT');
-  await app.listen(port);
-  Logger.log(`Listening on http://localhost:${port}`, 'Bootstrap');
+  await app.init();
+  return config;
 }
 
-void bootstrap();
+let ready: Promise<ConfigService> | undefined;
+
+export default async function handler(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  ready ??= bootstrap();
+  await ready;
+  server(req, res);
+}
+
+if (require.main === module) {
+  bootstrap()
+    .then((config) => {
+      const port = Number(config.getOrThrow<string>('PORT'));
+      server.listen(port, '0.0.0.0', () =>
+        Logger.log(`Listening on http://localhost:${port}`, 'Bootstrap'),
+      );
+    })
+    .catch((error: unknown) => {
+      Logger.error(error, 'Bootstrap');
+      process.exit(1);
+    });
+}
