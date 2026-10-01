@@ -28,9 +28,12 @@ can reach the bundle; `npm run build` fails if any of it does.
 
 Routes: `/sections` (the section manager — artboard 01), `/sections/:type`
 (one editor for every
-section type the registry declares), and `/dev/fields` (M0's field-states
-matrix). Sidebar navigation, the preview, publish and onboarding are still out
-of scope.
+section type the registry declares), `/onboarding/slug` (the claim screen —
+artboard E1), and `/dev/fields` (M0's field-states matrix). Every route but
+`/dev/fields` is gated on `GET /admin/me` (FR-AUTH-7): no portfolio sends the
+tenant to `/onboarding/slug`, and a portfolio sends them away from it. In mock
+mode, `window.__mocks.set({ tenant: 'no-portfolio' })` and a reload reach it.
+Sidebar navigation, the preview and publish are still out of scope.
 
 Playwright drives the built mock bundle:
 
