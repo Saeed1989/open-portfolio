@@ -32,7 +32,7 @@ npm run start:dev         # http://localhost:3001
 
 ## Seed data
 
-`src/seed/` holds four fixture tenants. Every id, slug and timestamp is fixed,
+`src/seed/` holds the fixture tenants below. Every id, slug and timestamp is fixed,
 so a test may assert on a seeded value and a second run leaves the same state
 rather than a second copy. Nothing in there may call `Date.now()`,
 `Math.random()`, or `new Types.ObjectId()` with no argument.
@@ -43,6 +43,7 @@ rather than a second copy. Nothing in there may call `Date.now()`,
 | `bob` | published | A second real tenant, so the cross-tenant isolation suite (NFR-SEC-1) has genuine ids to attempt with. Every identifying field differs from alice's. |
 | `carol` | draft only | Publicly 404s (§2.4). Deliberately incomplete, so publish validation has something to fail on. |
 | `dave` | suspended | FR-TEN-3. Has a complete published tree that must still 404. |
+| `eve` | no portfolio | The onboarding path (FR-AUTH-7): a signed-in user with no `portfolios` row. `GET /admin/me` answers `portfolio: null` and every other route but the two creation routes answers `404`. |
 
 It targets `MONGODB_URI` and has **no default**: both scripts load `.env`
 through Node's own `--env-file`, so the seed goes wherever the service goes, and

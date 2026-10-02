@@ -22,6 +22,8 @@ export type Fault =
   | 'validation'
   /** 500 from the admin surface. */
   | 'server'
+  /** 429 from the slug availability check (30 a minute per tenant). */
+  | 'rate_limited'
   /** The RSS connection is failing: last good payload still served, entry
    *  marked stale (FR-INT-3). Not an HTTP failure — the admin surface answers
    *  200 and the failure is in the payload. */
@@ -42,6 +44,7 @@ export const FAULTS: readonly Fault[] = [
   'slug_taken',
   'validation',
   'server',
+  'rate_limited',
   'rss_sync_failing',
   'save_stale',
   'save_refused',

@@ -17,8 +17,12 @@ import {
   UPLOADED_AT,
   userId,
 } from './ids';
-import { buildPublishedTree, type SeedTenant } from './tenant';
-import { TENANTS } from './tenants';
+import {
+  buildPublishedTree,
+  type SeedAccount,
+  type SeedTenant,
+} from './tenant';
+import { ACCOUNTS, TENANTS } from './tenants';
 
 /*
  * Deterministic seed for local development and for the test suites.
@@ -68,17 +72,21 @@ async function put(
   await collection.updateOne({ _id }, { $set: document }, { upsert: true });
 }
 
-async function seedTenant(tenant: SeedTenant): Promise<void> {
-  await put(MODELS.users.collection, userId(tenant.name), {
-    provider: tenant.user.provider,
-    providerId: tenant.user.providerId,
-    email: tenant.user.email,
-    displayName: tenant.user.displayName,
-    avatarUrl: tenant.user.avatarUrl,
-    status: tenant.user.status,
+async function seedUser({ name, user }: SeedAccount): Promise<void> {
+  await put(MODELS.users.collection, userId(name), {
+    provider: user.provider,
+    providerId: user.providerId,
+    email: user.email,
+    displayName: user.displayName,
+    avatarUrl: user.avatarUrl,
+    status: user.status,
     createdAt: CREATED_AT,
     lastLoginAt: LAST_LOGIN_AT,
   });
+}
+
+async function seedTenant(tenant: SeedTenant): Promise<void> {
+  await seedUser(tenant);
 
   const published = tenant.publish ? buildPublishedTree(tenant.draft) : null;
 
@@ -113,6 +121,23 @@ async function seedTenant(tenant: SeedTenant): Promise<void> {
   }
 }
 
+/**
+ * Writes every fixture through the default mongoose connection, which the
+ * caller has opened. Exported for the e2e suite.
+ */
+export async function seed(): Promise<void> {
+  /*
+   * Before writing, not after: the unique indexes of §5 are part of what the
+   * seed is asserting, and a duplicate slug should fail the seed rather than
+   * land and be found later.
+   */
+  for (const model of Object.values(MODELS)) {
+    await model.syncIndexes();
+  }
+  for (const tenant of TENANTS) await seedTenant(tenant);
+  for (const account of ACCOUNTS) await seedUser(account);
+}
+
 async function main(): Promise<void> {
   const reset = process.argv.includes('--reset');
   const uri = process.env.MONGODB_URI;
@@ -138,18 +163,12 @@ async function main(): Promise<void> {
     console.log('dropped 7 collections');
   }
 
-  /*
-   * Before writing, not after: the unique indexes of §5 are part of what the
-   * seed is asserting, and a duplicate slug should fail the seed rather than
-   * land and be found later.
-   */
-  for (const model of Object.values(MODELS)) {
-    await model.syncIndexes();
-  }
-
+  await seed();
   for (const tenant of TENANTS) {
-    await seedTenant(tenant);
     console.log(`  ${tenant.name.padEnd(6)} ${tenant.slug} (${tenant.status})`);
+  }
+  for (const account of ACCOUNTS) {
+    console.log(`  ${account.name.padEnd(6)} (no portfolio)`);
   }
 
   console.log('\ndocuments per collection');
@@ -161,8 +180,10 @@ async function main(): Promise<void> {
   await mongoose.disconnect();
 }
 
-main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
-  void mongoose.disconnect();
-});
+if (require.main === module) {
+  main().catch((error: unknown) => {
+    console.error(error);
+    process.exitCode = 1;
+    void mongoose.disconnect();
+  });
+}

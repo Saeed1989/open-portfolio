@@ -1,5 +1,5 @@
-import { S as SectionType, a as SectionDescriptor, F as FieldError } from './types-DLM9OYrT.js';
-export { C as CollectionSectionDescriptor, b as FieldDescriptor, c as FieldKind, P as Priority, d as SECTION_TYPES, e as SectionInstance, f as SingleSectionDescriptor } from './types-DLM9OYrT.js';
+import { S as SectionType, a as SectionDescriptor, b as SectionInstance, F as FieldError } from './types-DhxjKKQp.js';
+export { C as CollectionSectionDescriptor, c as FieldDescriptor, d as FieldKind, P as Priority, e as SECTION_TYPES, f as SingleSectionDescriptor } from './types-DhxjKKQp.js';
 
 /**
  * The registry's version (FR-REG-4).
@@ -1026,6 +1026,32 @@ declare function getDescriptor(type: SectionType): SectionDescriptor;
 declare function isSectionEmpty(type: SectionType, content: unknown): boolean;
 
 /**
+ * Presets (FR-REG-6, FR-REG-10): named starting configurations, applied once
+ * at portfolio creation. A preset only sets initial state; everything it
+ * produces is editable afterwards.
+ */
+declare const PRESET_IDS: readonly ["software-engineer"];
+type PresetId = (typeof PRESET_IDS)[number];
+interface InitialDraft {
+    readonly sections: SectionInstance[];
+    readonly theme: Record<string, unknown>;
+    readonly seo: Record<string, unknown>;
+    readonly analytics: null;
+}
+declare function isPresetId(value: unknown): value is PresetId;
+/**
+ * The initial draft tree for a preset (FR-REG-10): one entry per declared
+ * section type, in registry order, enabled and defaulted as the preset sets.
+ * Pure — reads no environment and touches no database.
+ *
+ * `name` is the display name collected on the creation screen (FR-AUTH-5).
+ * It lands in the hero's `name` here, so the caller need not know that key.
+ */
+declare function createInitialDraft(presetId: PresetId, options?: {
+    name?: string;
+}): InitialDraft;
+
+/**
  * Pulling a Credly badge id out of whatever the tenant pasted.
  *
  * This is extraction, not validation: the tenant hands over an embed snippet,
@@ -1127,4 +1153,4 @@ declare function credlyBadgesUrl(username: string): string;
  */
 declare function importCredlyBadges(username: unknown, existing?: readonly AchievementItem[], options?: CredlyImportOptions): Promise<CredlyImportOutcome>;
 
-export { type AchievementItem, type AchievementSource, type AchievementType, type AchievementsContent, type BlogContent, type BlogPost, CREDLY_ORIGIN, type Collection, type ContactContent, type ContactLink, type CredlyImportFailure, type CredlyImportOptions, type CredlyImportOutcome, type CredlyImportSuccess, type Cta, type CtaKind, type EducationContent, type EducationItem, type ExperienceContent, type ExperienceItem, type FetchLike, FieldError, GITHUB_EMBED_CARDS, type GalleryContent, type GalleryItem, type GitHubEmbedCard, type HeroContent, type ImageRef, MIN_SUPPORTED_REGISTRY_VERSION, type OpenSourceContent, type OpenSourceContribution, type OpenSourceStats, type ProjectBodies, type ProjectItem, type ProjectsContent, REGISTRY, REGISTRY_VERSION, type Registry, type SectionContentMap, SectionDescriptor, SectionType, type SkillItem, type SkillsContent, type SpeakingContent, type SpeakingItem, type Testimonial, type TestimonialsContent, type TrainingItem, type TrainingsContent, type TypedSectionInstance, allBlank, collectionIsEmpty, credlyBadgesUrl, getDescriptor, hasItems, hasText, importCredlyBadges, isRecord, isSectionEmpty, isSupportedRegistryVersion, parseCredlyBadgeId };
+export { type AchievementItem, type AchievementSource, type AchievementType, type AchievementsContent, type BlogContent, type BlogPost, CREDLY_ORIGIN, type Collection, type ContactContent, type ContactLink, type CredlyImportFailure, type CredlyImportOptions, type CredlyImportOutcome, type CredlyImportSuccess, type Cta, type CtaKind, type EducationContent, type EducationItem, type ExperienceContent, type ExperienceItem, type FetchLike, FieldError, GITHUB_EMBED_CARDS, type GalleryContent, type GalleryItem, type GitHubEmbedCard, type HeroContent, type ImageRef, type InitialDraft, MIN_SUPPORTED_REGISTRY_VERSION, type OpenSourceContent, type OpenSourceContribution, type OpenSourceStats, PRESET_IDS, type PresetId, type ProjectBodies, type ProjectItem, type ProjectsContent, REGISTRY, REGISTRY_VERSION, type Registry, type SectionContentMap, SectionDescriptor, SectionInstance, SectionType, type SkillItem, type SkillsContent, type SpeakingContent, type SpeakingItem, type Testimonial, type TestimonialsContent, type TrainingItem, type TrainingsContent, type TypedSectionInstance, allBlank, collectionIsEmpty, createInitialDraft, credlyBadgesUrl, getDescriptor, hasItems, hasText, importCredlyBadges, isPresetId, isRecord, isSectionEmpty, isSupportedRegistryVersion, parseCredlyBadgeId };

@@ -13,5 +13,6 @@ export * from './version';
 export * from './content';
 export * from './empty';
 export * from './sections';
+export * from './presets';
 export * from './credly/parse';
 export * from './credly/import';

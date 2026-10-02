@@ -4,25 +4,35 @@ import {
   Get,
   NotImplementedException,
   Patch,
+  Post,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import type { ServerResponse } from 'node:http';
 import {
+  ApiConflictResponse,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiHeader,
   ApiOperation,
+  ApiQuery,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
 import { etag } from '../etag';
-import { ApiKeyGuard } from '../guards/api-key.guard';
+import { AllowWithoutPortfolio, ApiKeyGuard } from '../guards/api-key.guard';
+import { PerUserRateLimitGuard } from '../guards/per-user-rate-limit.guard';
 import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
 import { AdminSeoDto } from './dto/admin-seo.dto';
 import { AdminThemeDto } from './dto/admin-theme.dto';
+import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { MeDto } from './dto/me.dto';
+import { SlugAvailabilityDto } from './dto/slug-availability.dto';
 import { UpdateSlugDto } from './dto/update-slug.dto';
 import { PortfolioService } from './portfolio.service';
 
@@ -38,10 +48,56 @@ export class PortfolioController {
   constructor(private readonly portfolio: PortfolioService) {}
 
   @Get('me')
+  @AllowWithoutPortfolio()
   @ApiOperation({ summary: 'Account behind the current session (FR-AUTH-3)' })
   @ApiOkResponse({ type: MeDto })
   getMe(@Tenant() tenant: TenantScope): Promise<MeDto> {
     return this.portfolio.getMe(tenant.userId);
+  }
+
+  @Get('slug-availability')
+  @AllowWithoutPortfolio()
+  @UseGuards(PerUserRateLimitGuard)
+  @ApiOperation({
+    summary: 'Whether a slug could be claimed now — advisory only (§7.2)',
+  })
+  @ApiQuery({ name: 'slug', type: String, required: true })
+  @ApiOkResponse({ type: SlugAvailabilityDto })
+  @ApiTooManyRequestsResponse({
+    description: '30 requests a minute per tenant.',
+  })
+  slugAvailability(
+    @Query('slug') slug: string = '',
+  ): Promise<SlugAvailabilityDto> {
+    return this.portfolio.slugAvailability(slug);
+  }
+
+  @Post('portfolio')
+  @AllowWithoutPortfolio()
+  @ApiOperation({
+    summary: "Create the tenant's portfolio, once (§7.2, FR-AUTH-7)",
+  })
+  @ApiCreatedResponse({
+    type: AdminPortfolioDto,
+    description: 'The `ETag` header carries `draftRevision`.',
+  })
+  @ApiUnprocessableEntityResponse({
+    description:
+      'Malformed body or unknown preset; `slug_invalid`; `slug_reserved`.',
+  })
+  @ApiConflictResponse({ description: '`portfolio_exists`; `slug_taken`.' })
+  async create(
+    @Tenant() tenant: TenantScope,
+    @Body() dto: CreatePortfolioDto,
+    @Res({ passthrough: true }) response: ServerResponse,
+  ): Promise<AdminPortfolioDto> {
+    const created = await this.portfolio.create(
+      tenant.userId,
+      tenant.portfolioId,
+      dto,
+    );
+    response.setHeader('ETag', etag(created.draftRevision));
+    return created;
   }
 
   @Get('portfolio')

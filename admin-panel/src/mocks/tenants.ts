@@ -81,18 +81,16 @@ export const TENANTS: Record<TenantName, MockTenant> = {
 };
 
 /**
- * A fifth identity: authenticated, no portfolio.
- *
- * Not a seed tenant — the seed has none, because every fixture it holds is a
- * portfolio. FR-AUTH-7 branches on exactly this case, so the handlers have to
- * be able to produce it.
+ * Authenticated, no portfolio: the seed's `eve` (tenant 06), the onboarding
+ * path FR-AUTH-7 branches on.
  */
 export const NO_PORTFOLIO: MockTenant = {
-  userId: '5eed00000000000001050001',
+  userId: '5eed00000000000001060001',
   me: {
     provider: 'github',
-    email: 'erin@example.com',
-    displayName: 'Erin Okonkwo',
+    email: 'eve@example.net',
+    displayName: 'Eve Martin',
+    avatarUrl: 'https://placeholder.invalid/eve/avatar.png',
     portfolio: null,
   },
 };

@@ -37,6 +37,8 @@ export type AdminErrorKind =
   /** Field-level validation failure (FR-API-4, FR-PUB-6 — every failure at
    *  once, never only the first). */
   | 'validation'
+  /** Too many requests; the slug check allows 30 a minute per tenant. */
+  | 'rate_limited'
   /** The API reached, and failed. */
   | 'server'
   /**
@@ -135,6 +137,7 @@ function kindFor(status: number, code: string | undefined): AdminErrorKind {
   /* 400 as well as 422: Nest's ValidationPipe answers 400 until FR-API-4's
      filter narrows it, and both mean the same thing to a form. */
   if (status === 422 || status === 400) return 'validation';
+  if (status === 429) return 'rate_limited';
   /* 501 is what a NestJS `NotImplementedException` answers, which is how
      every unbuilt admin write currently responds. */
   if (status === 501 || status === 405) return 'unsupported';
@@ -169,6 +172,25 @@ export async function parseError(response: Response): Promise<AdminError> {
       code,
       fields: readFields(specified['fields']),
       payload: specified,
+    });
+  }
+
+  /* What `api` sends today for its coded errors: an unwrapped
+     `{ code, message, errors }` (sections.exceptions.ts,
+     portfolio.exceptions.ts). Without this, a `409 slug_taken` would read
+     as `portfolio_exists`. */
+  if (isRecord(body) && typeof body['code'] === 'string') {
+    const code = body['code'];
+    return new AdminError({
+      kind: kindFor(response.status, code),
+      status: response.status,
+      message:
+        typeof body['message'] === 'string'
+          ? body['message']
+          : response.statusText,
+      code,
+      fields: readFields(body['errors']),
+      payload: body,
     });
   }
 

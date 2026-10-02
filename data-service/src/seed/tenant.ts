@@ -24,16 +24,24 @@ export interface SeedMedia {
   readonly altText: string;
 }
 
+export interface SeedUser {
+  readonly provider: AuthProvider;
+  readonly providerId: string;
+  readonly email: string;
+  readonly displayName: string;
+  readonly avatarUrl: string;
+  readonly status: UserStatus;
+}
+
+/** A signed-in user who has not created a portfolio yet (FR-AUTH-2). */
+export interface SeedAccount {
+  readonly name: TenantName;
+  readonly user: SeedUser;
+}
+
 export interface SeedTenant {
   readonly name: TenantName;
-  readonly user: {
-    readonly provider: AuthProvider;
-    readonly providerId: string;
-    readonly email: string;
-    readonly displayName: string;
-    readonly avatarUrl: string;
-    readonly status: UserStatus;
-  };
+  readonly user: SeedUser;
   readonly slug: string;
   readonly status: PortfolioStatus;
   readonly presetId: string;

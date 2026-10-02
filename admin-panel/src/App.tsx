@@ -1,13 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router';
+import { ONBOARDING_PATH } from './app-state/me';
+import { PortfolioGate } from './app-state/PortfolioGate';
 import { PublishAttemptedProvider } from './app-state/publish-attempted';
 import { DevFields } from './routes/DevFields';
+import { OnboardingSlugPage } from './routes/OnboardingSlugPage';
 import { SectionEditorPage } from './routes/SectionEditorPage';
 import { SectionManagerPage } from './routes/SectionManagerPage';
 
 /*
- * Three routes. `/sections/:type` is one page for every section type the
+ * `/sections/:type` is one page for every section type the
  * registry declares — there is no route per type and no component per type.
+ *
+ * Every route but `/dev/fields` sits behind the portfolio gate (FR-AUTH-7).
+ * The dev matrix reads no account, so it is reachable in any state.
  *
  * The section manager, sidebar navigation beyond a link list, section
  * reordering, the preview and the publish flow are all out of this milestone.
@@ -33,9 +39,18 @@ export function App() {
         <BrowserRouter>
         <Routes>
           <Route path="/dev/fields" element={<DevFields />} />
-          <Route path="/sections" element={<SectionManagerPage />} />
-          <Route path="/sections/:type" element={<SectionEditorPage />} />
-          <Route path="*" element={<Navigate to="/sections" replace />} />
+          <Route
+            element={
+              <PortfolioGate>
+                <Outlet />
+              </PortfolioGate>
+            }
+          >
+            <Route path={ONBOARDING_PATH} element={<OnboardingSlugPage />} />
+            <Route path="/sections" element={<SectionManagerPage />} />
+            <Route path="/sections/:type" element={<SectionEditorPage />} />
+            <Route path="*" element={<Navigate to="/sections" replace />} />
+          </Route>
         </Routes>
         </BrowserRouter>
       </PublishAttemptedProvider>

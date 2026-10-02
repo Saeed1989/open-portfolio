@@ -45,7 +45,120 @@
         ]
       }
     },
+    "/admin/slug-availability": {
+      "get": {
+        "operationId": "PortfolioController_slugAvailability",
+        "summary": "Whether a slug could be claimed now — advisory only (§7.2)",
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlugAvailabilityDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key or user id."
+          },
+          "429": {
+            "description": "30 requests a minute per tenant."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ]
+      }
+    },
     "/admin/portfolio": {
+      "post": {
+        "operationId": "PortfolioController_create",
+        "summary": "Create the tenant's portfolio, once (§7.2, FR-AUTH-7)",
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePortfolioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The `ETag` header carries `draftRevision`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminPortfolioDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key or user id."
+          },
+          "409": {
+            "description": "`portfolio_exists`; `slug_taken`."
+          },
+          "422": {
+            "description": "Malformed body or unknown preset; `slug_invalid`; `slug_reserved`."
+          }
+        },
+        "tags": [
+          "portfolio"
+        ]
+      },
       "get": {
         "operationId": "PortfolioController_getDraft",
         "summary": "Full draft of the session's portfolio (FR-TEN-4)",
@@ -1253,6 +1366,55 @@
           "email",
           "displayName",
           "portfolio"
+        ]
+      },
+      "SlugAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "eve-dev",
+            "description": "The slug as normalised."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "invalid",
+              "reserved",
+              "taken",
+              "available"
+            ],
+            "example": "available"
+          }
+        },
+        "required": [
+          "slug",
+          "status"
+        ]
+      },
+      "CreatePortfolioDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "eve-dev",
+            "description": "Trimmed and lower-cased before validation."
+          },
+          "name": {
+            "type": "string",
+            "example": "Eve Martin",
+            "description": "Seeds the hero's name."
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "software-engineer"
+            ],
+            "default": "software-engineer"
+          }
+        },
+        "required": [
+          "slug"
         ]
       },
       "AdminSectionDto": {
