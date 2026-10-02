@@ -11,7 +11,8 @@
  *
  *   5eed000000000000 01 01 0001
  *   ^seed            ^  ^  ^sequence
- *                    |  ^tenant: 01 alice, 02 bob, 03 carol, 04 dave
+ *                    |  ^tenant: 01 alice, 02 bob, 03 carol, 04 dave,
+ *                    |          06 eve
  *                    ^kind: 01 user
  *
  * `src/mocks/tenants.ts` holds the same ids for MSW. They are duplicated on
@@ -30,6 +31,8 @@ export const DEV_TENANTS = {
   carol: '5eed00000000000001030001',
   /** Suspended, with a published tree. */
   dave: '5eed00000000000001040001',
+  /** Signed in, no portfolio — the onboarding path. */
+  eve: '5eed00000000000001060001',
 } as const;
 
 export type DevTenantName = keyof typeof DEV_TENANTS;

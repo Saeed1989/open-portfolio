@@ -2,9 +2,11 @@ import { http, HttpResponse } from 'msw';
 import type {
   AdminPortfolio,
   Integration,
+  MePortfolio,
   PublishResult,
   SlugAvailabilityResult,
 } from '../api/dto';
+import { isWellFormedSlug, normaliseSlug } from '../api/slug';
 import { draftFor, writeSection } from './draft-store';
 import { mockState } from './state';
 import { NO_PORTFOLIO, TENANTS } from './tenants';
@@ -22,30 +24,35 @@ import { NO_PORTFOLIO, TENANTS } from './tenants';
  * being served is a switch here, not a header read.
  */
 
+/* `api`'s list (data-service/src/admin/portfolio/slug.ts). */
 const RESERVED = new Set([
   'www',
-  'api',
   'admin',
+  'api',
+  'auth',
   'app',
   'mail',
+  'docs',
+  'status',
   'static',
   'cdn',
   'assets',
-  'status',
-  'blog',
   'help',
   'support',
-  'docs',
+  'blog',
+  'saeed-dev',
 ]);
 
 /** Slugs already held, so `slug_taken` has real collisions (FR-DAT-1). */
 const TAKEN = new Set(['alice', 'bob', 'carol', 'dave']);
 
-const SLUG_FORMAT = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+/** The no-portfolio tenant's claim, once made. Held until reload. */
+let claimed: MePortfolio | null = null;
 
 function current() {
   const { tenant } = mockState();
-  return tenant === 'no-portfolio' ? NO_PORTFOLIO : TENANTS[tenant];
+  if (tenant !== 'no-portfolio') return TENANTS[tenant];
+  return { ...NO_PORTFOLIO, me: { ...NO_PORTFOLIO.me, portfolio: claimed } };
 }
 
 /** The envelope of §7.2, which is what `client.ts` parses first. */
@@ -108,8 +115,14 @@ export const handlers = [
     const blocked = globalFault();
     if (blocked) return blocked;
 
-    const slug = new URL(request.url).searchParams.get('slug') ?? '';
-    const status: SlugAvailabilityResult['status'] = !SLUG_FORMAT.test(slug)
+    if (mockState().fault === 'rate_limited') {
+      return fail(429, 'rate_limited', 'Too many requests.');
+    }
+
+    const slug = normaliseSlug(
+      new URL(request.url).searchParams.get('slug') ?? '',
+    );
+    const status: SlugAvailabilityResult['status'] = !isWellFormedSlug(slug)
       ? 'invalid'
       : RESERVED.has(slug)
         ? 'reserved'
@@ -140,7 +153,7 @@ export const handlers = [
       slug: string;
       preset: string;
     }>;
-    const slug = body.slug ?? '';
+    const slug = normaliseSlug(body.slug ?? '');
 
     if (fault === 'slug_taken' || TAKEN.has(slug)) {
       return fail(409, 'slug_taken', 'That address is already taken.', [
@@ -166,6 +179,12 @@ export const handlers = [
       ]);
     }
 
+    if (!isWellFormedSlug(slug)) {
+      return fail(422, 'slug_invalid', 'That address is not valid.', [
+        { path: 'slug', code: 'slug_invalid', message: 'That address is not valid.' },
+      ]);
+    }
+
     if (RESERVED.has(slug)) {
       return fail(422, 'slug_reserved', 'That address is reserved.', [
         {
@@ -176,6 +195,7 @@ export const handlers = [
       ]);
     }
 
+    claimed = { slug, status: 'unpublished' };
     return HttpResponse.json(
       {
         slug,

@@ -642,6 +642,40 @@ function isSectionEmpty(type, content) {
   return REGISTRY[type].emptyCondition(content);
 }
 
+// src/presets.ts
+var PRESET_IDS = ["software-engineer"];
+var PRESETS = {
+  "software-engineer": {
+    enabled: ["hero", "projects", "skills", "contact"],
+    content: {
+      skills: {
+        categories: [
+          "Backend",
+          "Frontend",
+          "Database",
+          "DevOps",
+          "Tools & Practices"
+        ]
+      }
+    }
+  }
+};
+function isPresetId(value) {
+  return PRESET_IDS.includes(value);
+}
+function createInitialDraft(presetId, options = {}) {
+  const preset = PRESETS[presetId];
+  const sections = SECTION_TYPES.map((type, order) => {
+    const base = REGISTRY[type].cardinality === "collection" ? { items: [] } : {};
+    const content = { ...base, ...preset.content[type] };
+    if (type === "hero" && options.name !== void 0) {
+      content.name = options.name;
+    }
+    return { type, enabled: preset.enabled.includes(type), order, content };
+  });
+  return { sections, theme: {}, seo: {}, analytics: null };
+}
+
 // src/credly/parse.ts
 var CREDLY_ORIGIN = "https://www.credly.com";
 var EMBED_ATTRIBUTE = /data-share-badge-id=["']([0-9a-f-]{36})["']/i;
@@ -782,16 +816,19 @@ export {
   CREDLY_ORIGIN,
   GITHUB_EMBED_CARDS,
   MIN_SUPPORTED_REGISTRY_VERSION,
+  PRESET_IDS,
   REGISTRY,
   REGISTRY_VERSION,
   SECTION_TYPES,
   allBlank,
   collectionIsEmpty,
+  createInitialDraft,
   credlyBadgesUrl,
   getDescriptor,
   hasItems,
   hasText,
   importCredlyBadges,
+  isPresetId,
   isRecord,
   isSectionEmpty,
   isSupportedRegistryVersion,

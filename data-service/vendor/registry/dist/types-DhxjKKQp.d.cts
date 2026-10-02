@@ -107,4 +107,4 @@ interface SectionInstance {
     readonly content: unknown;
 }
 
-export { type CollectionSectionDescriptor as C, type FieldError as F, type Priority as P, type SectionType as S, type SectionDescriptor as a, type FieldDescriptor as b, type FieldKind as c, SECTION_TYPES as d, type SectionInstance as e, type SingleSectionDescriptor as f };
+export { type CollectionSectionDescriptor as C, type FieldError as F, type Priority as P, type SectionType as S, type SectionDescriptor as a, type SectionInstance as b, type FieldDescriptor as c, type FieldKind as d, SECTION_TYPES as e, type SingleSectionDescriptor as f };

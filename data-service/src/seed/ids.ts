@@ -15,7 +15,7 @@ import { Types } from 'mongoose';
  *   5eed000000000000 01 01 0001
  *   ^seed            ^  ^  ^sequence within the tenant
  *                    |  ^tenant: 01 alice, 02 bob, 03 carol, 04 dave,
- *                    |          05 saeed
+ *                    |          05 saeed, 06 eve
  *                    ^kind: 01 user, 02 portfolio, 03 media
  */
 
@@ -27,6 +27,7 @@ export const TENANT_NUMBER = {
   carol: '03',
   dave: '04',
   saeed: '05',
+  eve: '06',
 } as const;
 
 export type TenantName = keyof typeof TENANT_NUMBER;

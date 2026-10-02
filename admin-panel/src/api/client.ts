@@ -81,11 +81,9 @@ export const adminApi = {
       { signal },
     ),
 
-  createPortfolio: (body: {
-    name: string;
-    slug: string;
-    preset: string;
-  }) => call<AdminPortfolio>(`${ADMIN}/portfolio`, { method: 'POST', body }),
+  /** `preset` is omitted while the registry has one; `api` defaults it. */
+  createPortfolio: (body: { slug: string; name?: string }) =>
+    call<AdminPortfolio>(`${ADMIN}/portfolio`, { method: 'POST', body }),
 
   portfolio: (signal?: AbortSignal) =>
     call<AdminPortfolio>(`${ADMIN}/portfolio`, { signal }),
