@@ -16,8 +16,8 @@ import type { SeedTenant } from '../tenant';
 export const alice: SeedTenant = {
   name: 'alice',
   user: {
-    provider: 'github',
-    providerId: 'gh-alice-1001',
+    provider: 'google',
+    providerId: '100000000000000001001',
     email: 'alice@example.com',
     displayName: 'Alice Nakamura',
     avatarUrl: `${MEDIA_HOST}/alice/avatar.png`,

@@ -7,15 +7,6 @@
         "summary": "Account behind the current session (FR-AUTH-3)",
         "parameters": [
           {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "X-User-Id",
             "in": "header",
             "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
@@ -37,7 +28,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -50,15 +41,6 @@
         "operationId": "PortfolioController_slugAvailability",
         "summary": "Whether a slug could be claimed now — advisory only (§7.2)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -89,7 +71,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           },
           "429": {
             "description": "30 requests a minute per tenant."
@@ -105,15 +87,6 @@
         "operationId": "PortfolioController_create",
         "summary": "Create the tenant's portfolio, once (§7.2, FR-AUTH-7)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -146,7 +119,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           },
           "409": {
             "description": "`portfolio_exists`; `slug_taken`."
@@ -163,15 +136,6 @@
         "operationId": "PortfolioController_getDraft",
         "summary": "Full draft of the session's portfolio (FR-TEN-4)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -194,7 +158,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -207,15 +171,6 @@
         "operationId": "PortfolioController_updateTheme",
         "summary": "Update the draft theme (FR-THM-1)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -248,7 +203,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -261,15 +216,6 @@
         "operationId": "PortfolioController_updateSeo",
         "summary": "Update the draft SEO fields (FR-PUB-1)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -302,7 +248,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -315,15 +261,6 @@
         "operationId": "PortfolioController_updateSlug",
         "summary": "Change the portfolio slug (FR-DAT-1)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -356,7 +293,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -369,15 +306,6 @@
         "operationId": "SectionsController_list",
         "summary": "List the draft sections (FR-CFG-1)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -400,7 +328,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -413,15 +341,6 @@
         "operationId": "SectionsController_update",
         "summary": "Toggle a section or replace its content (FR-CFG-1)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -489,7 +408,7 @@
             "description": "`invalid_if_match`."
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           },
           "404": {
             "description": "`portfolio_not_found`, `section_type_not_found`, or `section_not_found`."
@@ -511,15 +430,6 @@
         "operationId": "SectionsController_addItem",
         "summary": "Add an item to a collection section (FR-API-4)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -577,7 +487,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -590,15 +500,6 @@
         "operationId": "SectionsController_updateItem",
         "summary": "Update an item in a collection section (FR-API-4)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -665,7 +566,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -676,15 +577,6 @@
         "operationId": "SectionsController_removeItem",
         "summary": "Remove an item from a collection section (FR-API-4)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -732,7 +624,7 @@
             "description": "Removed."
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -745,15 +637,6 @@
         "operationId": "MediaController_createUploadUrl",
         "summary": "Issue a signed upload URL (FR-MED-1)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -786,7 +669,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -799,15 +682,6 @@
         "operationId": "MediaController_remove",
         "summary": "Delete a media asset of the session's portfolio (FR-TEN-4)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -832,7 +706,7 @@
             "description": "Deleted."
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -845,15 +719,6 @@
         "operationId": "IntegrationsController_list",
         "summary": "List connections with status and cached payload (FR-INT-3)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -879,7 +744,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -892,15 +757,6 @@
         "operationId": "IntegrationsController_importCredly",
         "summary": "Populate achievements from a public Credly profile (FR-INT-13)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -933,7 +789,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -946,15 +802,6 @@
         "operationId": "IntegrationsController_addCredlyBadge",
         "summary": "Add one badge from a pasted Credly embed code (FR-INT-14)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -987,7 +834,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1000,15 +847,6 @@
         "operationId": "IntegrationsController_connect",
         "summary": "Connect an integration provider (FR-INT-2)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -1055,7 +893,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1066,15 +904,6 @@
         "operationId": "IntegrationsController_disconnect",
         "summary": "Disconnect an integration provider (FR-INT-6)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -1104,7 +933,7 @@
             "description": "Disconnected."
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1117,15 +946,6 @@
         "operationId": "IntegrationsController_requestSync",
         "summary": "Request a manual refresh (FR-INT-2)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -1155,7 +975,7 @@
             "description": "Refresh handed to the sync worker."
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1168,15 +988,6 @@
         "operationId": "PublishController_publish",
         "summary": "Validate and publish the draft (FR-PUB-6)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -1199,7 +1010,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1212,15 +1023,6 @@
         "operationId": "PublishController_unpublish",
         "summary": "Return the subdomain to the 404 state (FR-PUB-8)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -1236,7 +1038,7 @@
             "description": "Unpublished."
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1249,15 +1051,6 @@
         "operationId": "LinkHealthController_list",
         "summary": "Link check results (FR-SEC-PROJ-9)",
         "parameters": [
-          {
-            "name": "X-Api-Key",
-            "in": "header",
-            "description": "Shared secret proving the request came from the edge proxy. Set manually in local dev only.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-User-Id",
             "in": "header",
@@ -1283,7 +1076,7 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key or user id."
+            "description": "Missing or malformed user id."
           }
         },
         "tags": [
@@ -1294,7 +1087,7 @@
   },
   "info": {
     "title": "Portfolio API — admin",
-    "description": "API-key authenticated. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
+    "description": "Scoped by the X-User-Id header edge sets. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
     "version": "0.1.0",
     "contact": {}
   },
@@ -1337,7 +1130,7 @@
               "github",
               "google"
             ],
-            "example": "github"
+            "example": "google"
           },
           "email": {
             "type": "string",

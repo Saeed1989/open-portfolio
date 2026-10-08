@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { Portfolio } from './portfolio.schema';
-import { User } from './user.schema';
 
 /** SRS §5.7. */
 @Schema({ collection: 'auditLog' })
@@ -13,7 +12,7 @@ export class AuditLog {
   })
   portfolioId: Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
   @Prop()

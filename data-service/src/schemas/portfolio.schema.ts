@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { SECTION_TYPES, type SectionType } from '@portfolio/registry';
-import { User } from './user.schema';
 
 export const PORTFOLIO_STATUSES = [
   'unpublished',
@@ -98,7 +97,7 @@ export const SlugHistoryEntrySchema =
 /** SRS §5.2. */
 @Schema({ collection: 'portfolios', timestamps: true })
 export class Portfolio {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
   @Prop({ required: true, lowercase: true })

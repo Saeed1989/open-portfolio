@@ -1,12 +1,13 @@
 import mongoose, { type Collection } from 'mongoose';
 import { REGISTRY_VERSION } from '@portfolio/registry';
+import { SessionSchema } from '../auth/schemas/session.schema';
+import { UserSchema } from '../auth/schemas/user.schema';
 import { AuditLogSchema } from '../schemas/audit-log.schema';
 import { IntegrationCacheSchema } from '../schemas/integration-cache.schema';
 import { IntegrationConnectionSchema } from '../schemas/integration-connection.schema';
 import { LinkHealthSchema } from '../schemas/link-health.schema';
 import { MediaSchema } from '../schemas/media.schema';
 import { PortfolioSchema } from '../schemas/portfolio.schema';
-import { UserSchema } from '../schemas/user.schema';
 import {
   CREATED_AT,
   LAST_LOGIN_AT,
@@ -38,7 +39,7 @@ import { ACCOUNTS, TENANTS } from './tenants';
  * there is nothing for casting or defaults to add.
  *
  *   npm run seed         upsert; safe to run repeatedly
- *   npm run seed:reset   drop the seven collections, then seed
+ *   npm run seed:reset   drop the eight collections, then seed
  *
  * `MONGODB_URI` is required and is not defaulted: seeding the wrong database
  * because a variable was missing is worse than not seeding at all, and a
@@ -50,6 +51,8 @@ import { ACCOUNTS, TENANTS } from './tenants';
 /** Registered here rather than through Nest DI — this is a plain script. */
 const MODELS = {
   users: mongoose.model('User', UserSchema),
+  /* No session is seeded; registered so its indexes sync and a reset drops it. */
+  sessions: mongoose.model('Session', SessionSchema),
   portfolios: mongoose.model('Portfolio', PortfolioSchema),
   media: mongoose.model('Media', MediaSchema),
   integrationConnections: mongoose.model(
@@ -160,7 +163,7 @@ async function main(): Promise<void> {
          which is the normal state on a fresh database. */
       await model.collection.drop().catch(() => undefined);
     }
-    console.log('dropped 7 collections');
+    console.log('dropped 8 collections');
   }
 
   await seed();

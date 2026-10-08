@@ -7,12 +7,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo, Types } from 'mongoose';
 import { createInitialDraft, REGISTRY_VERSION } from '@portfolio/registry';
+import { ACCOUNT_ACCESS, type AccountAccess } from '../../auth/account-access';
 import {
   REVALIDATOR,
   type Revalidator,
 } from '../../external/revalidator/revalidator';
 import { Portfolio } from '../../schemas/portfolio.schema';
-import { User } from '../../schemas/user.schema';
 import { AdminPortfolioDto } from './dto/admin-portfolio.dto';
 import { AdminSeoDto } from './dto/admin-seo.dto';
 import { AdminThemeDto } from './dto/admin-theme.dto';
@@ -31,7 +31,7 @@ import { normaliseSlug, slugProblem } from './slug';
 export class PortfolioService {
   constructor(
     @InjectModel(Portfolio.name) private readonly portfolios: Model<Portfolio>,
-    @InjectModel(User.name) private readonly users: Model<User>,
+    @Inject(ACCOUNT_ACCESS) private readonly accounts: AccountAccess,
     @Inject(REVALIDATOR) private readonly revalidator: Revalidator,
   ) {}
 
@@ -39,7 +39,7 @@ export class PortfolioService {
      the scope's portfolio id (§7.2). */
   async getMe(userId: string): Promise<MeDto> {
     const [user, portfolio] = await Promise.all([
-      this.users.findById(new Types.ObjectId(userId)).lean(),
+      this.accounts.getDisplayFields(userId),
       this.portfolios
         .findOne({ userId: new Types.ObjectId(userId) })
         .select('slug status')
@@ -47,7 +47,7 @@ export class PortfolioService {
     ]);
     if (!user) throw new NotFoundException('user_not_found');
 
-    /* Allowlisted: `providerId` and `status` stay internal. */
+    /* Allowlisted: `providerId` and `status` never leave auth (FR-AUTH-17). */
     return {
       provider: user.provider,
       email: user.email,

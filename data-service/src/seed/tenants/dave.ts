@@ -20,7 +20,7 @@ export const dave: SeedTenant = {
   name: 'dave',
   user: {
     provider: 'google',
-    providerId: 'goog-dave-4004',
+    providerId: '100000000000000004004',
     email: 'dave@example.co',
     displayName: 'Dave Lindqvist',
     avatarUrl: `${MEDIA_HOST}/dave/avatar.png`,

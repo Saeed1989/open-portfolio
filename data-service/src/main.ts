@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AdminModule } from './admin/admin.module';
 import { AppModule } from './app.module';
 import { setupApp } from './app.setup';
+import { AuthModule } from './auth/auth.module';
 import { PublicModule } from './public/public.module';
 
 async function bootstrap(): Promise<void> {
@@ -19,7 +20,7 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
 
   /* One document per surface, each built from its own module only, so the
-     public document cannot list an admin route (SRS §2.1). */
+     public document cannot list an admin or auth route (SRS §2.1). */
   const publicDocument = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
@@ -40,7 +41,7 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('Portfolio API — admin')
         .setDescription(
-          "API-key authenticated. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
+          "Scoped by the X-User-Id header edge sets. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
         )
         .setVersion('0.1.0')
         .addServer(serverUrl)
@@ -48,6 +49,20 @@ async function bootstrap(): Promise<void> {
       { include: [AdminModule] },
     );
     SwaggerModule.setup('docs/admin', app, adminDocument);
+
+    const authDocument = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle('Portfolio API — auth')
+        .setDescription(
+          'Sign-in, refresh, sign-out and session resolution. Reached through edge at /api/auth/* (SRS §7.3, §7.4).',
+        )
+        .setVersion('0.1.0')
+        .addServer(serverUrl)
+        .build(),
+      { include: [AuthModule] },
+    );
+    SwaggerModule.setup('docs/auth', app, authDocument);
 
     /* Written on every dev boot so the frontends can consume the contract
        without running this server. */
@@ -64,8 +79,11 @@ async function bootstrap(): Promise<void> {
   }
 
   const port = config.getOrThrow<string>('PORT');
-  await app.listen(port);
-  Logger.log(`Listening on http://localhost:${port}`, 'Bootstrap');
+  /* Loopback unless told otherwise: `api` has no public ingress, and the
+     admin surface trusts X-User-Id on that basis alone (FR-EDGE-5). */
+  const host = config.get<string>('API_BIND_HOST') || '127.0.0.1';
+  await app.listen(port, host);
+  Logger.log(`Listening on http://${host}:${port}`, 'Bootstrap');
 }
 
 void bootstrap();

@@ -1,7 +1,8 @@
 # api
 
-NestJS API for the portfolio generator: a public read-only surface and an
-API-key authenticated admin surface in one deployable (SRS §2.1).
+NestJS API for the portfolio generator: a public read-only surface, an admin
+surface scoped by the `X-User-Id` header `edge` sets, and an auth surface, in
+one deployable (SRS §2.1).
 
 **Status: skeleton.** Every route in SRS §7.1 and §7.2 is wired, validated for
 shape, and documented, and every handler returns `501 Not Implemented`.
@@ -28,7 +29,8 @@ npm run start:dev         # http://localhost:3001
 | `npm run lint` | ESLint, then `prettier --check` |
 | `npm run format` | `prettier --write` |
 | `npm run seed` | build, then upsert the fixture tenants |
-| `npm run seed:reset` | build, drop the seven collections, then seed |
+| `npm run seed:reset` | build, drop the eight collections, then seed |
+| `npm run test:e2e` | every suite, against a throwaway in-memory MongoDB |
 
 ## Seed data
 
@@ -50,7 +52,7 @@ through Node's own `--env-file`, so the seed goes wherever the service goes, and
 an unset variable fails the run rather than quietly filling a local database
 nobody meant to use. Pass the variable inline to target anything else.
 
-`seed:reset` **drops** the seven collections before writing. Against a shared or
+`seed:reset` **drops** the eight collections before writing. Against a shared or
 hosted cluster that deletes whatever else is in that database, so check which
 database `MONGODB_URI` resolves to before running it — a `mongodb+srv://` URI
 with no path resolves to `test`, not to a database named after the cluster.
@@ -65,19 +67,42 @@ the question of whether they are adopted, are Q-16 in
 [`docs/data-design.md`](docs/data-design.md) — that document, not this one, is
 where the open question lives.
 
+## Auth
+
+`src/auth/` is the auth surface (SRS §2.5, §2.6, §6.1): Google sign-in, the
+access JWT, rotating refresh tokens, and `GET /auth/resolve`. It is the only
+code that reads or writes `users` and `sessions`; every other module reaches
+accounts through the interface in `src/auth/account-access.ts` (FR-AUTH-17),
+and ESLint zones enforce that.
+
+The server refuses to start unless these are set and valid — see
+`.env.example` for the rules:
+
+| Variable | |
+|---|---|
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | The Google OAuth client. The redirect URI is the public callback through `edge` |
+| `AUTH_JWT_KEYS`, `AUTH_JWT_CURRENT_KID` | HS256 signing keys for the access JWT (FR-AUTH-19) |
+| `API_BIND_HOST` | Interface to bind; defaults to `127.0.0.1` |
+
+The admin surface trusts `X-User-Id` with no further proof (FR-AUTH-12), so
+the process must stay reachable only from `edge` (FR-EDGE-5). There is no
+dev-login route: locally, send `X-User-Id` with a seeded user id to
+`/admin/*`, as `edge` would.
+
 ## API documents
 
 | Path | Contents |
 |---|---|
 | `/docs/public` | Public surface only |
 | `/docs/admin` | Admin surface only; not mounted in production |
+| `/docs/auth` | Auth surface only; not mounted in production |
 | `openapi/public.json`, `openapi/admin.json` | Rewritten on every non-production boot, for the frontends |
 
 ## Decisions to revisit
 
 - **`/docs/admin` is mounted only when `NODE_ENV !== 'production'`.** The admin
   contract is not published from production. Revisit if a staging or
-  production client needs it, or once it can sit behind the API key guard.
+  production client needs it.
 - **`POST /internal/revalidate` (§7.3) is not served here.** It belongs to
   `portfolio`; this service calls it through `Revalidator`.
 - **`POST /admin/integrations/:provider/sync` returns 202.** Admin code may not

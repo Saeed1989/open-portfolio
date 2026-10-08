@@ -15,18 +15,17 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { ApiKeyGuard } from '../guards/api-key.guard';
-import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
+import { UserIdGuard } from '../guards/user-id.guard';
+import { USER_ID_HEADER } from '../swagger';
 import { PublishResultDto } from './dto/publish-result.dto';
 import { PublishService } from './publish.service';
 
 @ApiTags('publish')
 @ApiHeader(USER_ID_HEADER)
-@ApiHeader(API_KEY_HEADER)
 @ApiUnauthorizedResponse({
-  description: 'Missing or invalid API key or user id.',
+  description: 'Missing or malformed user id.',
 })
-@UseGuards(ApiKeyGuard)
+@UseGuards(UserIdGuard)
 @Controller('admin')
 export class PublishController {
   constructor(private readonly publishing: PublishService) {}

@@ -27,7 +27,6 @@ const fresh = () =>
   `5eed00000000000001ff${(++freshUser).toString(16).padStart(4, '0')}`;
 
 const as = (user: TenantName | string) => ({
-  'X-Api-Key': process.env.ADMIN_API_KEY!,
   'X-User-Id':
     user.length === 24 ? user : userId(user as TenantName).toHexString(),
 });
@@ -240,7 +239,7 @@ describe('GET /admin/slug-availability', () => {
     expect((await availability('bob', 'nobody-here')).status).toBe(200);
   });
 
-  it('requires the API key and a user id', async () => {
+  it('requires a user id', async () => {
     const res = await request(app.getHttpServer())
       .get('/admin/slug-availability')
       .query({ slug: 'x' });

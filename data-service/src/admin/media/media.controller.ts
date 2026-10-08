@@ -19,19 +19,18 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
-import { ApiKeyGuard } from '../guards/api-key.guard';
-import { API_KEY_HEADER, USER_ID_HEADER } from '../swagger';
+import { UserIdGuard } from '../guards/user-id.guard';
+import { USER_ID_HEADER } from '../swagger';
 import { CreateUploadUrlDto } from './dto/create-upload-url.dto';
 import { UploadUrlDto } from './dto/upload-url.dto';
 import { MediaService } from './media.service';
 
 @ApiTags('media')
 @ApiHeader(USER_ID_HEADER)
-@ApiHeader(API_KEY_HEADER)
 @ApiUnauthorizedResponse({
-  description: 'Missing or invalid API key or user id.',
+  description: 'Missing or malformed user id.',
 })
-@UseGuards(ApiKeyGuard)
+@UseGuards(UserIdGuard)
 @Controller('admin/media')
 export class MediaController {
   constructor(private readonly media: MediaService) {}
