@@ -12,8 +12,8 @@ import type { SeedAccount } from '../tenant';
 export const eve: SeedAccount = {
   name: 'eve',
   user: {
-    provider: 'github',
-    providerId: 'gh-eve-6006',
+    provider: 'google',
+    providerId: '100000000000000006006',
     email: 'eve@example.net',
     displayName: 'Eve Martin',
     avatarUrl: `${MEDIA_HOST}/eve/avatar.png`,

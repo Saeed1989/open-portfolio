@@ -5,7 +5,7 @@ import type { SeedTenant } from '../tenant';
  * The second real tenant, so the cross-tenant isolation suite (NFR-SEC-1) has
  * genuine ids to attempt an admin endpoint with rather than a fabricated one.
  *
- * **Every field differs from alice's.** Not only the names: the provider, the
+ * **Every field differs from alice's.** Not only the names: the
  * theme, the analytics provider, the project count, the skill count, the
  * prominent count, the categories, the ratings, the link visibility. A test
  * that leaks bob's content into alice's response fails on whichever field it
@@ -16,7 +16,7 @@ export const bob: SeedTenant = {
   name: 'bob',
   user: {
     provider: 'google',
-    providerId: 'goog-bob-2002',
+    providerId: '100000000000000002002',
     email: 'bob@example.net',
     displayName: 'Bob Ferreira',
     avatarUrl: `${MEDIA_HOST}/bob/avatar.jpg`,

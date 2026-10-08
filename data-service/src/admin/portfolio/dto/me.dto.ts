@@ -6,7 +6,7 @@ import {
 import {
   AUTH_PROVIDERS,
   type AuthProvider,
-} from '../../../schemas/user.schema';
+} from '../../../auth/account-access';
 
 /** What `admin` branches on to choose dashboard or creation screen. */
 export class MePortfolioDto {
@@ -22,7 +22,7 @@ export class MePortfolioDto {
 }
 
 export class MeDto {
-  @ApiProperty({ enum: [...AUTH_PROVIDERS], required: true, example: 'github' })
+  @ApiProperty({ enum: [...AUTH_PROVIDERS], required: true, example: 'google' })
   provider: AuthProvider;
 
   @ApiProperty({ type: String, required: true, example: 'alice@example.com' })

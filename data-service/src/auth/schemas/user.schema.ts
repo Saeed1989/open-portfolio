@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-export const AUTH_PROVIDERS = ['github', 'google'] as const;
-export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
+import { AUTH_PROVIDERS, type AuthProvider } from '../account-access';
 
 export const USER_STATUSES = ['active', 'suspended'] as const;
 export type UserStatus = (typeof USER_STATUSES)[number];

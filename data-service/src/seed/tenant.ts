@@ -3,7 +3,8 @@ import type {
   AnalyticsProvider,
   PortfolioStatus,
 } from '../schemas/portfolio.schema';
-import type { AuthProvider, UserStatus } from '../schemas/user.schema';
+import type { AuthProvider } from '../auth/account-access';
+import type { UserStatus } from '../auth/schemas/user.schema';
 import type { TenantName } from './ids';
 
 export interface SeedDraft {

@@ -5,14 +5,14 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import type { AdminRequest } from './api-key.guard';
+import type { AdminRequest } from './user-id.guard';
 
 const LIMIT = 30;
 const WINDOW_MS = 60_000;
 
 /**
  * 30 requests per minute per tenant, in a fixed window. Runs after
- * `ApiKeyGuard`, which has already resolved `userId`.
+ * `UserIdGuard`, which has already resolved `userId`.
  *
  * Counts live in this process's memory, so the limit holds per `api`
  * instance, not across replicas, and resets on restart.

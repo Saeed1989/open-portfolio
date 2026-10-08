@@ -6,7 +6,7 @@
 sequenceDiagram
     autonumber
     participant B as Browser · admin panel
-    participant E as edge · nginx
+    participant E as edge · Node.js service
     participant AU as api · auth module
     participant AD as api · admin surface
     participant D as MongoDB
@@ -15,9 +15,9 @@ sequenceDiagram
 
     B->>E: GET /api/admin/portfolio/sections/projects<br/>Cookie: session=raw token
 
-    Note over E: Host matched exactly, then the /api/admin/ location.<br/>edge holds no DB connection and owns no collection.
+    Note over E: Host matched exactly, then the /api/admin/ prefix.<br/>edge holds no DB connection and owns no collection.
 
-    E->>AU: auth_request subrequest<br/>GET /auth/resolve — inbound headers, no body
+    E->>AU: identity subrequest (FR-EDGE-3)<br/>GET /auth/resolve — inbound headers, no body
     AU->>AU: sha256 of raw token
     AU->>D: sessions by tokenHash
     D-->>AU: session, or null

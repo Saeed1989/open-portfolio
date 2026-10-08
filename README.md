@@ -19,7 +19,7 @@ SRS wins and the derived file is wrong.
 
 | Component | Tech | Exposure |
 |---|---|---|
-| `edge` | nginx | `openfolio.site`, `admin.openfolio.site`, `*.openfolio.site` — terminates TLS, routes by host, resolves identity |
+| `edge` | Node.js, TypeScript, Fastify — a small in-house service | `admin.openfolio.site`, `api.openfolio.site` — terminates TLS, routes by host and path, resolves identity by subrequest |
 | `api` | NestJS | not publicly routable — public, admin, and auth surfaces plus a scheduled `sync` module, reachable only from `edge` |
 | `admin` | Next.js | `admin.openfolio.site` — OAuth session required |
 | `portfolio` | Next.js SSR/ISR | `*.openfolio.site` wildcard — fully public |

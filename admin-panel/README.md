@@ -74,7 +74,7 @@ Hosts entries the dev topology expects
 | `e2e/` | Playwright: autosave, 5xx retry, 409 (M1) |
 | `dev/` | Dev-server only — modes, the seed-tenant table, never imported from `src/` |
 | `scripts/check-bundle.mjs` | Fails the build if a dev-only value reached the output |
-| `../edge/` | The nginx configuration FR-EDGE-6 requires, and the dev topology |
+| `../edge/` | The `edge` routing rules FR-EDGE-6 requires, and the dev topology. `edge` is specified as a small Node.js service (SRS 0.10); what is here is still the earlier nginx stand-in — see §3 |
 
 The `gap` prop is the publish-readiness marker, orthogonal to the five visual
 states: `'pending'` is the dotted grey publish-only marker shown while
@@ -222,9 +222,16 @@ list stopped flowing inline.
 
 **First: there was no `edge` configuration in the monorepo at all.** FR-EDGE-6
 requires it versioned there and NFR-OPS-5 makes a change to it a change to the
-system, but no nginx config, no `edge/` directory and no compose file beyond
+system, but no routing configuration, no `edge/` directory and no compose file beyond
 `data-service`'s mongo existed. `edge/templates/edge.conf.template` and
 `edge/docker-compose.yml` are new in this milestone, written to FR-EDGE-1..6.
+
+> **Superseded by SRS 0.10.** `edge` is now specified as a small in-house
+> Node.js service (TypeScript, Fastify), not nginx (§2.1, FR-EDGE-6,
+> FR-EDGE-7). The files named in this section are the nginx stand-in written
+> before that change. The routing rules they implement are the ones the
+> service must implement, and the snippets below are kept as the record of
+> what was built.
 
 Only one clause of FR-EDGE-2 actually changes. As a concrete diff:
 
@@ -254,9 +261,10 @@ location / {
 
 Three consequences the SRS does not currently record:
 
-- **The fallback must not outrank the two proxied prefixes.** nginx's prefix
-  matching handles this — `/api/admin/` and `/api/auth/` are longer prefixes
-  than `/` — but it is now load-bearing. A misordered rule would serve
+- **The fallback must not outrank the two proxied prefixes.** Longest-prefix
+  matching handles this in the stand-in — `/api/admin/` and `/api/auth/` are
+  longer prefixes than `/` — and the `edge` service must keep that order in
+  its own route table, because it is now load-bearing. A misordered rule would serve
   `index.html` for an API call and the failure would look like a JSON parse
   error in the browser.
 - **`index.html` must not be cached, and the hashed assets should be cached
@@ -270,7 +278,7 @@ Three consequences the SRS does not currently record:
 
 `edge/templates/edge.conf.template` also implements, and is the first thing in
 the repo to implement: FR-EDGE-1's exact-host matching with `return 444` for an
-unmatched `Host`; FR-EDGE-3's `auth_request`; FR-EDGE-4's unconditional
+unmatched `Host`; FR-EDGE-3's identity subrequest; FR-EDGE-4's unconditional
 `X-User-Id` on **every** proxied location including the unauthenticated ones;
 FR-AUTH-16's rate limit; and NFR-OPS-4's request id. FR-EDGE-5 is met in dev by
 giving `api` no published port.
@@ -311,7 +319,7 @@ curl -i http://admin.openfolio.test:8080/api/admin/me
 ```
 
 Against `api` this exercises the whole chain: `edge` matches the host, issues
-the `auth_request` to the D8 stub, receives 204 with `X-User-Id`, overwrites
+the identity subrequest to the D8 stub, receives 204 with `X-User-Id`, overwrites
 any inbound value, adds `X-Api-Key`, and proxies to `api`'s `/admin/me`, which
 resolves alice's portfolio. Point `AUTH_UPSTREAM` at `api` and delete the
 `auth-stub` service when real auth lands — `edge`'s own configuration does not
@@ -559,7 +567,7 @@ entirely, so nothing `edge` owns is exercised:
 |---|---|
 | FR-EDGE-1 host matching, `return 444` on an unmatched Host | not exercised — one origin, `localhost:5174` |
 | FR-EDGE-2's three-way split on the admin host | partly — the `/api/admin` rewrite is reproduced; the SPA fallback is Vite's dev server |
-| FR-EDGE-3's `auth_request` subrequest | not exercised — no subrequest at all |
+| FR-EDGE-3's identity subrequest | not exercised — no subrequest at all |
 | FR-EDGE-4's unconditional identity header | **reproduced** — stripped then set, on every proxied request |
 | FR-AUTH-16's rate limit on `/api/auth/*` | not exercised — `/api/auth/*` answers 501 |
 | FR-AUTH-3's cookie scoping, `Path=/api`, host-only | not exercised — no cookie exists |
