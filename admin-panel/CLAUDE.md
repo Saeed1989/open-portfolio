@@ -163,7 +163,7 @@ Dev modes:
 - `direct` — Vite proxy to `API_URL`, injecting `X-User-Id` and
   `X-Dev-Api-Key`. Pick the tenant with `DEV_TENANT=alice|bob|carol|dave`,
   then restart.
-- `edge` — behind the monorepo's nginx `edge`. Run this before merging anything
+- `edge` — behind the monorepo's `edge` service. Run this before merging anything
   that touches requests; `direct` does not exercise `edge`'s routing rules.
 
 ## 1. Think Before Coding
