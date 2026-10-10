@@ -1,4 +1,3 @@
-import { rmSync } from 'node:fs';
 import { Writable } from 'node:stream';
 import {
   afterAll,
@@ -12,12 +11,12 @@ import { loggerOptions } from '../src/app.js';
 import {
   ADMIN,
   ALICE,
+  API_KEY,
   PUBLIC_READ,
   SESSION_COOKIES,
-  makeAdminDist,
-  startEdge,
+  startGateway,
   startUpstream,
-  type Edge,
+  type Gateway,
   type Upstream,
 } from './helpers.js';
 
@@ -25,19 +24,16 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const COOKIE = ['Cookie', 'of_at=header.payload.signature'];
 
 let upstream: Upstream;
-let adminDist: string;
-let edge: Edge;
+let gateway: Gateway;
 
 beforeAll(async () => {
   upstream = await startUpstream();
-  adminDist = makeAdminDist();
-  edge = await startEdge(upstream, adminDist);
+  gateway = await startGateway(upstream);
 });
 
 afterAll(async () => {
-  await edge.close();
+  await gateway.close();
   await upstream.close();
-  rmSync(adminDist, { recursive: true, force: true });
 });
 
 beforeEach(() => upstream.reset());
@@ -69,7 +65,7 @@ describe('X-User-Id (FR-EDGE-4, NFR-SEC-8)', () => {
   for (const route of routes) {
     for (const [name, headers] of Object.entries(variants)) {
       it(`${route.host} ${route.method} ${route.path} — ${name}`, async () => {
-        const response = await edge.send(route.host, route.path, {
+        const response = await gateway.send(route.host, route.path, {
           method: route.method,
           headers: [...COOKIE, ...headers],
         });
@@ -91,10 +87,61 @@ describe('X-User-Id (FR-EDGE-4, NFR-SEC-8)', () => {
   }
 });
 
+describe('X-Api-Key (FR-EDGE-4, FR-EDGE-8)', () => {
+  const EVIL = 'client-supplied-key-0123456789abcdefghijklm';
+
+  const routes = [
+    { host: ADMIN, method: 'GET', path: '/api/auth/google/start' },
+    { host: ADMIN, method: 'POST', path: '/api/auth/refresh' },
+    { host: ADMIN, method: 'GET', path: '/api/admin/me' },
+    { host: PUBLIC_READ, method: 'GET', path: '/public/portfolios/alice' },
+  ];
+
+  const variants: Record<string, string[]> = {
+    absent: [],
+    canonical: ['X-Api-Key', EVIL],
+    uppercase: ['X-API-KEY', EVIL],
+    duplicated: ['X-Api-Key', EVIL, 'x-api-key', EVIL],
+    'hidden behind Connection': ['X-Api-Key', EVIL, 'Connection', 'x-api-key'],
+  };
+
+  for (const route of routes) {
+    for (const [name, headers] of Object.entries(variants)) {
+      it(`${route.host} ${route.method} ${route.path} — ${name}`, async () => {
+        const response = await gateway.send(route.host, route.path, {
+          method: route.method,
+          headers: [...COOKIE, ...headers],
+        });
+        expect(response.status).toBeLessThan(400);
+        expect(JSON.stringify(upstream.requests)).not.toContain(EVIL);
+
+        /* Exactly one, the gateway's own, on the identity subrequest and on
+           the proxied request alike. */
+        for (const sent of upstream.requests) {
+          const keys = sent.rawHeaders.filter(
+            (_value, index, raw) =>
+              index % 2 === 1 && raw[index - 1]!.toLowerCase() === 'x-api-key',
+          );
+          expect(keys).toEqual([API_KEY]);
+        }
+      });
+    }
+  }
+
+  it('is never sent back to the client', async () => {
+    const response = await gateway.send(ADMIN, '/api/admin/me', {
+      headers: COOKIE,
+    });
+    expect(JSON.stringify(response)).not.toContain(API_KEY);
+  });
+});
+
 describe('Host matching (FR-EDGE-1)', () => {
   it.each([
     ['an unknown host', 'GET / HTTP/1.1\r\nHost: evil.example\r\n\r\n'],
     ['the apex', 'GET / HTTP/1.1\r\nHost: openfolio.test\r\n\r\n'],
+    ['the admin host', 'GET / HTTP/1.1\r\nHost: admin.openfolio.test\r\n\r\n'],
+    ['the admin host, on a proxied path', 'GET /api/admin/me HTTP/1.1\r\nHost: admin.openfolio.test\r\n\r\n'],
     ['a tenant subdomain', 'GET / HTTP/1.1\r\nHost: alice.openfolio.test\r\n\r\n'],
     ['a suffix match', `GET / HTTP/1.1\r\nHost: ${ADMIN}.evil.example\r\n\r\n`],
     ['a proxied path', 'GET /api/admin/me HTTP/1.1\r\nHost: evil.example\r\n\r\n'],
@@ -102,17 +149,17 @@ describe('Host matching (FR-EDGE-1)', () => {
     ['no Host at all', 'GET / HTTP/1.0\r\n\r\n'],
     ['bytes that are not HTTP', 'not http\r\n\r\n'],
   ])('%s: the socket is closed with no bytes written', async (_name, bytes) => {
-    expect(await edge.raw(bytes)).toBe('');
+    expect(await gateway.raw(bytes)).toBe('');
     expect(upstream.requests).toHaveLength(0);
   });
 
   it('matches case-insensitively and ignores the port', async () => {
-    const admin = await edge.send('ADMIN.Openfolio.TEST:8443', '/api/admin/me', {
+    const admin = await gateway.send('GATEWAY.Openfolio.TEST:8443', '/api/admin/me', {
       headers: COOKIE,
     });
     expect(admin.status).toBe(200);
 
-    const read = await edge.send('Api.Openfolio.Test:443', '/public/portfolios/a');
+    const read = await gateway.send('Api.Openfolio.Test:443', '/public/portfolios/a');
     expect(read.status).toBe(200);
   });
 });
@@ -122,7 +169,7 @@ describe('identity subrequest (FR-EDGE-3)', () => {
     upstream.resolve.status = 401;
     upstream.resolve.headers = {};
 
-    const response = await edge.send(ADMIN, '/api/admin/me');
+    const response = await gateway.send(ADMIN, '/api/admin/me');
 
     expect(response.status).toBe(401);
     expect(response.body).toBe('');
@@ -135,7 +182,7 @@ describe('identity subrequest (FR-EDGE-3)', () => {
     upstream.resolve.status = 403;
     upstream.resolve.headers = { 'content-type': 'text/plain' };
 
-    const response = await edge.send(ADMIN, '/api/admin/me', { headers: COOKIE });
+    const response = await gateway.send(ADMIN, '/api/admin/me', { headers: COOKIE });
 
     expect(response.status).toBe(403);
     expect(response.body).toBe('');
@@ -153,7 +200,7 @@ describe('identity subrequest (FR-EDGE-3)', () => {
     upstream.resolve.status = status;
     upstream.resolve.headers = headers;
 
-    const response = await edge.send(ADMIN, '/api/admin/me', { headers: COOKIE });
+    const response = await gateway.send(ADMIN, '/api/admin/me', { headers: COOKIE });
 
     expect(response.status).toBe(502);
     expect(response.body).toBe('');
@@ -164,7 +211,7 @@ describe('identity subrequest (FR-EDGE-3)', () => {
     upstream.resolve.delayMs = 3000;
     const started = Date.now();
 
-    const response = await edge.send(ADMIN, '/api/admin/me', { headers: COOKIE });
+    const response = await gateway.send(ADMIN, '/api/admin/me', { headers: COOKIE });
 
     const elapsed = Date.now() - started;
     expect(response.status).toBe(502);
@@ -173,8 +220,8 @@ describe('identity subrequest (FR-EDGE-3)', () => {
     expect(upstream.calls('/admin')).toHaveLength(0);
   });
 
-  it('sends resolve only the cookie and the request id, with no body', async () => {
-    await edge.send(ADMIN, '/api/admin/portfolio/theme', {
+  it('sends resolve only the cookie, the request id and the API key, with no body', async () => {
+    await gateway.send(ADMIN, '/api/admin/portfolio/theme', {
       method: 'PATCH',
       headers: [
         ...COOKIE,
@@ -192,8 +239,10 @@ describe('identity subrequest (FR-EDGE-3)', () => {
       'connection',
       'cookie',
       'host',
+      'x-api-key',
       'x-request-id',
     ]);
+    expect(resolve!.headers['x-api-key']).toBe(API_KEY);
     expect(resolve!.headers.cookie).toBe(COOKIE[1]);
   });
 
@@ -204,7 +253,7 @@ describe('identity subrequest (FR-EDGE-3)', () => {
       'x-leak': 'from-resolve',
     };
 
-    const response = await edge.send(ADMIN, '/api/admin/me', { headers: COOKIE });
+    const response = await gateway.send(ADMIN, '/api/admin/me', { headers: COOKIE });
 
     expect(response.status).toBe(200);
     expect(response.headers['set-cookie']).toBeUndefined();
@@ -215,8 +264,8 @@ describe('identity subrequest (FR-EDGE-3)', () => {
   });
 
   it('resolves on every request — nothing is cached', async () => {
-    await edge.send(ADMIN, '/api/admin/me', { headers: COOKIE });
-    await edge.send(ADMIN, '/api/admin/me', { headers: COOKIE });
+    await gateway.send(ADMIN, '/api/admin/me', { headers: COOKIE });
+    await gateway.send(ADMIN, '/api/admin/me', { headers: COOKIE });
     expect(upstream.calls('/auth/resolve')).toHaveLength(2);
   });
 });
@@ -240,6 +289,12 @@ describe('routing (FR-EDGE-2)', () => {
     [ADMIN, 'GET', '/api/'],
     [ADMIN, 'GET', '/public/portfolios/alice'],
     [ADMIN, 'HEAD', '/public/portfolios/alice'],
+    /* gateway serves no SPA: nothing outside /api/* exists here. */
+    [ADMIN, 'GET', '/'],
+    [ADMIN, 'GET', '/index.html'],
+    [ADMIN, 'GET', '/sections/projects'],
+    [ADMIN, 'GET', '/assets/app.js'],
+    [ADMIN, 'POST', '/sections/projects'],
     [PUBLIC_READ, 'GET', '/admin/me'],
     [PUBLIC_READ, 'GET', '/admin/portfolio'],
     [PUBLIC_READ, 'GET', '/auth/resolve'],
@@ -255,7 +310,7 @@ describe('routing (FR-EDGE-2)', () => {
     [PUBLIC_READ, 'GET', '/'],
     [PUBLIC_READ, 'GET', '/assets/app.js'],
   ])('%s %s %s → 404, api never called', async (host, method, path) => {
-    const response = await edge.send(host, path, { method, headers: COOKIE });
+    const response = await gateway.send(host, path, { method, headers: COOKIE });
 
     expect(response.status).toBe(404);
     expect(response.body).toBe('');
@@ -264,13 +319,13 @@ describe('routing (FR-EDGE-2)', () => {
 
   it('strips /api and keeps the query, method and body', async () => {
     const body = '{"accent":"#123456"}';
-    await edge.send(ADMIN, '/api/admin/portfolio/theme?dry=1&x=%2F', {
+    await gateway.send(ADMIN, '/api/admin/portfolio/theme?dry=1&x=%2F', {
       method: 'PATCH',
       headers: [...COOKIE, 'Content-Type', 'application/json'],
       body,
     });
-    await edge.send(ADMIN, '/api/auth/refresh', { method: 'POST' });
-    await edge.send(PUBLIC_READ, '/public/portfolios/alice/sitemap.xml');
+    await gateway.send(ADMIN, '/api/auth/refresh', { method: 'POST' });
+    await gateway.send(PUBLIC_READ, '/public/portfolios/alice/sitemap.xml');
 
     const [, admin, auth, read] = upstream.requests;
     expect(admin).toMatchObject({
@@ -287,39 +342,33 @@ describe('routing (FR-EDGE-2)', () => {
   });
 
   it('proxies /api/auth/* without an identity subrequest', async () => {
-    await edge.send(ADMIN, '/api/auth/google/start');
+    await gateway.send(ADMIN, '/api/auth/google/start');
     expect(upstream.calls('/auth/resolve')).toHaveLength(0);
     expect(upstream.calls('/auth/google/start')).toHaveLength(1);
   });
 
   it('passes the api response through, Set-Cookie included', async () => {
-    const response = await edge.send(ADMIN, '/api/auth/google/callback?code=c&state=s');
+    const response = await gateway.send(ADMIN, '/api/auth/google/callback?code=c&state=s');
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toBe('/');
     expect(response.headers['set-cookie']).toEqual(SESSION_COOKIES);
   });
 
-  it('serves the admin build, with index.html for a path matching no file', async () => {
-    const index = await edge.send(ADMIN, '/');
-    const deepLink = await edge.send(ADMIN, '/sections/projects');
-    const asset = await edge.send(ADMIN, '/assets/app.js');
-    const write = await edge.send(ADMIN, '/sections/projects', { method: 'POST' });
-
-    expect(index.status).toBe(200);
-    expect(index.body).toContain('<title>admin</title>');
-    expect(deepLink.status).toBe(200);
-    expect(deepLink.body).toBe(index.body);
-    expect(asset.body).toBe('console.log("admin")');
-    expect(write.status).toBe(404);
-    expect(upstream.requests).toHaveLength(0);
+  it('returns what the admin host must hand back untouched: status, Location, Set-Cookie (FR-EDGE-9)', async () => {
+    const response = await gateway.send(ADMIN, '/api/auth/google/callback?code=c&state=s', {
+      headers: ['X-Forwarded-Host', 'admin.openfolio.test'],
+    });
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe('/');
+    expect(response.headers['set-cookie']).toEqual(SESSION_COOKIES);
   });
 });
 
 describe('forwarded headers and request ids (NFR-OPS-4)', () => {
   it('originates a request id when none arrives, or one that is no UUID', async () => {
-    await edge.send(ADMIN, '/api/auth/refresh', { method: 'POST' });
-    await edge.send(ADMIN, '/api/auth/refresh', {
+    await gateway.send(ADMIN, '/api/auth/refresh', { method: 'POST' });
+    await gateway.send(ADMIN, '/api/auth/refresh', {
       method: 'POST',
       headers: ['X-Request-Id', 'not-a-uuid\twith junk'],
     });
@@ -332,7 +381,7 @@ describe('forwarded headers and request ids (NFR-OPS-4)', () => {
 
   it('keeps an inbound UUID, on the subrequest and the proxied request alike', async () => {
     const id = '0b9f6f0e-3c53-4f0c-9d0b-6f1f3f8f2a11';
-    await edge.send(ADMIN, '/api/admin/me', {
+    await gateway.send(ADMIN, '/api/admin/me', {
       headers: [...COOKIE, 'X-Request-Id', id],
     });
 
@@ -342,7 +391,7 @@ describe('forwarded headers and request ids (NFR-OPS-4)', () => {
   });
 
   it('overwrites a client X-Forwarded-For when no proxy is trusted', async () => {
-    await edge.send(PUBLIC_READ, '/public/portfolios/alice', {
+    await gateway.send(PUBLIC_READ, '/public/portfolios/alice', {
       headers: ['X-Forwarded-For', '203.0.113.9', 'X-Forwarded-Proto', 'https'],
     });
 
@@ -351,8 +400,8 @@ describe('forwarded headers and request ids (NFR-OPS-4)', () => {
     expect(read!.headers['x-forwarded-proto']).toBe('http');
   });
 
-  it('believes X-Forwarded-For from a trusted proxy only (Q24)', async () => {
-    const behindProxy = await startEdge(upstream, adminDist, {
+  it('believes X-Forwarded-For from a trusted proxy only (FR-EDGE-10)', async () => {
+    const behindProxy = await startGateway(upstream, {
       trustedProxyCidrs: ['127.0.0.0/8'],
     });
     try {
@@ -369,11 +418,76 @@ describe('forwarded headers and request ids (NFR-OPS-4)', () => {
   });
 });
 
+describe('client address (FR-EDGE-10)', () => {
+  const forwardedFor = async (trusted: string[], header: string) => {
+    const behindProxy = await startGateway(upstream, { trustedProxyCidrs: trusted });
+    try {
+      await behindProxy.send(ADMIN, '/api/auth/refresh', {
+        method: 'POST',
+        headers: ['X-Forwarded-For', header],
+      });
+    } finally {
+      await behindProxy.close();
+    }
+    return upstream.requests.at(-1)!.headers['x-forwarded-for'];
+  };
+
+  it('takes the rightmost address that is not a trusted proxy', async () => {
+    /* The client wrote the first entry itself; the admin host appended the
+       second; a second trusted hop appended the third. */
+    expect(
+      await forwardedFor(
+        ['127.0.0.0/8', '10.0.0.0/8'],
+        '198.51.100.7, 203.0.113.9, 10.1.2.3',
+      ),
+    ).toBe('203.0.113.9');
+  });
+
+  it('uses the peer address when the peer is not trusted, whatever the header says', async () => {
+    expect(await forwardedFor(['10.0.0.0/8'], '203.0.113.9')).toBe('127.0.0.1');
+    expect(await forwardedFor([], '203.0.113.9, 10.1.2.3')).toBe('127.0.0.1');
+  });
+
+  it('limits per forwarded client behind a trusted proxy, per peer otherwise', async () => {
+    const tight = { max: 1, windowMs: 60_000 };
+    const rateLimits = { oauth: tight, auth: tight, publicRead: tight };
+    const refresh = (target: Gateway, client: string) =>
+      target
+        .send(ADMIN, '/api/auth/refresh', {
+          method: 'POST',
+          headers: ['X-Forwarded-For', client],
+        })
+        .then((response) => response.status);
+
+    const trusting = await startGateway(upstream, {
+      rateLimits,
+      trustedProxyCidrs: ['127.0.0.0/8'],
+    });
+    try {
+      expect(await refresh(trusting, '203.0.113.1')).toBe(200);
+      expect(await refresh(trusting, '203.0.113.2')).toBe(200);
+      expect(await refresh(trusting, '203.0.113.1')).toBe(429);
+    } finally {
+      await trusting.close();
+    }
+
+    /* A caller reaching gateway's own hostname directly cannot buy itself a
+       fresh bucket by changing the header. */
+    const direct = await startGateway(upstream, { rateLimits });
+    try {
+      expect(await refresh(direct, '203.0.113.1')).toBe(200);
+      expect(await refresh(direct, '203.0.113.2')).toBe(429);
+    } finally {
+      await direct.close();
+    }
+  });
+});
+
 describe('rate limits (FR-AUTH-16, Q23)', () => {
-  let limited: Edge;
+  let limited: Gateway;
 
   beforeAll(async () => {
-    limited = await startEdge(upstream, adminDist, {
+    limited = await startGateway(upstream, {
       rateLimits: {
         oauth: { max: 2, windowMs: 60_000 },
         auth: { max: 3, windowMs: 60_000 },
@@ -435,7 +549,7 @@ describe('rate limits (FR-AUTH-16, Q23)', () => {
 });
 
 describe('logging (FR-EDGE-7)', () => {
-  it('writes no cookie, token or query string', async () => {
+  it('writes no cookie, token, API key or query string', async () => {
     let logged = '';
     const stream = new Writable({
       write(chunk, _encoding, done) {
@@ -443,7 +557,7 @@ describe('logging (FR-EDGE-7)', () => {
         done();
       },
     });
-    const logging = await startEdge(upstream, adminDist, {}, {
+    const logging = await startGateway(upstream, {}, {
       ...loggerOptions,
       level: 'trace',
       stream,
@@ -453,6 +567,7 @@ describe('logging (FR-EDGE-7)', () => {
         headers: [
           'Cookie', 'of_at=cookie-secret',
           'Authorization', 'Bearer bearer-secret',
+          'X-Api-Key', 'client-key-secret',
         ],
       });
       await logging.send(ADMIN, '/api/auth/google/callback?code=oauth-code-secret');
@@ -462,5 +577,41 @@ describe('logging (FR-EDGE-7)', () => {
 
     expect(logged).toContain('/api/auth/google/callback');
     expect(logged).not.toMatch(/secret|of_at|of_rt|opaque-refresh-token/);
+    expect(logged).not.toContain(API_KEY);
+  });
+
+  it('writes none of them when api cannot be reached', async () => {
+    let logged = '';
+    const stream = new Writable({
+      write(chunk, _encoding, done) {
+        logged += chunk;
+        done();
+      },
+    });
+    const gone = await startUpstream();
+    await gone.close();
+    const logging = await startGateway(gone, {}, {
+      ...loggerOptions,
+      level: 'trace',
+      stream,
+    });
+    try {
+      const headers = ['Cookie', 'of_at=cookie-secret'];
+      const admin = await logging.send(ADMIN, '/api/admin/me', { headers });
+      expect(admin.status).toBe(502);
+      const auth = await logging.send(ADMIN, '/api/auth/refresh', {
+        method: 'POST',
+        headers,
+      });
+      expect(auth.status).toBeGreaterThanOrEqual(500);
+      const read = await logging.send(PUBLIC_READ, '/public/portfolios/alice');
+      expect(read.status).toBeGreaterThanOrEqual(500);
+    } finally {
+      await logging.close();
+    }
+
+    expect(logged).toContain('identity subrequest failed');
+    expect(logged).not.toMatch(/secret|of_at/);
+    expect(logged).not.toContain(API_KEY);
   });
 });

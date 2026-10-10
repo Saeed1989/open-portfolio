@@ -1,7 +1,7 @@
 # Portfolio Generator — `admin` app
 
 Client-rendered React SPA at `admin.openfolio.site`. A tenant edits their draft,
-configures sections and theme, and publishes. Built to static files; `edge`
+configures sections and theme, and publishes. Built to static files; `gateway`
 serves it at `/` on the admin host.
 
 ---
@@ -70,7 +70,7 @@ These hold in every milestone. Breaking one is a defect, whatever the task says.
   its own. Every call goes to `/api/admin/*` or `/api/auth/*` on its own origin.
   (§2.1, §2.6)
 - **No identity in requests.** Never send a portfolio id or user id in a path,
-  query, or body. Scope comes from `edge`. (FR-API-3, FR-TEN-4)
+  query, or body. Scope comes from `gateway`. (FR-API-3, FR-TEN-4)
 - **No cross-app imports.** Nothing from `apps/api` or `apps/portfolio`.
   `packages/registry` is imported only by `src/registry/index.ts`.
 - **Forms come from descriptors.** No component, route, or branch is named after
@@ -85,7 +85,7 @@ These hold in every milestone. Breaking one is a defect, whatever the task says.
 - **One sanitiser allowlist.** Rich-text marks and paste stripping import the
   registry constant. Never restate it. (FR-SEC-PROJ-12)
 - **No dev identity.** No proxy, mock, or fetch wrapper sets an identity
-  header or fakes a session. Identity comes from signing in through `edge`.
+  header or fakes a session. Identity comes from signing in through `gateway`.
   (NFR-OPS-6, FR-AUTH-20)
 
 ## Directory layout
@@ -106,7 +106,8 @@ src/
     transport.ts          fetch, error envelope, If-Match
     types.ts              DTO types — regenerated from /docs/admin
   styles/tokens.css       the only file with a colour value
-vite.config.ts            build and test config — no proxy
+admin-host/api-proxy.ts   the admin host's /api/* rule (FR-EDGE-9)
+vite.config.ts            build, test, and the dev admin host
 ```
 
 ---
@@ -147,7 +148,7 @@ theme references the variables; it does not restate their values.
 ## Commands
 
 ```bash
-npm run dev -w apps/admin          # the app alone, no API
+npm run dev -w apps/admin          # the dev admin host: the app, and /api/* → gateway
 npm run build -w apps/admin        # must pass before any milestone is done;
                                    # fails if the dev key string is in the bundle
 npm run typecheck -w apps/admin
@@ -155,9 +156,9 @@ npm run lint -w apps/admin
 npm run test -w apps/admin         # vitest
 ```
 
-Anything that calls the API runs behind the monorepo's `edge` service, with a
-real sign-in: build, then follow `../edge/README.md`. There is no mock mode
-and no proxy mode.
+Anything that calls the API goes through the dev admin host to the monorepo's
+`gateway` service, with a real sign-in: follow `../gateway/README.md`, then
+`README.md` here. There is no mock mode, and the proxy sets no identity.
 
 ## 1. Think Before Coding
 

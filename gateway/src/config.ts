@@ -1,6 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { isIP } from 'node:net';
-import { join, resolve } from 'node:path';
 
 export interface RateLimit {
   max: number;
@@ -8,15 +7,17 @@ export interface RateLimit {
 }
 
 export interface Config {
-  adminHost: string;
+  /** The hostname of the admin route — `gateway`'s own, not the admin host's. */
+  adminRouteHost: string;
   publicReadHost: string;
-  /** Origin of `api`'s private address, e.g. `http://10.0.0.5:3001`. */
+  /** Origin `api` is reached at, e.g. `http://10.0.0.5:3001`. */
   apiUpstream: string;
-  adminDistDir: string;
+  /** Sent to `api` as `X-Api-Key` on every request (FR-EDGE-4, FR-EDGE-8). */
+  apiKey: string;
   port: number;
   /** Null when a load balancer terminates TLS instead (SRS §10.3 Q24). */
   tls: { cert: Buffer; key: Buffer } | null;
-  /** The only peers `X-Forwarded-For` is believed from. Empty: none. */
+  /** The only peers `X-Forwarded-For` is believed from (FR-EDGE-10). Empty: none. */
   trustedProxyCidrs: string[];
   rateLimits: {
     /** `/api/auth/google/start` and `/callback` (FR-AUTH-16). */
@@ -29,6 +30,7 @@ export interface Config {
 }
 
 const HOSTNAME = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/;
+const BASE64URL = /^[A-Za-z0-9_-]+$/;
 
 function isCidr(value: string): boolean {
   const [address = '', prefix, ...rest] = value.split('/');
@@ -39,7 +41,7 @@ function isCidr(value: string): boolean {
 }
 
 /**
- * Reads and validates every variable `edge` takes (FR-EDGE-6). Throws one
+ * Reads and validates every variable `gateway` takes (FR-EDGE-6). Throws one
  * error naming every problem, so a misconfigured deploy fails at boot and
  * says everything that is wrong with it at once.
  */
@@ -78,10 +80,10 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     ),
   });
 
-  const adminHost = hostname('ADMIN_HOST');
+  const adminRouteHost = hostname('GATEWAY_ADMIN_HOST');
   const publicReadHost = hostname('PUBLIC_READ_HOST');
-  if (adminHost !== '' && adminHost === publicReadHost) {
-    errors.push('ADMIN_HOST and PUBLIC_READ_HOST must differ');
+  if (adminRouteHost !== '' && adminRouteHost === publicReadHost) {
+    errors.push('GATEWAY_ADMIN_HOST and PUBLIC_READ_HOST must differ');
   }
 
   let apiUpstream = required('API_UPSTREAM');
@@ -100,12 +102,13 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     }
   }
 
-  let adminDistDir = required('ADMIN_DIST_DIR');
-  if (adminDistDir !== '') {
-    adminDistDir = resolve(adminDistDir);
-    if (!existsSync(join(adminDistDir, 'index.html'))) {
-      errors.push('ADMIN_DIST_DIR must hold the admin build (no index.html)');
-    }
+  /* FR-EDGE-8. The message names the rule, never the value. */
+  const apiKey = required('GATEWAY_API_KEY');
+  if (
+    apiKey !== '' &&
+    (!BASE64URL.test(apiKey) || Buffer.from(apiKey, 'base64url').length < 32)
+  ) {
+    errors.push('GATEWAY_API_KEY must be base64url of at least 256 bits');
   }
 
   const port = integer('PORT', 1, 65535);
@@ -132,12 +135,6 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
       errors.push(`TRUSTED_PROXY_CIDRS: "${entry}" is not an address or CIDR`);
     }
   }
-  /* Q24 is either/or. Terminating TLS here means clients connect directly,
-     and then nobody's X-Forwarded-For is to be believed. */
-  if (certPath !== '' && trustedProxyCidrs.length > 0) {
-    errors.push('TRUSTED_PROXY_CIDRS must be empty when TLS_* is set');
-  }
-
   const rateLimits = {
     oauth: rateLimit('OAUTH'),
     auth: rateLimit('AUTH'),
@@ -145,14 +142,14 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
   };
 
   if (errors.length > 0) {
-    throw new Error(`Invalid edge configuration:\n- ${errors.join('\n- ')}`);
+    throw new Error(`Invalid gateway configuration:\n- ${errors.join('\n- ')}`);
   }
 
   return {
-    adminHost,
+    adminRouteHost,
     publicReadHost,
     apiUpstream,
-    adminDistDir,
+    apiKey,
     port,
     tls,
     trustedProxyCidrs,

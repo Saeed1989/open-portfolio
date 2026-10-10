@@ -23,6 +23,11 @@ export default async function globalSetup(): Promise<void> {
     previous: randomBytes(32).toString('base64url'),
   });
   process.env.AUTH_JWT_CURRENT_KID = 'current';
+  /* Two entries, as during a rotation (FR-EDGE-8). */
+  process.env.GATEWAY_API_KEYS = JSON.stringify([
+    randomBytes(32).toString('base64url'),
+    randomBytes(32).toString('base64url'),
+  ]);
   process.env.REVALIDATE_MODE = 'noop';
   process.env.STORAGE_MODE = 'local';
 

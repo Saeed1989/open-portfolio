@@ -1,7 +1,7 @@
 # api
 
 NestJS API for the portfolio generator: a public read-only surface, an admin
-surface scoped by the `X-User-Id` header `edge` sets, and an auth surface, in
+surface scoped by the `X-User-Id` header `gateway` sets, and an auth surface, in
 one deployable (SRS §2.1).
 
 **Status: skeleton.** Every route in SRS §7.1 and §7.2 is wired, validated for
@@ -80,14 +80,18 @@ The server refuses to start unless these are set and valid — see
 
 | Variable | |
 |---|---|
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | The Google OAuth client. The redirect URI is the public callback through `edge` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | The Google OAuth client. The redirect URI is the public callback through `gateway` |
 | `AUTH_JWT_KEYS`, `AUTH_JWT_CURRENT_KID` | HS256 signing keys for the access JWT (FR-AUTH-19) |
+| `GATEWAY_API_KEYS` | JSON array of one or two keys `gateway` may present as `X-Api-Key` (FR-EDGE-5, FR-EDGE-8) |
 | `API_BIND_HOST` | Interface to bind; defaults to `127.0.0.1` |
 
-The admin surface trusts `X-User-Id` with no further proof (FR-AUTH-12), so
-the process must stay reachable only from `edge` (FR-EDGE-5). There is no
-dev-login route: locally, send `X-User-Id` with a seeded user id to
-`/admin/*`, as `edge` would.
+`/auth/*` and `/admin/*` answer `401`, with no body, to a request without an
+accepted `X-Api-Key`, before any guard runs, and the admin surface trusts
+`X-User-Id` only on a request that carries one (FR-AUTH-12, FR-EDGE-5).
+Where the process is reachable from is therefore not what protects it.
+`/public/*` asks for no key. There is no dev-login route: locally, send
+`X-Api-Key` and `X-User-Id` with a seeded user id to `/admin/*`, as `gateway`
+would.
 
 ## API documents
 

@@ -6,21 +6,60 @@ form renderer.
 A pure client-rendered React SPA (D0): Vite + React + TypeScript strict +
 Tailwind v4, built to static files. It has no server of its own, holds no
 session, parses no cookie, and makes no server-side call to `api`. Every call
-goes to `/api/admin/*` or `/api/auth/*` on its own origin, where `edge` takes
+goes to `/api/admin/*` or `/api/auth/*` on its own origin, where `gateway` takes
 over.
 
 ## Running it
 
 ```bash
 npm install
-npm run dev          # http://localhost:5174 — the app alone, no API: /dev/fields
-npm run build        # static files in dist/, which `edge` serves
+cp .env.example .env.local
+npm run dev          # http://localhost:5174
+npm run build        # static files in dist/, then the bundle check
 npm run typecheck && npm run lint && npm test
 ```
 
-There is no mock server, no dev proxy and no dev identity. Anything that calls
-the API runs behind `../edge` on the admin host (NFR-OPS-6), with a real
-sign-in: build here, then follow `../edge/README.md`.
+In development the dev server is the admin host (FR-EDGE-6). It serves the app
+and forwards `/api/*` to `GATEWAY_ORIGIN` by the one rule in
+`admin-host/api-proxy.ts` (FR-EDGE-9): method, path, query, body and `Cookie`
+unchanged; status, `Set-Cookie` and `Location` unchanged; no redirect followed,
+nothing cached, no cookie rewritten. There is no mock server and no dev
+identity: the proxy sets neither `X-User-Id` nor `X-Api-Key` and holds no
+secret, and sign-in is real, through `gateway`.
+
+**Plain HTTP on localhost** is the default in `.env.example`, and needs no
+certificate and no hosts entry. Run `api` and `gateway` as `../README.md`
+describes, with `gateway` on `http://gateway.localhost:8080`, and open
+`http://localhost:5174`. `api`'s `GOOGLE_REDIRECT_URI` is the admin host's
+origin, not `gateway`'s — `http://localhost:5174/api/auth/google/callback` —
+and the same URI is registered on the Google OAuth client. `api` has no
+`ADMIN_ORIGIN`: its post-sign-in redirects are relative paths. The session
+cookies are `Secure`, which browsers accept over plain HTTP on `localhost` and
+nowhere else, so this mode works only at that name.
+
+Without `.env.local` at all, the dev server is the app alone with no API,
+which is enough for `/dev/fields`.
+
+**HTTPS on real hostnames** (NFR-OPS-6) is the commented block in
+`.env.example`, on the topology of `../gateway/README.md`. Node then has to
+trust `gateway`'s mkcert certificate, or every `/api/*` request answers `500`.
+Node reads the variable only at startup, so it is set in the shell:
+
+```bash
+NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem" npm run dev
+```
+
+```powershell
+$env:NODE_EXTRA_CA_CERTS = "$(mkcert -CAROOT)\rootCA.pem"; npm run dev
+```
+
+`GOOGLE_REDIRECT_URI` is then
+`https://admin.openfolio.test:5174/api/auth/google/callback`.
+
+`npm run build` ends with `scripts/check-bundle.mjs` (also `npm run
+check:bundle`), which fails if `dist/` holds `X-Api-Key`, `X-User-Id`,
+`gateway`'s address from `GATEWAY_ORIGIN`, or — read from `../gateway/.env`
+when it exists — `api`'s address or the API key.
 
 Routes: `/sections` (the section manager — artboard 01), `/sections/:type`
 (one editor for every
@@ -29,8 +68,9 @@ artboard E1), `/sign-in` (§2.5), and `/dev/fields` (M0's field-states matrix).
 Every route but `/sign-in` and `/dev/fields` is gated on `GET /admin/me`
 (FR-AUTH-7): no portfolio sends the tenant to `/onboarding/slug`, and a
 portfolio sends them away from it. A `401` is refreshed once and retried once
-by `src/api/client.ts`; a refresh that answers `401` lands on `/sign-in`
-(FR-AUTH-20).
+by `src/api/client.ts`; a refresh that answers `401`, or a retry that does,
+lands on `/sign-in?returnTo=<current path>`, and any other refresh failure is
+reported without signing out (FR-AUTH-20).
 Sidebar navigation, the preview and publish are still out of scope.
 
 ## Layout
@@ -51,8 +91,11 @@ Sidebar navigation, the preview and publish are still out of scope.
 | `src/save/` | D2's save machine and the artboard-39 indicator (M1) |
 | `src/api/precondition.ts` | D3, whole (M1) |
 | `dev/` | The bundle guard's test — never imported from `src/` |
+| `src/test/auth-server.ts` | MSW handlers for §7.4, for Vitest only — there is still no mock mode |
+| `admin-host/` | The admin host's `/api/*` proxy rule (FR-EDGE-9) and its test against a stub upstream. The dev server applies it |
+| `e2e/` | Playwright, against the dev topology of `../gateway/README.md`; skipped without `E2E_GOOGLE_EMAIL` and `E2E_GOOGLE_PASSWORD` |
 | `scripts/check-bundle.mjs` | Fails the build if a dev-only value reached the output |
-| `../edge/` | The `edge` routing rules FR-EDGE-6 requires, and the dev topology. `edge` is specified as a small Node.js service (SRS 0.10); what is here is still the earlier nginx stand-in — see §3 |
+| `../gateway/` | The `gateway` routing rules FR-EDGE-6 requires, and the dev topology. `gateway` is specified as a small Node.js service (SRS 0.10); what is here is still the earlier nginx stand-in — see §3 |
 
 The `gap` prop is the publish-readiness marker, orthogonal to the five visual
 states: `'pending'` is the dotted grey publish-only marker shown while
@@ -108,9 +151,9 @@ scope), but FR-CFG-5 cannot be built until it exists.
 well as `X-User-Id`**. §2.6 and FR-AUTH-12 describe the identity header alone,
 and FR-AUTH-12 says in terms that "no signed token, key pair, or shared secret
 takes part". The guard's own comment argues the key proves the caller is
-`edge` — a reasonable defence-in-depth answer to §2.6's admitted network
+`gateway` — a reasonable defence-in-depth answer to §2.6's admitted network
 assumption, but it is not what the SRS says, and D8's brief for the dev edge
-config mentions only `X-User-Id`. `edge/templates/edge.conf.template` sets
+config mentions only `X-User-Id`. `gateway/templates/edge.conf.template` sets
 both, or every `/admin/*` request 401s. Either the SRS gains the key or the
 guard loses it; right now they disagree.
 
@@ -196,15 +239,15 @@ occupies exactly the space the mock draws it in, and the target is out of flow.
 Padding was the first attempt and was wrong — it inflated each chip until a tag
 list stopped flowing inline.
 
-## 3. What `edge` needs in order to serve a static SPA
+## 3. What `gateway` needs in order to serve a static SPA
 
-**First: there was no `edge` configuration in the monorepo at all.** FR-EDGE-6
+**First: there was no `gateway` configuration in the monorepo at all.** FR-EDGE-6
 requires it versioned there and NFR-OPS-5 makes a change to it a change to the
-system, but no routing configuration, no `edge/` directory and no compose file beyond
-`data-service`'s mongo existed. `edge/templates/edge.conf.template` and
-`edge/docker-compose.yml` are new in this milestone, written to FR-EDGE-1..6.
+system, but no routing configuration, no `gateway/` directory and no compose file beyond
+`data-service`'s mongo existed. `gateway/templates/edge.conf.template` and
+`gateway/docker-compose.yml` are new in this milestone, written to FR-EDGE-1..6.
 
-> **Superseded by SRS 0.10.** `edge` is now specified as a small in-house
+> **Superseded by SRS 0.10.** `gateway` is now specified as a small in-house
 > Node.js service (TypeScript, Fastify), not nginx (§2.1, FR-EDGE-6,
 > FR-EDGE-7). The files named in this section are the nginx stand-in written
 > before that change. The routing rules they implement are the ones the
@@ -214,14 +257,14 @@ system, but no routing configuration, no `edge/` directory and no compose file b
 Only one clause of FR-EDGE-2 actually changes. As a concrete diff:
 
 ```diff
- | FR-EDGE-2 | Must | On the admin host, `edge` routes `/api/auth/*` to
+ | FR-EDGE-2 | Must | On the admin host, `gateway` routes `/api/auth/*` to
  `api`'s `/auth/*` without an identity subrequest; `/api/admin/*` to `api`'s
  `/admin/*` with the subrequest of FR-EDGE-3; and every other path to the
 -`admin` Next.js app. No other path on `api` is reachable from any public
-+`admin` app's built static files, served by `edge` from a directory supplied
++`admin` app's built static files, served by `gateway` from a directory supplied
 +by environment variable, with any path that matches no file falling back to
 +`index.html` so that a deep link reaches the client router rather than a 404.
-+`edge` is the only server `admin` has. No other path on `api` is reachable
++`gateway` is the only server `admin` has. No other path on `api` is reachable
 -host: `/public/*` is not routable from the admin host, and neither `/admin/*`
 +from any public host: `/public/*` is not routable from the admin host, and
 -nor `/auth/*` is routable from the wildcard host. |
@@ -241,20 +284,20 @@ Three consequences the SRS does not currently record:
 
 - **The fallback must not outrank the two proxied prefixes.** Longest-prefix
   matching handles this in the stand-in — `/api/admin/` and `/api/auth/` are
-  longer prefixes than `/` — and the `edge` service must keep that order in
+  longer prefixes than `/` — and the `gateway` service must keep that order in
   its own route table, because it is now load-bearing. A misordered rule would serve
   `index.html` for an API call and the failure would look like a JSON parse
   error in the browser.
 - **`index.html` must not be cached, and the hashed assets should be cached
   forever.** With a server app this is the framework's business; with static
-  files behind a fallback it is `edge`'s, and a cached `index.html` makes a
+  files behind a fallback it is `gateway`'s, and a cached `index.html` makes a
   deploy invisible.
 - **The fallback answers 200 for every unknown path on the admin host.** The
   SRS's "no other path on `api` is reachable" still holds — nothing reaches
   `api` — but `/public/foo` on the admin host now returns the SPA rather than a
   404. That is a routing fact worth stating rather than discovering.
 
-`edge/templates/edge.conf.template` also implements, and is the first thing in
+`gateway/templates/edge.conf.template` also implements, and is the first thing in
 the repo to implement: FR-EDGE-1's exact-host matching with `return 444` for an
 unmatched `Host`; FR-EDGE-3's identity subrequest; FR-EDGE-4's unconditional
 `X-User-Id` on **every** proxied location including the unauthenticated ones;
@@ -277,8 +320,8 @@ D8 stub anyway.
 | `/dev/fields` renders every component in every state, light and dark | **Met.** 11 components x 7 states x 2 themes, verified in Chrome and asserted in `DevFields.a11y.test.tsx` |
 | matching the mock | **Cannot be assessed.** The field-states reference `Field System.dc.html` is not in the repo — see §2 |
 | axe reports no violations on `/dev/fields` | **Met.** 0 violations in Chrome across axe's default ruleset (41 rules, 891 colour-contrast nodes passing), and 0 on the WCAG 2.2 `target-size` rule. The suite also runs in CI under jsdom, where `color-contrast` is disabled because jsdom has no layout engine |
-| `GET /admin/me` resolves through `edge` against MSW | **Not verified.** Docker is not installed on this machine, so `edge` was never started. Verified instead against MSW behind `vite preview`: all four seed tenants plus the no-portfolio branch, and every fault mode of §7.2 |
-| `GET /admin/me` resolves through `edge` against a locally running `api` | **Not verified.** Needs Docker (or nginx) *and* MongoDB, neither of which is installed here |
+| `GET /admin/me` resolves through `gateway` against MSW | **Not verified.** Docker is not installed on this machine, so `gateway` was never started. Verified instead against MSW behind `vite preview`: all four seed tenants plus the no-portfolio branch, and every fault mode of §7.2 |
+| `GET /admin/me` resolves through `gateway` against a locally running `api` | **Not verified.** Needs Docker (or nginx) *and* MongoDB, neither of which is installed here |
 | no hex or rgba outside the token file | **One deliberate exception.** `TENANT_ACCENT` in `src/mocks/handlers.ts` — a tenant's accent colour (FR-THM-1) is content this app transports and never styles itself with, so it belongs in the fixture standing in for the database |
 | no section-type name anywhere in `apps/admin` | **Not met literally, and cannot be.** No *component* is named or shaped for a section type, which is what the DO-NOT-BUILD list actually forbids. The names survive in three places, all data or citation: the `SectionType` union in `src/api/dto.ts`, transcribed from the API's own enum — typing it as `string` would weaken the transport types item 5 asks for; the draft fixture and publish-error paths in `src/mocks/handlers.ts`; and comments citing `FR-SEC-*` requirements |
 
@@ -290,17 +333,17 @@ cd data-service && docker compose up -d && npm run seed && npm run start:dev
 
 # Terminal 2 — admin, built the way edge serves it
 cd admin-panel && npm run build          # or build:mock for the MSW path
-cd ../edge && docker compose up
+cd ../gateway && docker compose up
 
 # Then
 curl -i http://admin.openfolio.test:8080/api/admin/me
 ```
 
-Against `api` this exercises the whole chain: `edge` matches the host, issues
+Against `api` this exercises the whole chain: `gateway` matches the host, issues
 the identity subrequest to the D8 stub, receives 204 with `X-User-Id`, overwrites
 any inbound value, adds `X-Api-Key`, and proxies to `api`'s `/admin/me`, which
 resolves alice's portfolio. Point `AUTH_UPSTREAM` at `api` and delete the
-`auth-stub` service when real auth lands — `edge`'s own configuration does not
+`auth-stub` service when real auth lands — `gateway`'s own configuration does not
 change, which is the reason the stub is a service rather than a branch inside
 it.
 
@@ -449,7 +492,7 @@ with the SRS, which is worth separating from the rest.
 | Condition | Status |
 |---|---|
 | `/sections/hero` and `/sections/contact` fully editable and autosaving | **Met.** Verified in Chrome: hero shows conditional required firing (`CTA label *` appears once a type is chosen; the rail reads "Blocking publish 1 — CTA target is required to publish, because another field is set to 'resume'"); contact shows five hideable links; an edit goes `No changes yet → Unsaved changes → Saved 10:17 PM` and the server holds the value |
-| …through `edge` against MSW | **Not verified through `edge`.** Docker and nginx are still absent on this machine (unchanged from M0). Verified against MSW behind `vite preview`, which serves the same built bundle `edge` serves from disk |
+| …through `gateway` against MSW | **Not verified through `gateway`.** Docker and nginx are still absent on this machine (unchanged from M0). Verified against MSW behind `vite preview`, which serves the same built bundle `gateway` serves from disk |
 | No `hero`/`contact` outside `src/registry/`, except tests and fixtures | **Met.** The only two remaining hits were the `SectionType` union in `src/api/dto.ts`, now `string` — see §2 |
 | The fake-descriptor test passes | **Met.** `src/renderer/fake-descriptor.test.tsx` invents two section types that exist nowhere else and asserts they render every kind, get a visibility switch, validate, produce readiness counts, bind gaps, label collapsed rows, and enforce min/max — with no change outside that file |
 | Every save state reachable through the MSW toggles | **Met.** `idle`, `saving`, `saved`, `failed`, `refused`, `stale` all reached in the browser via `save_server_error`, `save_refused`, `save_stale` |
@@ -494,13 +537,13 @@ existing contract is already what a dev proxy needs**:
 > `X-Api-Key` proves the caller is trusted; `X-User-Id` names the tenant. The
 > admin guard reads both and accepts neither alone.
 
-So direct mode presents that pair. It is *what `edge` does, minus the identity
+So direct mode presents that pair. It is *what `gateway` does, minus the identity
 subrequest* — and it needs no change to `api` at all.
 
 Two consequences worth stating plainly:
 
 - **There is no dev-only key any more.** `ADMIN_API_KEY` is `api`'s real admin
-  key, the same secret `edge` holds. A developer's `.env.local` therefore holds
+  key, the same secret `gateway` holds. A developer's `.env.local` therefore holds
   a production-shaped credential, and whoever holds it can act as any tenant on
   whatever database the api points at. `.env.example` says so; point direct
   mode at a local database, never a shared one.
@@ -514,7 +557,7 @@ Two consequences worth stating plainly:
 to take from this section.
 
 FR-AUTH-12 says "no signed token, key pair, or shared secret takes part", and
-NFR-SEC-8 says `edge` setting `X-User-Id` plus `api` being unroutable is "the
+NFR-SEC-8 says `gateway` setting `X-User-Id` plus `api` being unroutable is "the
 whole of what makes the header trustworthy". `api` already deviates from both:
 `ApiKeyGuard` has required `X-Api-Key` since before this task, and the M0
 report records that as an unresolved contradiction with FR-AUTH-12. Direct mode
@@ -524,15 +567,15 @@ What it *does* change is who presents the key:
 
 | | Production (FR-EDGE-4 + FR-EDGE-5) | Direct mode |
 |---|---|---|
-| Who sets `X-User-Id` | `edge`, unconditionally | the Vite dev-server proxy, unconditionally |
+| Who sets `X-User-Id` | `gateway`, unconditionally | the Vite dev-server proxy, unconditionally |
 | Can a client supply it | No — overwritten on every location | No — stripped, then set |
-| Who presents `X-Api-Key` | `edge` | the Vite dev-server proxy |
+| Who presents `X-Api-Key` | `gateway` | the Vite dev-server proxy |
 | Where identity is decided | session resolution at `/auth/resolve` | one environment variable, fixed at dev-server start |
 | Why the hop is trusted | `api` is not publicly routable (FR-EDGE-5) | the developer's own machine |
 
 The one standing recommendation this leaves: **the `X-Api-Key` contradiction
 with FR-AUTH-12 should be resolved in the SRS one way or the other.** Direct
-mode now depends on it, so it is no longer only `edge`'s business. Either
+mode now depends on it, so it is no longer only `gateway`'s business. Either
 FR-AUTH-12 gains the key, or `api` loses it and direct mode needs another
 answer.
 
@@ -540,12 +583,12 @@ answer.
 
 > **NFR-OPS-6 (Should)** — The development environment reproduces the
 > production topology: real hostnames under a subdomain delegated to loopback,
-> a locally-trusted wildcard certificate, and the same `edge` configuration.
+> a locally-trusted wildcard certificate, and the same `gateway` configuration.
 
-**Direct mode does not satisfy this, and is not meant to.** It bypasses `edge`
-entirely, so nothing `edge` owns is exercised:
+**Direct mode does not satisfy this, and is not meant to.** It bypasses `gateway`
+entirely, so nothing `gateway` owns is exercised:
 
-| Exercised by `edge` mode | In direct mode |
+| Exercised by `gateway` mode | In direct mode |
 |---|---|
 | FR-EDGE-1 host matching, `return 444` on an unmatched Host | not exercised — one origin, `localhost:5174` |
 | FR-EDGE-2's three-way split on the admin host | partly — the `/api/admin` rewrite is reproduced; the SPA fallback is Vite's dev server |
@@ -560,18 +603,18 @@ environment:
 
 > **NFR-OPS-6 (amended)** — The development environment reproduces the
 > production topology: real hostnames under a subdomain delegated to loopback,
-> a locally-trusted wildcard certificate, and the same `edge` configuration.
+> a locally-trusted wildcard certificate, and the same `gateway` configuration.
 > A second, faster arrangement may exist for application work — `admin`'s dev
-> server proxying directly to `api` and presenting the same headers `edge`
+> server proxying directly to `api` and presenting the same headers `gateway`
 > presents — provided it reproduces FR-EDGE-4's unconditional identity header.
 > It does not satisfy this requirement, and any change to routing, identity
-> resolution, cookie scoping, or rate limiting must be exercised against `edge`
+> resolution, cookie scoping, or rate limiting must be exercised against `gateway`
 > before it is considered done.
 
 That last clause is the one that matters. The M0 report already records
 FR-EDGE-6's reasoning — "a rule that exists only in production is a rule that
 is never tested" — and direct mode is precisely the thing that makes it easy to
-stop testing them. `ADMIN_DEV_MODE=edge` keeps the `edge` path one environment
+stop testing them. `ADMIN_DEV_MODE=edge` keeps the `gateway` path one environment
 variable away, and the startup banner names which arrangement is running so it
 is never a guess.
 
@@ -599,7 +642,7 @@ unverified. Everything else was exercised.
 
 | Condition | Status |
 |---|---|
-| All three modes start cleanly | **Met.** `mock`, `edge` and `direct` each start and announce themselves |
+| All three modes start cleanly | **Met.** `mock`, `gateway` and `direct` each start and announce themselves |
 | Direct mode fails fast on missing config | **Met.** `ADMIN_DEV_MODE=direct` alone aborts with `needs API_URL, ADMIN_API_KEY, DEV_TENANT (or DEV_USER_ID)` — every missing variable at once |
 | The proxy presents both headers and strips client values | **Met**, against an echo upstream standing in for `api`: `/api/admin/me` arrives as `/admin/me` carrying `X-User-Id: <alice>` and `X-Api-Key: <configured>`, and a request sending **bob's** id plus its own api key arrives carrying **alice's id and the configured key** |
 | `DEV_TENANT=dave` after a restart shows dave | **Met** at the transport level — the proxy injects `5eed00000000000001040001`. Whether dave's *state* then renders is the unverified half |

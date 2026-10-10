@@ -1,14 +1,12 @@
 import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 import request from 'supertest';
 import { SECTION_TYPES } from '@portfolio/registry';
 import { validateDraftContent } from '../src/admin/sections/section-content';
-import { AppModule } from '../src/app.module';
-import { setupApp } from '../src/app.setup';
 import { Portfolio } from '../src/schemas/portfolio.schema';
 import { userId, type TenantName } from '../src/seed/ids';
+import { createApp } from './helpers';
 
 /*
  * Onboarding: slug availability, portfolio creation, and the
@@ -44,12 +42,7 @@ const availability = (user: string, slug: string) =>
     .set(as(user));
 
 beforeAll(async () => {
-  const moduleRef = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
-  app = moduleRef.createNestApplication();
-  setupApp(app);
-  await app.init();
+  app = await createApp();
   portfolios = app.get(getModelToken(Portfolio.name));
 });
 

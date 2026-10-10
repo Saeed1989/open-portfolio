@@ -3,17 +3,18 @@ import { join, relative } from 'node:path';
 import { loadEnv } from 'vite';
 
 /*
- * Nothing secret may reach the bundle.
+ * Nothing that names `gateway`, `api`, or a credential may reach the bundle.
  *
- * Direct mode's safety argument is that identity and the dev key are injected
- * by the dev-server proxy and are never available to client code. That is
- * enforced by two things — the variables are not VITE_-prefixed, and nothing
+ * The app is a plain client that calls `/api/*` on its own origin (D0). The
+ * admin host forwards those calls (FR-EDGE-9), so `gateway`'s address is the
+ * admin host's to know, and `api`'s address and the API key are `gateway`'s.
+ * That is kept by two conventions — no variable is VITE_-prefixed, and nothing
  * under src/ mentions them — and both are conventions a future edit could
  * break silently. This check turns the convention into a build failure.
  *
  * Run after every `vite build`. It reads the same env files the dev server
- * does, so it checks the value that is actually configured on this machine,
- * not a placeholder.
+ * does, and `gateway`'s where there is one, so it checks the values that are
+ * actually configured on this machine, not placeholders.
  */
 
 /* Resolved from the working directory, not from this file's location: `npm
@@ -22,15 +23,11 @@ import { loadEnv } from 'vite';
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
 
-/** Strings that must never appear, whatever the environment holds. */
-const FORBIDDEN_LITERALS = [
-  /* The header name is as good as a confession: nothing in the bundle has any
-     reason to know it. `edge` sets X-Api-Key in production and the dev proxy
-     sets it in direct mode; either way the browser never does, so its presence
-     means transport code learned about something it must not know. */
-  'X-Api-Key',
-  'ADMIN_API_KEY',
-];
+/** Header names that must never appear, in any case, whatever the environment
+ *  holds. Each is as good as a confession: `gateway` sets both on every
+ *  request to `api` (FR-EDGE-4) and the browser never does, so its presence
+ *  means transport code learned about something it must not know. */
+const FORBIDDEN_LITERALS = ['X-Api-Key', 'X-User-Id'];
 
 function walk(dir) {
   const out = [];
@@ -53,14 +50,20 @@ function walk(dir) {
 const TEXTUAL = /\.(js|mjs|cjs|css|html|json|map|txt|svg)$/i;
 
 const env = loadEnv('production', ROOT, '');
-const apiKey = (env.ADMIN_API_KEY ?? '').trim();
-const devUserId = (env.DEV_USER_ID ?? '').trim();
+/* `gateway` sits beside this package, and only it knows where `api` is. */
+const gatewayEnv = loadEnv('production', join(ROOT, '..', 'gateway'), '');
+const hostOf = (origin = '') =>
+  URL.canParse(origin.trim()) ? new URL(origin.trim()).host : '';
 
-const needles = [...FORBIDDEN_LITERALS];
-/* A short key would produce false positives against minified output, and a
-   key that short is not protecting anything either. */
-if (apiKey.length >= 8) needles.push(apiKey);
-if (devUserId.length >= 8) needles.push(devUserId);
+/** Values that must not appear, each with the name it is reported under. */
+const values = [
+  ["gateway's address", hostOf(env.GATEWAY_ORIGIN)],
+  ["api's address", hostOf(gatewayEnv.API_UPSTREAM)],
+  ['GATEWAY_API_KEY', gatewayEnv.GATEWAY_API_KEY],
+]
+  .map(([name, value]) => [name, (value ?? '').trim().toLowerCase()])
+  /* A short value would produce false positives against minified output. */
+  .filter(([, value]) => value.length >= 8);
 
 const files = walk(DIST).filter((file) => TEXTUAL.test(file));
 
@@ -71,31 +74,32 @@ if (files.length === 0) {
 
 const hits = [];
 for (const file of files) {
-  const contents = readFileSync(file, 'utf8');
-  for (const needle of needles) {
-    if (!contents.includes(needle)) continue;
-    const redacted =
-      needle === apiKey
-        ? 'the value of ADMIN_API_KEY'
-        : needle === devUserId
-          ? 'the value of DEV_USER_ID'
-          : `the string "${needle}"`;
-    hits.push(`  ${relative(ROOT, file)} contains ${redacted}`);
+  const contents = readFileSync(file, 'utf8').toLowerCase();
+  for (const literal of FORBIDDEN_LITERALS) {
+    if (contents.includes(literal.toLowerCase())) {
+      hits.push(`  ${relative(ROOT, file)} contains the string "${literal}"`);
+    }
+  }
+  /* Named, never reprinted. */
+  for (const [name, value] of values) {
+    if (contents.includes(value)) {
+      hits.push(`  ${relative(ROOT, file)} contains the value of ${name}`);
+    }
   }
 }
 
 if (hits.length > 0) {
   console.error(
-    'check-bundle: the build leaked development-only values.\n' +
+    'check-bundle: the build leaked values the client must not hold.\n' +
       `${hits.join('\n')}\n\n` +
-      'Direct mode injects identity and the dev key in the Vite proxy, never\n' +
-      'in client code. Something under src/ now references them, or a\n' +
-      'VITE_-prefixed alias was added. Neither may ship.',
+      'The app calls /api/* on its own origin and nothing else. Something\n' +
+      'under src/ now references these, or a VITE_-prefixed alias was added.\n' +
+      'Neither may ship.',
   );
   process.exit(1);
 }
 
 console.log(
-  `check-bundle: ${String(files.length)} files, no development-only values. ` +
-    `Checked ${String(needles.length)} patterns.`,
+  `check-bundle: ${String(files.length)} files, nothing leaked. ` +
+    `Checked ${String(FORBIDDEN_LITERALS.length + values.length)} patterns.`,
 );

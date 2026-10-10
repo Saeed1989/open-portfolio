@@ -34,7 +34,7 @@ type FailureCode = 'auth_failed' | 'account_suspended';
 const random = () => randomBytes(32).toString('base64url');
 
 /**
- * The auth surface (SRS §7.3, §7.4). Paths are without `/api`, which `edge`
+ * The auth surface (SRS §7.3, §7.4). Paths are without `/api`, which `gateway`
  * strips. Every handler writes its own response: redirects, cookies, and
  * `401`s with no body are not what the global filter produces.
  */
@@ -171,7 +171,7 @@ export class AuthController {
 
   @Get('resolve')
   @ApiOperation({
-    summary: 'Identity subrequest target, called by edge (FR-AUTH-11)',
+    summary: 'Identity subrequest target, called by gateway (FR-AUTH-11)',
   })
   @ApiNoContentResponse({ description: '`X-User-Id` carries the user id.' })
   @ApiUnauthorizedResponse({ description: 'No body.' })
