@@ -81,12 +81,11 @@ async function read<T>(response: Response): Promise<T> {
 let refreshing: Promise<void> | null = null;
 
 /**
- * The session is over: the tenant is sent to sign-in, to come back to where
- * they were. The promise never settles, so no caller renders an error on a
- * page that is being left.
+ * The session is over: the tenant is sent to sign-in. The promise never
+ * settles, so no caller renders an error on a page that is being left.
  */
 function sessionEnded(): Promise<never> {
-  goToSignIn(window.location.pathname + window.location.search);
+  goToSignIn();
   return new Promise<never>(() => undefined);
 }
 

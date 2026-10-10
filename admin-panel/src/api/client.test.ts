@@ -103,12 +103,12 @@ test('a retried request that 401s again ends the session, with no second refresh
   await vi.waitFor(() => {
     expect(goToSignIn).toHaveBeenCalledTimes(1);
   });
-  expect(goToSignIn).toHaveBeenCalledWith('/sections/projects?tab=1');
+  expect(goToSignIn).toHaveBeenCalledWith();
   expect(count('GET /api/admin/me')).toBe(2);
   expect(count(`POST ${REFRESH}`)).toBe(1);
 });
 
-test('a refresh that answers 401 sends the tenant to sign-in with returnTo, and no retry', async () => {
+test('a refresh that answers 401 sends the tenant to sign-in, with no returnTo and no retry', async () => {
   browserHolds(TENANTS.dave);
 
   void adminApi.me();
@@ -116,7 +116,7 @@ test('a refresh that answers 401 sends the tenant to sign-in with returnTo, and 
   await vi.waitFor(() => {
     expect(goToSignIn).toHaveBeenCalledTimes(1);
   });
-  expect(goToSignIn).toHaveBeenCalledWith('/sections/projects?tab=1');
+  expect(goToSignIn).toHaveBeenCalledWith();
   expect(count('GET /api/admin/me')).toBe(1);
   expect(count(`POST ${REFRESH}`)).toBe(1);
 });

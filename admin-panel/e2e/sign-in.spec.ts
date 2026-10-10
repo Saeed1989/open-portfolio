@@ -23,9 +23,9 @@ test('sign-in round trip, refresh on an expired access JWT, and sign-out', async
   page,
   context,
 }) => {
-  /* Fresh browser: /me 401 → refresh 401 → sign-in, carrying where we were. */
+  /* Fresh browser: /me 401 → refresh 401 → sign-in. */
   await page.goto('/sections');
-  await expect(page).toHaveURL('/sign-in?returnTo=%2Fsections');
+  await expect(page).toHaveURL('/sign-in');
 
   await page.getByRole('link', { name: 'Sign in with Google' }).click();
   await page.getByLabel('Email or phone').fill(email ?? '');
@@ -68,5 +68,5 @@ test('sign-in round trip, refresh on an expired access JWT, and sign-out', async
   await expect(page).toHaveURL('/sign-in');
 
   await page.goto('/sections');
-  await expect(page).toHaveURL('/sign-in?returnTo=%2Fsections');
+  await expect(page).toHaveURL('/sign-in');
 });

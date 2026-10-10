@@ -19,15 +19,9 @@ test('the link is a plain navigation to the start endpoint', () => {
   expect(screen.queryByRole('alert')).toBeNull();
 });
 
-test('a safe returnTo is passed on', () => {
+test('a returnTo in the query is not passed on (open question 28)', () => {
   expect(
     renderAt('/sign-in?returnTo=%2Fsections%2Fprojects').getAttribute('href'),
-  ).toBe('/api/auth/google/start?returnTo=%2Fsections%2Fprojects');
-});
-
-test('an unsafe returnTo is dropped', () => {
-  expect(
-    renderAt('/sign-in?returnTo=%2F%2Fevil.com').getAttribute('href'),
   ).toBe('/api/auth/google/start');
 });
 

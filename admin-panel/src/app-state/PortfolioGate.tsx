@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router';
+import { Button } from '../ui/primitives';
 import { DASHBOARD_PATH, ONBOARDING_PATH, useMe } from './me';
 
 /**
@@ -15,7 +16,16 @@ export function PortfolioGate({ children }: { children: ReactNode }) {
   if (me.isError) {
     return (
       <main className="p-8 font-sans text-[13px] text-danger" role="alert">
-        Could not load your account. {me.error.message}
+        <p className="m-0 mb-[10px]">
+          Could not load your account. {me.error.message}
+        </p>
+        <Button
+          onClick={() => {
+            void me.refetch();
+          }}
+        >
+          Retry
+        </Button>
       </main>
     );
   }

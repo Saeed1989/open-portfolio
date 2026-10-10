@@ -69,8 +69,8 @@ Every route but `/sign-in` and `/dev/fields` is gated on `GET /admin/me`
 (FR-AUTH-7): no portfolio sends the tenant to `/onboarding/slug`, and a
 portfolio sends them away from it. A `401` is refreshed once and retried once
 by `src/api/client.ts`; a refresh that answers `401`, or a retry that does,
-lands on `/sign-in?returnTo=<current path>`, and any other refresh failure is
-reported without signing out (FR-AUTH-20).
+lands on `/sign-in`, with no `returnTo` (open question 28), and any other
+failure is reported with a retry, without signing out (FR-AUTH-20).
 Sidebar navigation, the preview and publish are still out of scope.
 
 ## Layout

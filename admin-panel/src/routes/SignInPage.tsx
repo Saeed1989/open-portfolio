@@ -1,5 +1,4 @@
 import { useSearchParams } from 'react-router';
-import { safeReturnTo } from '../auth/navigation';
 import { Pill } from '../ui/primitives';
 
 interface Failure {
@@ -37,7 +36,6 @@ export function SignInPage() {
   const [params] = useSearchParams();
   const error = params.get('error');
   const failure = error === null ? undefined : (FAILURES[error] ?? AUTH_FAILED);
-  const returnTo = safeReturnTo(params.get('returnTo'));
 
   return (
     <main className="mx-auto flex min-h-screen max-w-[520px] flex-col justify-center gap-[22px] p-[32px]">
@@ -62,11 +60,7 @@ export function SignInPage() {
         </div>
       )}
       <a
-        href={
-          returnTo === null
-            ? START
-            : `${START}?returnTo=${encodeURIComponent(returnTo)}`
-        }
+        href={START}
         className="inline-flex items-center justify-center rounded-field border border-line-strong bg-surface px-[14px] py-[11px] font-sans text-[13px] font-medium leading-[1.2] text-ink no-underline hover:border-ink3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         Sign in with Google
