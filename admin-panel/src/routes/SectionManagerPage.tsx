@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { adminApi } from '../api/client';
 import { AdminError } from '../api/errors';
 import type { AdminSection } from '../api/dto';
+import { SignOutControls } from '../auth/SignOutControls';
 import {
   DESCRIPTORS,
   readiness,
@@ -251,6 +252,7 @@ export function SectionManagerPage() {
             </>
           ) : null}
         </div>
+        <SignOutControls />
       </header>
 
       <main className="flex flex-col gap-[16px] p-[20px]">
