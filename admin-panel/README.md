@@ -13,47 +13,25 @@ over.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5174 — no API, no mocks
-npm run build        # static files in dist/ — no mock worker in this bundle
-npm run build:mock   # same, plus the MSW worker (VITE_MOCKS=on)
+npm run dev          # http://localhost:5174 — the app alone, no API: /dev/fields
+npm run build        # static files in dist/, which `edge` serves
 npm run typecheck && npm run lint && npm test
 ```
 
-How the dev server reaches `api` is chosen by `ADMIN_DEV_MODE` — `mock`
-(default, MSW in the browser), `direct` (proxy straight to `api`, presenting
-the same `X-Api-Key` and `X-User-Id` that `edge` does, so it needs no change to
-`api`) or `edge` (no proxy; serve the build through `../edge`). Copy
-`.env.example` to `.env.local`. Nothing in it is `VITE_`-prefixed, so none of it
-can reach the bundle; `npm run build` fails if any of it does.
+There is no mock server, no dev proxy and no dev identity. Anything that calls
+the API runs behind `../edge` on the admin host (NFR-OPS-6), with a real
+sign-in: build here, then follow `../edge/README.md`.
 
 Routes: `/sections` (the section manager — artboard 01), `/sections/:type`
 (one editor for every
 section type the registry declares), `/onboarding/slug` (the claim screen —
-artboard E1), and `/dev/fields` (M0's field-states matrix). Every route but
-`/dev/fields` is gated on `GET /admin/me` (FR-AUTH-7): no portfolio sends the
-tenant to `/onboarding/slug`, and a portfolio sends them away from it. In mock
-mode, `window.__mocks.set({ tenant: 'no-portfolio' })` and a reload reach it.
+artboard E1), `/sign-in` (§2.5), and `/dev/fields` (M0's field-states matrix).
+Every route but `/sign-in` and `/dev/fields` is gated on `GET /admin/me`
+(FR-AUTH-7): no portfolio sends the tenant to `/onboarding/slug`, and a
+portfolio sends them away from it. A `401` is refreshed once and retried once
+by `src/api/client.ts`; a refresh that answers `401` lands on `/sign-in`
+(FR-AUTH-20).
 Sidebar navigation, the preview and publish are still out of scope.
-
-Playwright drives the built mock bundle:
-
-```bash
-npm run test:e2e
-```
-
-Through `edge`, which is what every environment actually does:
-
-```bash
-npm run build:mock                       # or `npm run build` for a live api
-cd ../edge && docker compose up          # http://admin.openfolio.test:8080
-```
-
-Hosts entries the dev topology expects
-(`C:\Windows\System32\drivers\etc\hosts`):
-
-```
-127.0.0.1  openfolio.test admin.openfolio.test alice.openfolio.test
-```
 
 ## Layout
 
@@ -66,13 +44,13 @@ Hosts entries the dev topology expects
 | `src/routes/field-specs.tsx` | The matrix as data — eleven components x seven states |
 | `src/api/dto.ts` | Hand-written wire types, in one file, ready to be regenerated |
 | `src/api/errors.ts` | The §7.2 error model as one closed set |
-| `src/mocks/` | MSW over the four seed tenants, with runtime-switchable faults |
+| `src/api/client.ts` | The one API client, with FR-AUTH-20's refresh-and-retry |
+| `src/auth/` | The sign-in navigation and the sign-out controls |
 | `src/registry/` | The only place the section registry is reached (M1) |
 | `src/renderer/` | Descriptor to form: the kind→component table, gaps, item labels (M1) |
 | `src/save/` | D2's save machine and the artboard-39 indicator (M1) |
 | `src/api/precondition.ts` | D3, whole (M1) |
-| `e2e/` | Playwright: autosave, 5xx retry, 409 (M1) |
-| `dev/` | Dev-server only — modes, the seed-tenant table, never imported from `src/` |
+| `dev/` | The bundle guard's test — never imported from `src/` |
 | `scripts/check-bundle.mjs` | Fails the build if a dev-only value reached the output |
 | `../edge/` | The `edge` routing rules FR-EDGE-6 requires, and the dev topology. `edge` is specified as a small Node.js service (SRS 0.10); what is here is still the earlier nginx stand-in — see §3 |
 
@@ -495,6 +473,10 @@ the client's version. Re-running after a reload gives `refused`.
 ---
 
 # Report — dev-only direct mode
+
+> **Removed.** Direct mode, its Vite proxy, and the seed-tenant table were
+> deleted when real sign-in was wired (SRS v0.10 §2.5, §2.6, FR-AUTH-20). This
+> report is kept as the record of why it existed.
 
 Required by the task. **`spec/srs.md` is not edited by any of this, and neither
 is `data-service`.**

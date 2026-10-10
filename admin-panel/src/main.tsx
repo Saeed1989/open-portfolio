@@ -16,25 +16,11 @@ import './tokens/tokens.css';
 
 applyTheme(storedTheme());
 
-async function start(): Promise<void> {
-  /* Opt-in, never default — see src/mocks/browser.ts.
-     With VITE_MOCKS unset, Vite replaces this with `undefined === 'on'` at
-     build time, so the branch is statically dead and the dynamic import below
-     is dropped rather than shipped as an unreachable chunk. `npm run
-     build:mock` produces the one bundle that carries the worker. */
-  if (import.meta.env.VITE_MOCKS === 'on') {
-    const { startMocks } = await import('./mocks/browser');
-    await startMocks();
-  }
+const root = document.getElementById('root');
+if (!root) throw new Error('#root is missing from index.html');
 
-  const root = document.getElementById('root');
-  if (!root) throw new Error('#root is missing from index.html');
-
-  createRoot(root).render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  );
-}
-
-void start();
+createRoot(root).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

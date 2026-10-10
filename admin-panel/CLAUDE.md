@@ -84,8 +84,9 @@ These hold in every milestone. Breaking one is a defect, whatever the task says.
   a component. (FR-REG-9)
 - **One sanitiser allowlist.** Rich-text marks and paste stripping import the
   registry constant. Never restate it. (FR-SEC-PROJ-12)
-- **Dev identity stays out of `src/`.** The dev API key and user id are read by
-  `vite.config.ts` only, from env vars without the `VITE_` prefix.
+- **No dev identity.** No proxy, mock, or fetch wrapper sets an identity
+  header or fakes a session. Identity comes from signing in through `edge`.
+  (NFR-OPS-6, FR-AUTH-20)
 
 ## Directory layout
 
@@ -104,10 +105,8 @@ src/
   api/
     transport.ts          fetch, error envelope, If-Match
     types.ts              DTO types — regenerated from /docs/admin
-  mocks/                  MSW handlers over the four seed tenants
   styles/tokens.css       the only file with a colour value
-vite.config.ts            dev proxy and identity injection (direct mode)
-dev/tenants.ts            DEV_TENANT → seed user id
+vite.config.ts            build and test config — no proxy
 ```
 
 ---
@@ -148,23 +147,17 @@ theme references the variables; it does not restate their values.
 ## Commands
 
 ```bash
-npm run dev -w apps/admin          # ADMIN_DEV_MODE=mock | direct | edge
+npm run dev -w apps/admin          # the app alone, no API
 npm run build -w apps/admin        # must pass before any milestone is done;
                                    # fails if the dev key string is in the bundle
 npm run typecheck -w apps/admin
 npm run lint -w apps/admin
 npm run test -w apps/admin         # vitest
-npm run e2e -w apps/admin          # playwright
 ```
 
-Dev modes:
-
-- `mock` — MSW over the seed tenants. Default. No api needed.
-- `direct` — Vite proxy to `API_URL`, injecting `X-User-Id` and
-  `X-Dev-Api-Key`. Pick the tenant with `DEV_TENANT=alice|bob|carol|dave`,
-  then restart.
-- `edge` — behind the monorepo's `edge` service. Run this before merging anything
-  that touches requests; `direct` does not exercise `edge`'s routing rules.
+Anything that calls the API runs behind the monorepo's `edge` service, with a
+real sign-in: build, then follow `../edge/README.md`. There is no mock mode
+and no proxy mode.
 
 ## 1. Think Before Coding
 

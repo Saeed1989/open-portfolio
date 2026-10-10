@@ -10,6 +10,7 @@ import type { Me } from '../api/dto';
 import { AdminError } from '../api/errors';
 import { isWellFormedSlug, normaliseSlug, SLUG_SUFFIX } from '../api/slug';
 import { DASHBOARD_PATH, ME_QUERY_KEY, useMe } from '../app-state/me';
+import { SignOutControls } from '../auth/SignOutControls';
 import { SlugField } from '../fields/SlugField';
 import { TextInput } from '../fields/TextInput';
 import { Button, Card, Pill } from '../ui/primitives';
@@ -189,6 +190,9 @@ export function OnboardingSlugPage() {
 
   return (
     <main className="mx-auto flex max-w-[720px] flex-col gap-[17px] p-[32px]">
+      <div className="flex justify-end">
+        <SignOutControls />
+      </div>
       <div>
         <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-ink3">
           Signed in as {me.email} · step 1 of 1

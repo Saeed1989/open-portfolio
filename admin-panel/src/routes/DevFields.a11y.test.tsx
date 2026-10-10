@@ -15,8 +15,8 @@ import { DevFields } from './DevFields';
  * and accessible names.
  */
 
-/** Renders and lets the one mount-time fetch settle, so no state update
- *  lands outside `act`. */
+/** Renders and lets mount effects settle, so no state update lands outside
+ *  `act`. */
 async function renderPage() {
   const view = render(<DevFields />);
   await act(async () => {

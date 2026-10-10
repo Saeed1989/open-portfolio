@@ -1,8 +1,6 @@
 /*
- * jsdom has no fetch and no service worker, so the mock server does not run
- * here. The one call /dev/fields makes on mount is stubbed to a network
- * failure, which is a state the page is required to render anyway — and it
- * keeps the a11y suite measuring the matrix rather than the transport.
+ * No test reaches a server. `fetch` fails as a network error unless a test
+ * stubs its own.
  */
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
