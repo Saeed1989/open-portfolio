@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { PublicModule } from './public/public.module';
+import { TransportModule } from './transport/transport.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PublicModule } from './public/public.module';
         uri: config.getOrThrow<string>('MONGODB_URI'),
       }),
     }),
+    TransportModule,
     PublicModule,
     AdminModule,
     AuthModule,

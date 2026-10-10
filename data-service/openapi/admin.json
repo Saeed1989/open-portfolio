@@ -9,7 +9,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -44,7 +44,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -90,7 +90,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -139,7 +139,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -174,7 +174,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -219,7 +219,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -264,7 +264,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -309,7 +309,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -344,7 +344,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -433,7 +433,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -503,7 +503,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -580,7 +580,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -640,7 +640,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -685,7 +685,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -722,7 +722,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -760,7 +760,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -805,7 +805,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -850,7 +850,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -907,7 +907,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -949,7 +949,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -991,7 +991,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1026,7 +1026,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1054,7 +1054,7 @@
           {
             "name": "X-User-Id",
             "in": "header",
-            "description": "User id injected by edge proxy after session resolution. Set manually in local dev only.",
+            "description": "User id injected by gateway after session resolution. Set manually in local dev only.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1087,7 +1087,7 @@
   },
   "info": {
     "title": "Portfolio API — admin",
-    "description": "Scoped by the X-User-Id header edge sets. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
+    "description": "Scoped by the X-User-Id header gateway sets. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
     "version": "0.1.0",
     "contact": {}
   },

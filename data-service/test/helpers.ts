@@ -2,12 +2,40 @@ import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { setupApp } from '../src/app.setup';
+import { GATEWAY_KEYS } from '../src/transport/gateway-key.config';
 
-export async function createApp(): Promise<INestApplication> {
-  const moduleRef = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
+/** The keys the suite's `api` accepts, minted in global-setup (FR-EDGE-8). */
+export const gatewayKeys = (): string[] =>
+  JSON.parse(process.env.GATEWAY_API_KEYS!) as string[];
+
+/**
+ * By default the app sits behind a stand-in for `gateway`, which attaches
+ * the key to a request that carries none (FR-EDGE-4), so a spec about a
+ * surface need not repeat it. `behindGateway: false` is `api` at its own
+ * address, where a request carries only what the test sent.
+ */
+export async function createApp(
+  options: { behindGateway?: boolean; accepts?: readonly string[] } = {},
+): Promise<INestApplication> {
+  const builder = Test.createTestingModule({ imports: [AppModule] });
+  if (options.accepts) {
+    builder.overrideProvider(GATEWAY_KEYS).useValue(options.accepts);
+  }
+  const moduleRef = await builder.compile();
   const app = moduleRef.createNestApplication();
+  if (options.behindGateway ?? true) {
+    const [key] = gatewayKeys();
+    app.use(
+      (
+        request: { headers: Record<string, unknown> },
+        _response: unknown,
+        next: () => void,
+      ) => {
+        request.headers['x-api-key'] ??= key;
+        next();
+      },
+    );
+  }
   setupApp(app);
   await app.init();
   return app;

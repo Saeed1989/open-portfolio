@@ -24,7 +24,12 @@ const zones = [
   { target: './src/auth', from: './src/public' },
   { target: './src/auth', from: './src/admin' },
   {
-    target: ['./src/schemas', './src/common', './src/external'],
+    target: [
+      './src/schemas',
+      './src/common',
+      './src/external',
+      './src/transport',
+    ],
     from: './src/auth',
   },
 ].map((zone) => ({

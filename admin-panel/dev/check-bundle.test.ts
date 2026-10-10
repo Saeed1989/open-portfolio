@@ -17,26 +17,36 @@ import { afterEach, describe, expect, test } from 'vitest';
  */
 
 const SCRIPT = join(process.cwd(), 'scripts', 'check-bundle.mjs');
-const KEY = 'a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5';
-const USER_ID = '5eed00000000000001040001';
+const KEY = 'a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5a6b7c8d9e0f';
+const GATEWAY_ORIGIN = 'http://gateway.localhost:8080';
+const API_UPSTREAM = 'http://10.20.30.40:3001';
 
 const made: string[] = [];
 
-function sandbox(files: Record<string, string>, env: Record<string, string>) {
-  const root = mkdtempSync(join(tmpdir(), 'bundle-guard-'));
-  made.push(root);
+const dotenv = (env: Record<string, string>) =>
+  Object.entries(env)
+    .map(([k, v]) => `${k}=${v}`)
+    .join('\n');
+
+/** A package directory with a `dist/` and its own `.env.local`, and
+ *  `gateway`'s `.env` beside it: the script reads its env the way the dev
+ *  server does, from files in the directory it is pointed at, and `gateway`'s
+ *  from the directory next door. */
+function sandbox(
+  files: Record<string, string>,
+  env: Record<string, string>,
+  gatewayEnv: Record<string, string> = {},
+) {
+  const parent = mkdtempSync(join(tmpdir(), 'bundle-guard-'));
+  made.push(parent);
+  const root = join(parent, 'admin-panel');
   mkdirSync(join(root, 'dist', 'assets'), { recursive: true });
   for (const [name, contents] of Object.entries(files)) {
     writeFileSync(join(root, 'dist', name), contents);
   }
-  /* The script reads its env the way the dev server does, from files in the
-     directory it is pointed at. */
-  writeFileSync(
-    join(root, '.env.local'),
-    Object.entries(env)
-      .map(([k, v]) => `${k}=${v}`)
-      .join('\n'),
-  );
+  writeFileSync(join(root, '.env.local'), dotenv(env));
+  mkdirSync(join(parent, 'gateway'));
+  writeFileSync(join(parent, 'gateway', '.env'), dotenv(gatewayEnv));
   return root;
 }
 
@@ -46,8 +56,9 @@ function run(root: string): string | null {
      process.env over the .env files, so an empty string here would shadow the
      sandbox's value and the guard would find nothing to complain about. */
   const env = { ...process.env };
-  delete env.ADMIN_API_KEY;
-  delete env.DEV_USER_ID;
+  delete env.GATEWAY_ORIGIN;
+  delete env.API_UPSTREAM;
+  delete env.GATEWAY_API_KEY;
 
   try {
     execFileSync(process.execPath, [SCRIPT], {
@@ -74,35 +85,48 @@ afterEach(() => {
 const SPAWN_TIMEOUT = 30_000;
 
 describe('check-bundle', () => {
-  test('fails on a bundle carrying the admin key', () => {
+  test("fails on a bundle carrying gateway's address", () => {
+    const root = sandbox(
+      { 'assets/index-abc.js': `fetch("${GATEWAY_ORIGIN}/api/admin/me")` },
+      { GATEWAY_ORIGIN },
+    );
+    expect(run(root)).toContain("the value of gateway's address");
+  }, SPAWN_TIMEOUT);
+
+  test("fails on a bundle carrying api's address", () => {
+    const root = sandbox(
+      { 'assets/index-abc.js': `fetch("${API_UPSTREAM}/admin/me")` },
+      {},
+      { API_UPSTREAM },
+    );
+    expect(run(root)).toContain("the value of api's address");
+  }, SPAWN_TIMEOUT);
+
+  test('fails on a bundle carrying the API key, without reprinting it', () => {
     const root = sandbox(
       { 'assets/index-abc.js': `const k="${KEY}";export default k;` },
-      { ADMIN_API_KEY: KEY },
+      {},
+      { GATEWAY_API_KEY: KEY },
     );
     const output = run(root);
-    expect(output).not.toBeNull();
     expect(output).toContain('leaked');
     /* And it does not reprint the secret while complaining about it. */
     expect(output).not.toContain(KEY);
   }, SPAWN_TIMEOUT);
 
-  test('fails on the header name alone, with no key configured', () => {
-    /* The name is as good as a confession: nothing in the bundle has any
-       reason to know it. */
-    const root = sandbox(
-      { 'assets/index-abc.js': `fetch(u,{headers:{"X-Api-Key":k}})` },
-      {},
-    );
-    expect(run(root)).toContain('X-Api-Key');
-  }, SPAWN_TIMEOUT);
-
-  test('fails on a leaked DEV_USER_ID', () => {
-    const root = sandbox(
-      { 'assets/index-abc.js': `const tenant="${USER_ID}";` },
-      { DEV_USER_ID: USER_ID },
-    );
-    expect(run(root)).not.toBeNull();
-  }, SPAWN_TIMEOUT);
+  test.each(['X-Api-Key', 'x-user-id'])(
+    'fails on the header name %s alone, with nothing configured',
+    (header) => {
+      /* The name is as good as a confession: nothing in the bundle has any
+         reason to know it. */
+      const root = sandbox(
+        { 'assets/index-abc.js': `fetch(u,{headers:{"${header}":k}})` },
+        {},
+      );
+      expect(run(root)).toContain('leaked');
+    },
+    SPAWN_TIMEOUT,
+  );
 
   test('passes a clean bundle', () => {
     const root = sandbox(
@@ -110,7 +134,8 @@ describe('check-bundle', () => {
         'assets/index-abc.js': 'export const app=()=>fetch("/api/admin/me");',
         'index.html': '<!doctype html><div id="root"></div>',
       },
-      { ADMIN_API_KEY: KEY },
+      { GATEWAY_ORIGIN },
+      { API_UPSTREAM, GATEWAY_API_KEY: KEY },
     );
     expect(run(root)).toBeNull();
   }, SPAWN_TIMEOUT);
@@ -123,12 +148,11 @@ describe('check-bundle', () => {
     expect(run(root)).toContain('no build output');
   }, SPAWN_TIMEOUT);
 
-  test('ignores a key too short to be meaningful', () => {
-    /* A three-character key would match minified output everywhere, and is
-       not protecting anything either. */
+  test('ignores a value too short to be meaningful', () => {
+    /* A three-character hostname would match minified output everywhere. */
     const root = sandbox(
       { 'assets/index-abc.js': 'const a="abc";' },
-      { ADMIN_API_KEY: 'abc' },
+      { GATEWAY_ORIGIN: 'http://abc' },
     );
     expect(run(root)).toBeNull();
   }, SPAWN_TIMEOUT);

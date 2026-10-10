@@ -32,11 +32,12 @@ export interface AdminRequest extends IncomingMessage, Writable<TenantScope> {}
 type Writable<T> = { -readonly [K in keyof T]: T[K] };
 
 /**
- * An admin request carries one identity input, the `X-User-Id` header `edge`
- * sets from the identity subrequest and overwrites on every request
- * (FR-AUTH-12, FR-EDGE-4, FR-TEN-4). It is trustworthy only because `api` is
- * not publicly routable (FR-EDGE-5). An absent, empty or malformed value is
- * rejected.
+ * An admin request carries one identity input, the `X-User-Id` header
+ * `gateway` sets from the identity subrequest and overwrites on every request
+ * (FR-AUTH-12, FR-EDGE-4, FR-TEN-4). It is trustworthy only because the
+ * request has already shown the API key `gateway` alone holds: one without it
+ * is answered before this guard runs (FR-EDGE-5). An absent, empty or
+ * malformed value is rejected.
  *
  * No cookie is parsed, no token is verified and no session is looked up — the
  * auth module already resolved the session (SRS §2.6). Having accepted the

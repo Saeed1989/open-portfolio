@@ -20,7 +20,7 @@
 import { STALE_WRITE_CODE } from './precondition';
 
 export type AdminErrorKind =
-  /** No session, or one that failed to resolve. `edge` answers this
+  /** No session, or one that failed to resolve. `gateway` answers this
    *  before the admin surface is reached (FR-EDGE-3, FR-AUTH-11). */
   | 'unauthorized'
   /** The tenant already has a portfolio. Takes precedence over every slug
@@ -151,7 +151,7 @@ export async function parseError(response: Response): Promise<AdminError> {
     body = await response.json();
   } catch {
     /* An empty or non-JSON body is normal: `/auth/resolve` answers 401 with
-       no body at all (§7.3), and `edge` propagates it unchanged. */
+       no body at all (§7.3), and `gateway` propagates it unchanged. */
   }
 
   const specified = isRecord(body)

@@ -3,7 +3,7 @@ import { parse, serialize } from 'cookie';
 
 /*
  * The three cookies of the auth surface. Paths are the browser's, so they
- * carry the `/api` prefix `edge` strips before a request reaches this
+ * carry the `/api` prefix `gateway` strips before a request reaches this
  * service (§7.4). None carries `Domain`: all are host-only (FR-AUTH-3).
  */
 export const ACCESS_COOKIE = { name: 'of_at', path: '/api' } as const;

@@ -1,4 +1,3 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import {
   createServer,
   request,
@@ -6,16 +5,17 @@ import {
   type OutgoingHttpHeaders,
 } from 'node:http';
 import { connect, type AddressInfo } from 'node:net';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import type { FastifyServerOptions } from 'fastify';
 import { buildApp } from '../src/app.js';
 import type { Config } from '../src/config.js';
 
-export const ADMIN = 'admin.openfolio.test';
+/** `gateway`'s own hostname, which carries the admin route (FR-EDGE-1). */
+export const ADMIN = 'gateway.openfolio.test';
 export const PUBLIC_READ = 'api.openfolio.test';
 export const ALICE = '5eed00000000000001010001';
+/** 32 bytes, base64url — the shape FR-EDGE-8 requires. */
+export const API_KEY = 'gateway-test-key-0123456789abcdefghijklmnop';
 
 export const SESSION_COOKIES = [
   'of_at=header.payload.signature; Max-Age=900; Path=/api; HttpOnly; Secure; SameSite=Lax',
@@ -92,29 +92,19 @@ export async function startUpstream() {
 
 export type Upstream = Awaited<ReturnType<typeof startUpstream>>;
 
-/** A stand-in for the admin build: an index and one hashed asset. */
-export function makeAdminDist(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'edge-admin-dist-'));
-  mkdirSync(join(dir, 'assets'));
-  writeFileSync(join(dir, 'index.html'), '<!doctype html><title>admin</title>');
-  writeFileSync(join(dir, 'assets', 'app.js'), 'console.log("admin")');
-  return dir;
-}
-
 const UNLIMITED = { max: 1_000_000, windowMs: 60_000 };
 
-export async function startEdge(
+export async function startGateway(
   upstream: Upstream,
-  adminDistDir: string,
   overrides: Partial<Config> = {},
   logger: FastifyServerOptions['logger'] = false,
 ) {
   const app = await buildApp(
     {
-      adminHost: ADMIN,
+      adminRouteHost: ADMIN,
       publicReadHost: PUBLIC_READ,
       apiUpstream: upstream.url,
-      adminDistDir,
+      apiKey: API_KEY,
       port: 0,
       tls: null,
       trustedProxyCidrs: [],
@@ -182,4 +172,4 @@ export async function startEdge(
   };
 }
 
-export type Edge = Awaited<ReturnType<typeof startEdge>>;
+export type Gateway = Awaited<ReturnType<typeof startGateway>>;

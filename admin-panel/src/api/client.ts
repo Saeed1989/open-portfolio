@@ -22,7 +22,7 @@ import { preconditionHeaders } from './precondition';
  * else this app serves — which is exactly why `credentials: 'same-origin'` is
  * enough, no token is held in JS, and neither cookie is ever read here.
  *
- * No identity is sent. `X-User-Id` is `edge`'s to set, unconditionally, on
+ * No identity is sent. `X-User-Id` is `gateway`'s to set, unconditionally, on
  * every location it proxies (FR-EDGE-4); a value from here would be
  * overwritten, and sending one would suggest it were trusted.
  */
@@ -78,27 +78,31 @@ async function read<T>(response: Response): Promise<T> {
 /** The one refresh in flight on this page, shared by every 401 that arrives
  *  while it is (FR-AUTH-20). Within the page only — tabs do not coordinate
  *  (open question 17). */
-let refreshing: Promise<boolean> | null = null;
+let refreshing: Promise<void> | null = null;
 
 /**
- * `POST /api/auth/refresh` (FR-AUTH-18). Resolves true when the cookies were
+ * The session is over: the tenant is sent to sign-in. The promise never
+ * settles, so no caller renders an error on a page that is being left.
+ */
+function sessionEnded(): Promise<never> {
+  goToSignIn();
+  return new Promise<never>(() => undefined);
+}
+
+/**
+ * `POST /api/auth/refresh` (FR-AUTH-18). Resolves when the cookies were
  * re-set and the original request is worth retrying.
  *
- * A `401` means the session is over: the tenant is sent to sign-in, and the
- * promise is left pending so no caller renders an error on a page that is
- * being left. Any other failure resolves false, and the caller reports its
- * original `401`.
+ * A `401` ends the session. Any other failure — `429`, a `5xx`, no network —
+ * rejects with that failure and signs nobody out: the session may well be
+ * intact, and the caller reports the error.
  */
-function refreshSession(): Promise<boolean> {
+function refreshSession(): Promise<void> {
   refreshing ??= send('/api/auth/refresh', { method: 'POST' })
-    .then(
-      (response) => {
-        if (response.status !== 401) return response.ok;
-        goToSignIn();
-        return new Promise<boolean>(() => undefined);
-      },
-      () => false,
-    )
+    .then(async (response) => {
+      if (response.status === 401) return sessionEnded();
+      if (!response.ok) throw await parseError(response);
+    })
     .finally(() => {
       refreshing = null;
     });
@@ -106,13 +110,17 @@ function refreshSession(): Promise<boolean> {
 }
 
 /**
- * A request under FR-AUTH-20: on a `401`, refresh once and retry once. The
- * retry's answer is final — a second `401` is reported, not refreshed again.
+ * A request under FR-AUTH-20: on a `401`, refresh once and retry once. A
+ * retry that answers `401` again ends the session — it is not refreshed a
+ * second time. `init` is rebuilt into a request by each `send`, so the retry
+ * carries the same body.
  */
 async function call<T>(path: string, init: RequestInit_ = {}): Promise<T> {
   let response = await send(path, init);
-  if (response.status === 401 && (await refreshSession())) {
+  if (response.status === 401) {
+    await refreshSession();
     response = await send(path, init);
+    if (response.status === 401) return sessionEnded();
   }
   return read<T>(response);
 }

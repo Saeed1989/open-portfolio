@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 import type { IncomingMessage } from 'node:http';
 import rateLimit from '@fastify/rate-limit';
 import replyFrom from '@fastify/reply-from';
-import fastifyStatic from '@fastify/static';
 import fastify, {
   type FastifyReply,
   type FastifyRequest,
@@ -11,7 +10,7 @@ import fastify, {
 import { Pool } from 'undici';
 import type { Config, RateLimit } from './config.js';
 
-type EdgeHost = 'admin' | 'public-read';
+type GatewayHost = 'admin' | 'public-read';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -47,10 +46,13 @@ export const loggerOptions = {
     'req.headers.cookie',
     'req.headers.authorization',
     'req.headers["set-cookie"]',
+    'req.headers["x-api-key"]',
     'res.headers["set-cookie"]',
+    'res.headers["x-api-key"]',
     'headers.cookie',
     'headers.authorization',
     'headers["set-cookie"]',
+    'headers["x-api-key"]',
   ],
   serializers: {
     req: (req: FastifyRequest) => ({
@@ -63,8 +65,10 @@ export const loggerOptions = {
 } satisfies FastifyServerOptions['logger'];
 
 /**
- * The whole of `edge`: host matching, path routing, the identity subrequest,
- * header overwrite, rate limiting and request ids (SRS §2.1, FR-EDGE-1..7).
+ * The whole of `gateway`: host matching, path routing, the identity subrequest,
+ * header overwrite, API key attachment, rate limiting and request ids (SRS
+ * §2.1, FR-EDGE-1..8, 10). It serves no page: the admin build belongs to the
+ * admin host, which forwards `/api/*` here (FR-EDGE-9).
  * The rules below are the same in every environment (FR-EDGE-6); everything
  * that differs arrives in `config`.
  */
@@ -73,9 +77,9 @@ export async function buildApp(
   logger: FastifyServerOptions['logger'] = loggerOptions,
 ) {
   /* FR-EDGE-1: case-insensitive, port stripped, matched exactly. */
-  const hostOf = (req: IncomingMessage): EdgeHost | undefined => {
+  const hostOf = (req: IncomingMessage): GatewayHost | undefined => {
     const host = req.headers.host?.toLowerCase().replace(/:\d*$/, '');
-    if (host === config.adminHost) return 'admin';
+    if (host === config.adminRouteHost) return 'admin';
     if (host === config.publicReadHost) return 'public-read';
     return undefined;
   };
@@ -83,6 +87,9 @@ export async function buildApp(
   const app = fastify({
     logger,
     https: config.tls,
+    /* FR-EDGE-10: the client address is the rightmost X-Forwarded-For entry
+       that is not a trusted proxy, and only when the peer is one; otherwise
+       it is the peer. Rate limits and logs both read it as `req.ip`. */
     trustProxy:
       config.trustedProxyCidrs.length > 0 ? config.trustedProxyCidrs : false,
     /* NFR-OPS-4: an inbound id is kept only if it is a UUID. */
@@ -97,13 +104,13 @@ export async function buildApp(
        for one host does not exist on the other (FR-EDGE-2). */
     routerOptions: {
       constraints: {
-        edgeHost: {
-          name: 'edgeHost',
+        gatewayHost: {
+          name: 'gatewayHost',
           storage() {
-            const handlers = new Map<EdgeHost, unknown>();
+            const handlers = new Map<GatewayHost, unknown>();
             return {
-              get: (host: EdgeHost) => (handlers.get(host) as never) ?? null,
-              set: (host: EdgeHost, handler: unknown) => {
+              get: (host: GatewayHost) => (handlers.get(host) as never) ?? null,
+              set: (host: GatewayHost, handler: unknown) => {
                 handlers.set(host, handler);
               },
             };
@@ -111,7 +118,7 @@ export async function buildApp(
           deriveConstraint: (req: IncomingMessage) => hostOf(req) ?? '',
           validate(host: unknown) {
             if (host !== 'admin' && host !== 'public-read') {
-              throw new Error(`Unknown edge host: ${String(host)}`);
+              throw new Error(`Unknown gateway host: ${String(host)}`);
             }
           },
         },
@@ -191,7 +198,8 @@ export async function buildApp(
   };
 
   /* FR-EDGE-4, NFR-SEC-8: X-User-Id is set on every proxied request, to the
-     resolved id or to the empty value, so no client-supplied one survives. */
+     resolved id or to the empty value, and X-Api-Key to the key, so no
+     client-supplied value of either survives. */
   const proxy = (
     req: FastifyRequest,
     reply: FastifyReply,
@@ -202,6 +210,8 @@ export async function buildApp(
       rewriteRequestHeaders: (_req, headers) => {
         delete headers['x-user-id'];
         headers['x-user-id'] = userId;
+        delete headers['x-api-key'];
+        headers['x-api-key'] = config.apiKey;
         headers['x-forwarded-for'] = req.ip;
         headers['x-forwarded-proto'] = req.protocol;
         headers['x-request-id'] = req.id;
@@ -212,14 +222,17 @@ export async function buildApp(
     });
 
   /**
-   * FR-EDGE-3. Sends only the inbound Cookie and the request id, and takes
-   * only X-User-Id back; nothing is cached, so this runs on every admin
+   * FR-EDGE-3. Sends only the inbound Cookie, the request id and the API
+   * key, and takes only X-User-Id back; nothing is cached, so this runs on every admin
    * request. The cookie is forwarded as an opaque string (FR-EDGE-7).
    */
   const resolveIdentity = async (
     req: FastifyRequest,
   ): Promise<{ userId: string } | { status: 401 | 403 | 502 }> => {
-    const headers: Record<string, string> = { 'x-request-id': req.id };
+    const headers: Record<string, string> = {
+      'x-request-id': req.id,
+      'x-api-key': config.apiKey,
+    };
     if (req.headers.cookie !== undefined) headers.cookie = req.headers.cookie;
 
     try {
@@ -254,9 +267,9 @@ export async function buildApp(
     reply.code(404).send();
 
   // -------------------------------------------------------------------------
-  // Admin host (FR-EDGE-2)
+  // Admin route (FR-EDGE-2)
   // -------------------------------------------------------------------------
-  const admin = { constraints: { edgeHost: 'admin' satisfies EdgeHost } };
+  const admin = { constraints: { gatewayHost: 'admin' satisfies GatewayHost } };
 
   app.all('/api/auth/*', admin, async (req, reply) => {
     const path = upstreamPath(req, '/api/auth/', '/auth/');
@@ -281,23 +294,13 @@ export async function buildApp(
     return proxy(req, reply, path, identity.userId);
   });
 
-  app.all('/api/*', admin, notFound);
-  app.all('/public/*', admin, notFound);
-
-  /* Every other path is the admin SPA build; the not-found handler below is
-     its fallback to index.html. */
-  await app.register(fastifyStatic, {
-    root: config.adminDistDir,
-    constraints: admin.constraints,
-  });
-
   // -------------------------------------------------------------------------
   // Public-read host (FR-EDGE-2)
   // -------------------------------------------------------------------------
   app.route({
     method: ['GET', 'HEAD'],
     url: '/public/*',
-    constraints: { edgeHost: 'public-read' satisfies EdgeHost },
+    constraints: { gatewayHost: 'public-read' satisfies GatewayHost },
     handler: async (req, reply) => {
       const path = upstreamPath(req, '/public/', '/public/');
       if (path === null) return notFound(req, reply);
@@ -306,13 +309,8 @@ export async function buildApp(
     },
   });
 
-  app.setNotFoundHandler((req, reply) => {
-    const isRead = req.method === 'GET' || req.method === 'HEAD';
-    if (isRead && hostOf(req.raw) === 'admin') {
-      return reply.sendFile('index.html');
-    }
-    return notFound(req, reply);
-  });
+  /* Every other path, on either host, is a 404 (FR-EDGE-2). */
+  app.setNotFoundHandler(notFound);
 
   return app;
 }

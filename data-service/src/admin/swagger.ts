@@ -10,5 +10,5 @@ export const USER_ID_HEADER: ApiHeaderOptions = {
   name: 'X-User-Id',
   required: true,
   description:
-    'User id injected by edge proxy after session resolution. Set manually in local dev only.',
+    'User id injected by gateway after session resolution. Set manually in local dev only.',
 };

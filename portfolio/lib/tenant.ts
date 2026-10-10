@@ -52,7 +52,7 @@ export function isValidSlug(candidate: string): boolean {
  * the apex, another domain, a nested subdomain, a reserved or malformed label —
  * is null, and all of those render the same 404 (FR-TEN-3).
  *
- * `edge` overwrites `Host` on every proxied request, so the header read here is
+ * `gateway` overwrites `Host` on every proxied request, so the header read here is
  * the one nginx set. Set PORTFOLIO_BASE_DOMAIN=localhost to test
  * `alice.localhost:3000` locally.
  */

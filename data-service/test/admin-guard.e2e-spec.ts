@@ -6,7 +6,9 @@ import { createApp, freshUserId } from './helpers';
 
 /*
  * The admin guard (FR-AUTH-12, FR-TEN-4, FR-API-3): X-User-Id is the only
- * identity input, and it scopes every read.
+ * identity input, and it scopes every read. Every request here carries the
+ * API key, as one sent by `gateway` does; gateway-key.e2e-spec.ts covers one
+ * that does not.
  */
 
 let app: INestApplication;
@@ -51,7 +53,7 @@ describe('X-User-Id', () => {
     expect(res.status).toBe(401);
   });
 
-  it('is sufficient alone: no API key takes part', async () => {
+  it('is the only identity input on a request carrying the API key', async () => {
     expect((await get('/admin/me').set('X-User-Id', alice)).status).toBe(200);
   });
 });
