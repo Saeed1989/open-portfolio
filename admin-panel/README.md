@@ -27,8 +27,8 @@ nothing cached, no cookie rewritten. There is no mock server and no dev
 identity: the proxy sets neither `X-User-Id` nor `X-Api-Key` and holds no
 secret, and sign-in is real, through `gateway`.
 
-**Plain HTTP on localhost** is the default in `.env.example`, and needs no
-certificate and no hosts entry. Run `api` and `gateway` as `../README.md`
+The dev server runs on **plain HTTP on localhost**, and needs no certificate
+and no hosts entry. Run `api` and `gateway` as `../README.md`
 describes, with `gateway` on `http://gateway.localhost:8080`, and open
 `http://localhost:5174`. `api`'s `GOOGLE_REDIRECT_URI` is the admin host's
 origin, not `gateway`'s — `http://localhost:5174/api/auth/google/callback` —
@@ -39,22 +39,6 @@ nowhere else, so this mode works only at that name.
 
 Without `.env.local` at all, the dev server is the app alone with no API,
 which is enough for `/dev/fields`.
-
-**HTTPS on real hostnames** (NFR-OPS-6) is the commented block in
-`.env.example`, on the topology of `../gateway/README.md`. Node then has to
-trust `gateway`'s mkcert certificate, or every `/api/*` request answers `500`.
-Node reads the variable only at startup, so it is set in the shell:
-
-```bash
-NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem" npm run dev
-```
-
-```powershell
-$env:NODE_EXTRA_CA_CERTS = "$(mkcert -CAROOT)\rootCA.pem"; npm run dev
-```
-
-`GOOGLE_REDIRECT_URI` is then
-`https://admin.openfolio.test:5174/api/auth/google/callback`.
 
 `npm run build` ends with `scripts/check-bundle.mjs` (also `npm run
 check:bundle`), which fails if `dist/` holds `X-Api-Key`, `X-User-Id`,

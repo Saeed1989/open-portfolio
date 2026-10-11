@@ -20,8 +20,7 @@ export function apiProxy(gatewayOrigin: string): Record<string, ProxyOptions> {
       changeOrigin: true,
       /* X-Forwarded-For, -Proto and -Host; -Host is the admin host's name. */
       xfwd: true,
-      /* Over HTTPS, gateway's certificate is verified. With a mkcert
-         certificate that takes NODE_EXTRA_CA_CERTS — see the README. */
+      /* Over HTTPS, gateway's certificate is verified. */
       secure: true,
     },
   };
