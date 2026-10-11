@@ -33,7 +33,9 @@ export function setCookie(
       path,
       maxAge,
       httpOnly: true,
-      secure: true,
+      /* Departs from FR-AUTH-3 in development only: over plain HTTP a
+         browser drops a `Secure` cookie on any host but localhost. */
+      secure: process.env.NODE_ENV !== 'development',
       sameSite: 'lax',
     }),
   );
