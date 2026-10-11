@@ -26,59 +26,38 @@ working development set.
 | `RATE_LIMIT_PUBLIC_MAX` | yes | Requests per window, per IP, on the public-read host. |
 | `RATE_LIMIT_PUBLIC_WINDOW_MS` | yes | That window, in milliseconds. |
 
-## Local development topology (NFR-OPS-6)
+## Local development topology
 
-Development runs this same service with these same rules, on real hostnames over HTTPS. `localhost`
-is not enough: the cookie scoping the design depends on cannot be exercised there.
+Development runs this same service with these same rules, on `localhost` over plain HTTP: no
+certificate and no hosts entry. Both `TLS_*` paths stay empty.
 
 ```
-Browser ──► https://admin.openfolio.test ──► admin host ─┬─ /*      ──► the admin SPA
-                                                          └─ /api/*  ──► https://gateway.openfolio.test
+Browser ──► http://localhost:5174 ──► admin host ─┬─ /*      ──► the admin SPA
+                                                   └─ /api/*  ──► http://gateway.localhost:8080
 
-admin host ──► https://gateway.openfolio.test ──► gateway :443 ─┬─ /api/auth/*  ──► api 127.0.0.1:3001 /auth/*
+admin host ──► http://gateway.localhost:8080 ──► gateway :8080 ─┬─ /api/auth/*  ──► api 127.0.0.1:3001 /auth/*
                                                                  ├─ /api/admin/* ──► api /auth/resolve ──► api /admin/*
                                                                  └─ anything else ──► 404
-portfolio (next dev) ──► https://api.openfolio.test ──► gateway :443 ── GET /public/* ──► api /public/*
+portfolio (next dev) ──► http://api.localhost:8080 ──► gateway :8080 ── GET /public/* ──► api /public/*
 ```
 
 In development `api` listens on loopback and is reached through `gateway`. Nothing depends on that:
 `gateway` sends `X-Api-Key` on every request to `api`, and `api` answers `401` on `/auth/*` and
 `/admin/*` without it (FR-EDGE-5).
 
-### 1. Hostnames
+The session cookies are `Secure` (FR-AUTH-3). A browser accepts them over plain HTTP on `localhost`
+and nowhere else, so the panel is opened at `localhost`, not at a hosts-file name.
 
-The dev domain is `openfolio.test`, with every name under it resolving to loopback. Add to the hosts
-file (`C:\Windows\System32\drivers\etc\hosts`, or `/etc/hosts`):
-
-```
-127.0.0.1  admin.openfolio.test gateway.openfolio.test api.openfolio.test
-```
-
-Any domain whose records point at `127.0.0.1` serves equally well — the hostnames are
-`GATEWAY_ADMIN_HOST` and `PUBLIC_READ_HOST`, not code. `admin.openfolio.test` is the admin
-host's name; `gateway` closes the connection on it.
-
-### 2. Certificate
-
-A locally-trusted wildcard certificate from [mkcert](https://github.com/FiloSottile/mkcert), in
-`gateway/certs/` (gitignored):
-
-```
-mkcert -install
-mkcert -cert-file certs/openfolio.test.pem -key-file certs/openfolio.test-key.pem "*.openfolio.test"
-```
-
-### 3. Run order
+### Run order
 
 1. **Database** — MongoDB, as `data-service/.env` points to it.
 2. **`api`** — in `data-service/`: `npm run start:dev`. It binds `127.0.0.1:3001`.
 3. **admin host** — in development, the admin dev server in `admin-panel/`, answering on
-   `admin.openfolio.test` and forwarding `/api/*` to `https://gateway.openfolio.test` by the rules
-   of FR-EDGE-9. `gateway` no longer serves the build.
+   `localhost:5174` and forwarding `/api/*` to `http://gateway.localhost:8080` by the rules of
+   FR-EDGE-9. `gateway` no longer serves the build.
 4. **`gateway`** — in `gateway/`: copy `.env.example` to `.env`, set `GATEWAY_API_KEY` to the key in
    `GATEWAY_API_KEYS` of `data-service/.env`, then `npm install` and `npm run dev`.
-5. **`portfolio`**, when needed — in `portfolio/`, with `PORTFOLIO_API_URL=https://api.openfolio.test`
-   and `NODE_EXTRA_CA_CERTS` set to `rootCA.pem` in the directory `mkcert -CAROOT` prints, so that
-   Node trusts the certificate: `npm run dev`.
+5. **`portfolio`**, when needed — in `portfolio/`, with `PORTFOLIO_API_URL=http://api.localhost:8080`:
+   `npm run dev`.
 
-Open `https://admin.openfolio.test`.
+Open `http://localhost:5174`.

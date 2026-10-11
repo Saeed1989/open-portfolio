@@ -62,9 +62,8 @@ There is no root workspace: each folder installs and runs on its own. You need N
 MongoDB instance (`data-service/docker-compose.yml` starts one on `27017`, or point
 `MONGODB_URI` at any other).
 
-This is the quick setup, on `localhost` over plain HTTP. It exercises sign-in and the admin
-panel end to end. The topology NFR-OPS-6 asks for — real hostnames and a trusted certificate —
-is described in [`gateway/README.md`](gateway/README.md).
+Everything runs on `localhost` over plain HTTP, with no certificate and no hosts entry. It
+exercises sign-in and the admin panel end to end.
 
 ```
 Browser ──► admin host ─┬─ /*      ──► the admin SPA
@@ -145,13 +144,9 @@ npm install
 cp .env.example .env
 ```
 
-Change in `.env`, leaving both `TLS_*` paths empty:
+Set in `.env`:
 
 ```
-GATEWAY_ADMIN_HOST=gateway.localhost
-PUBLIC_READ_HOST=api.localhost
-PORT=8080
-TRUSTED_PROXY_CIDRS=127.0.0.1
 GATEWAY_API_KEY=<the key in GATEWAY_API_KEYS of data-service/.env>
 ```
 
@@ -170,7 +165,7 @@ lands on the dashboard, or on the slug claim screen for an account with no portf
 ```
 cd portfolio
 npm install
-cp .env.example .env.local    # then set PORTFOLIO_BASE_DOMAIN=localhost
+cp .env.example .env.local
 npm run dev                   # http://alice.localhost:3000
 ```
 
