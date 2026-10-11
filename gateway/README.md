@@ -26,6 +26,15 @@ working development set.
 | `RATE_LIMIT_PUBLIC_MAX` | yes | Requests per window, per IP, on the public-read host. |
 | `RATE_LIMIT_PUBLIC_WINDOW_MS` | yes | That window, in milliseconds. |
 
+`gateway` reads the process environment only; nothing in it opens `.env`. `npm run dev` passes
+`--env-file=.env` to Node, and `npm start` does not. Under pm2, start it from the ecosystem file,
+which passes the same flag:
+
+```
+npm run build
+pm2 start ecosystem.config.cjs
+```
+
 ## Local development topology
 
 Development runs this same service with these same rules, on `localhost` over plain HTTP: no
