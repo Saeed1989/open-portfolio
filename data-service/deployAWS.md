@@ -106,7 +106,7 @@ npm run build
 ## 5. Run the app with PM2
 
 ```bash
-pm2 start dist/main.js --name nest-app
+pm2 start ecosystem.config.cjs   # starts nest-app from this folder, so it reads this .env
 pm2 save
 pm2 startup        # run the command it prints → auto-start on reboot
 ```
