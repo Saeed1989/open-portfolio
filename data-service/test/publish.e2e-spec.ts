@@ -80,11 +80,19 @@ it('a valid draft publishes and is served publicly', async () => {
     .get('/admin/portfolio')
     .set(user);
   expect(draft.body.status).toBe('published');
+  /* Nothing unpublished: the two revisions agree. */
+  expect(res.body.publishedDraftRevision).toBe(draft.body.draftRevision);
+  expect(draft.body.publishedDraftRevision).toBe(draft.body.draftRevision);
 });
 
 it('a draft edit is not live until the next publish', async () => {
   await patchSection('hero', { content: { name: 'Pat', title: 'Lead' } });
   expect((await publicPage()).body.data.hero.title).toBe('Engineer');
+
+  const draft = await request(app.getHttpServer())
+    .get('/admin/portfolio')
+    .set(user);
+  expect(draft.body.publishedDraftRevision).toBe(draft.body.draftRevision - 1);
 
   expect((await publish()).body.version).toBe(2);
   expect((await publicPage()).body.data.hero.title).toBe('Lead');

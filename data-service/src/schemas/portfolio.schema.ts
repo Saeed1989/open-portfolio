@@ -136,6 +136,14 @@ export class Portfolio {
   @Prop({ default: 0 })
   draftRevision: number;
 
+  /**
+   * The `draftRevision` the last publish read its draft at; null until the
+   * first. The draft holds unpublished changes while the two differ. Not in
+   * §5.2, like `draftRevision`.
+   */
+  @Prop({ type: Number, default: null })
+  publishedDraftRevision: number | null;
+
   createdAt: Date;
 
   updatedAt: Date;

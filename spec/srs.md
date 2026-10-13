@@ -1,10 +1,11 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.12 (draft) · **Date** 11 October 2026
+**Version** 0.13 (draft) · **Date** 14 October 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
 
 **Change log**
 
+- **0.13** (14 October 2026) — `portfolios` gains two revision counters: `draftRevision`, the draft's concurrency token, and `publishedDraftRevision`, the draft revision the last publish carried. Amended: §2.3 step 7, §5.2, §7.2.
 - **0.12** (11 October 2026) — The admin SPA moves to its own static host at `admin.openfolio.site`, which proxies `/api/*` to `gateway` on `gateway`'s own hostname. `gateway` no longer serves the SPA. Amended: FR-EDGE-1, 2, 6; NFR-SEC-1; NFR-PERF-5; NFR-OPS-4; §2.1, §2.5 step 1, §2.6, §7.4, §10.3 question 24. Added: FR-EDGE-9, FR-EDGE-10. Open question 29 added.
 - **0.11** (11 October 2026) — Hosting-agnostic trust: `api` may be publicly reachable, and the hop from the proxy to `api` is authenticated by an API key instead of network placement. `edge` is renamed `gateway` (`apps/gateway`); FR-EDGE identifiers are retained, and requirements changed by the rename alone are not marked amended. Integration sync is started by an authenticated internal trigger instead of an in-process schedule. Amended: FR-AUTH-11, 12; FR-EDGE-3, 4, 5, 6, 7; FR-INT-2; NFR-SEC-1, 3, 7, 8; §2.1, §2.2 step 4, §2.5 step 1, §2.6, §3, §5.4, §5.6, §6.10 title, §7.3, §9, §10.4. Added: FR-EDGE-8, FR-INT-16. Open questions 11, 12 revised; 25–28 added.
 - **0.10** (5 October 2026) — Sign-in is Google only in v1; GitHub sign-in is deferred. `edge` is an in-house Node.js service (`apps/edge`) rather than nginx, and fronts only the admin host and a public-read host. `portfolio` runs on Vercel, and `admin` is a client-rendered React SPA. Amended: FR-AUTH-1, 3, 4, 8, 14, 17, 19, 20; FR-EDGE-1, 2, 3, 5, 6; NFR-SEC-1; §2.1, §2.2 step 4, §2.5, §2.6, §5.1, §7.3, §7.4. Added: FR-AUTH-21, 22; FR-EDGE-7. Open questions 18–21 resolved; 15 deferred; 22–24 added.
@@ -119,7 +120,7 @@ Two features are deliberate exceptions, and they sit on the *client* side of tha
 4. It merges each synced payload into the section it feeds, beneath the tenant's manual values, which win (FR-INT-4). A payload marked `stale` is merged like any other: it is the last good payload, which FR-INT-3 already serves.
 5. It removes every section whose merged content satisfies its `emptyCondition` (FR-CFG-2). Emptiness is judged after the merge, so a section the tenant left empty but a sync has filled survives, and a section with neither is removed (FR-INT-5).
 6. It emits the survivors as `config.sections` — `{ type, order }`, in ascending order — with their content in `data`, keyed by type, and copies `theme`, `seo`, and `analytics` when configured into `config`. If no section survives, the publish is refused (FR-CFG-4).
-7. In one write, the builder's output is stored as `published.config` and `published.data`, and the draft as it stood after step 3 as `published.source`; `publishedAt` is set and `version` incremented.
+7. In one write, the builder's output is stored as `published.config` and `published.data`, and the draft as it stood after step 3 as `published.source`; `publishedAt` is set, `version` incremented, and `publishedDraftRevision` set to the `draftRevision` the draft was read at (§5.2).
 8. `api` calls the `portfolio` app's on-demand revalidation endpoint for that slug, using a shared secret.
 9. The next public request repopulates the cache.
 
@@ -267,7 +268,8 @@ status ('unpublished'|'published'|'suspended'),
 registryVersion, presetId,
 draft:     { sections: [...], theme: {...}, seo: {...}, analytics: {...} | null },
 published: { config: {...}, data: {...}, source: {...} } | null,
-publishedAt, version, createdAt, updatedAt
+publishedAt, version, draftRevision, publishedDraftRevision | null,
+createdAt, updatedAt
 ```
 
 Each entry in `draft.sections`:
@@ -283,6 +285,10 @@ Each entry in `draft.sections`:
 Its cost is that the served shape cannot be rebuilt from itself. A fold of synced data has to know which values were the tenant's, so that manual values still win (FR-INT-4), and which sections were enabled but empty at publish, so that a sync which gives one content can bring it back; the build discards both. `published.source` keeps them: the draft's enabled sections as they stood at publish, with unpublished items already removed and no synced value merged in, together with the theme, SEO, and analytics published beside them. The sync worker rebuilds from `source` rather than from `draft`, because `draft` may hold edits the tenant has not published. `source` is never served, and the public read excludes it by projection.
 
 `version` is incremented by every write to `published`, whether publish or fold; `publishedAt` changes only on publish.
+
+**Amended (0.13).** `draftRevision` is the draft's concurrency token. It starts at 0 and is incremented by every write to `draft`, in the same update as the write. `version` cannot serve here: it moves only on writes to `published`, so it cannot see two draft writes racing. The admin surface returns `draftRevision` with the draft and as the `ETag` header, and a draft write must echo it in `If-Match`. The write is one update conditional on that revision; an absent or outdated `If-Match` is refused with `409 stale_write`, which carries the current `draftRevision`, and nothing is written.
+
+`publishedDraftRevision` is the `draftRevision` the last publish read its draft at, and is null until the first publish. A publish sets it in the same write as `published` (§2.3 step 7); a fold of synced data (FR-INT-15) does not touch it, since a fold publishes no edit. The draft holds unpublished changes exactly when the two differ, and `admin` offers Publish only then. The admin surface returns it with the draft and in the publish response. Neither counter is served publicly.
 
 **Imported items carry their own publish state.** A Credly badge arrives from import unpublished and is promoted by the tenant *(11.7)*, so an achievements item additionally carries `published: bool`, independent of the portfolio-level draft/published trees. An unpublished item stays in `draft`; the builder removes it, so it reaches neither half of `published` nor its `source`. This is the only per-item publish flag in the model; it exists because the import cannot judge which badges are high-signal.
 
@@ -663,6 +669,13 @@ GET   /admin/link-health
 **A tenant with no portfolio.** `GET /admin/me` responds `200` with the tenant and `portfolio: null`; when a portfolio exists, `portfolio` is `{ slug, status }`. `admin` branches on this field (FR-AUTH-7). `GET /admin/portfolio` responds `404 portfolio_not_found`, and so does every other route above except `GET /admin/me`, `GET /admin/slug-availability`, and `POST /admin/portfolio`, since FR-TEN-4 has no portfolio id to scope them by.
 
 **Slug change.** `PATCH /admin/portfolio/slug` changes the slug of an existing portfolio and does nothing else. It never creates a portfolio or sets a first slug — that is `POST /admin/portfolio` — and with no portfolio it responds `404` as above. Every successful call is a change and triggers FR-DAT-2: the old slug enters `slugHistory` and its subdomain answers with a 301. A request naming the current slug is rejected with `422 slug_unchanged` rather than accepted as a no-op, so no success skips FR-DAT-2. The new slug is validated, and collides, exactly as at creation.
+
+**Draft concurrency — added (0.13).** `GET /admin/portfolio`, `GET /admin/portfolio/sections`, the `201` of `POST /admin/portfolio`, and every successful draft write answer with an `ETag` header holding the draft's `draftRevision` (§5.2) as a strong tag, e.g. `"7"`; the same value is in the body as `draftRevision`. A draft write is any route above that changes `draft`: the `PATCH` routes for theme, SEO, and a section, and the three item routes. Each must carry `If-Match` with the revision the caller last read, quoted as issued or bare. The write is one update conditional on that revision and increments it. On any refusal nothing is written:
+
+- `409 stale_write` when `If-Match` is absent or is not the current revision. The body carries the current `draftRevision`, so the caller can re-read and decide; `api` never merges.
+- `400 invalid_if_match` when the header is not a single revision. A weak tag, `*`, and a list are refused: `*` would match any revision, and a weak tag cannot be compared strongly.
+
+`PATCH /admin/portfolio/slug`, `POST /admin/publish`, and `POST /admin/unpublish` do not change `draft`, take no `If-Match`, and leave `draftRevision` as it was. The publish response carries `version`, `publishedAt`, and `publishedDraftRevision`.
 
 **FR-API-3 (Must)** — No admin endpoint accepts a portfolio id or user id as a parameter. Scope comes from the `X-User-Id` header set by `gateway` (FR-AUTH-12, FR-EDGE-4).
 

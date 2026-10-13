@@ -114,6 +114,11 @@ export function SectionManagerPage() {
   const [publishError, setPublishError] = useState<AdminError | undefined>(
     undefined,
   );
+  /* The draft revision last published; null before the first publish. */
+  const [publishedRevision, setPublishedRevision] = useState<number | null>(
+    null,
+  );
+  const unpublishedChanges = version !== publishedRevision;
 
   /* The server validates and decides (FR-PUB-6); a refusal comes back with
      every failing field, each path led by its section type. */
@@ -124,6 +129,7 @@ export function SectionManagerPage() {
       .publish()
       .then((result) => {
         setPublishedAt(result.publishedAt);
+        setPublishedRevision(result.publishedDraftRevision);
         setAttempted(false);
       })
       .catch((cause: unknown) => {
@@ -154,6 +160,7 @@ export function SectionManagerPage() {
         setSlug(portfolio.slug);
         setPublishedAt(portfolio.publishedAt ?? undefined);
         setVersion(portfolio.draftRevision);
+        setPublishedRevision(portfolio.publishedDraftRevision);
       })
       .catch((cause: unknown) => {
         setLoadError(cause instanceof AdminError ? cause.message : String(cause));
@@ -305,10 +312,15 @@ export function SectionManagerPage() {
           </a>
         ) : null}
         {/* Held while a toggle or reorder is being written, so a publish
-            cannot race a write. */}
+            cannot race a write, and while the draft is what is published. */}
         <Button
           variant="primary"
-          disabled={loading || publishing || status === 'saving'}
+          disabled={
+            loading ||
+            publishing ||
+            status === 'saving' ||
+            !unpublishedChanges
+          }
           onClick={publish}
         >
           {publishing ? 'Publishing…' : 'Publish'}

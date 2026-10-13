@@ -80,4 +80,14 @@ export class AdminPortfolioDto {
       'Also sent as the `ETag` header; draft writes echo it in `If-Match`.',
   })
   draftRevision: number;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    nullable: true,
+    example: 7,
+    description:
+      'The `draftRevision` last published; null before the first publish. The draft holds unpublished changes while it differs from `draftRevision`.',
+  })
+  publishedDraftRevision: number | null;
 }

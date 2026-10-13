@@ -98,6 +98,8 @@ export interface AdminPortfolio {
   readonly version: number;
   /** The draft's concurrency token; a draft write echoes it in `If-Match`. */
   readonly draftRevision: number;
+  /** The `draftRevision` last published; null before the first publish. */
+  readonly publishedDraftRevision: number | null;
 }
 
 /** What `PATCH /admin/portfolio/sections/:type` answers. */
@@ -146,6 +148,7 @@ export interface Integration {
 export interface PublishResult {
   readonly version: number;
   readonly publishedAt: string;
+  readonly publishedDraftRevision: number;
 }
 
 export interface LinkHealth {

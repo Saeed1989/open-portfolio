@@ -102,6 +102,7 @@ async function seedTenant(tenant: SeedTenant): Promise<void> {
     publishedAt: tenant.publish ? PUBLISHED_AT : null,
     version: tenant.version,
     draftRevision: 0,
+    publishedDraftRevision: tenant.publish ? 0 : null,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
   });

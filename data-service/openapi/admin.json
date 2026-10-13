@@ -1409,6 +1409,12 @@
             "type": "number",
             "example": 7,
             "description": "Also sent as the `ETag` header; draft writes echo it in `If-Match`."
+          },
+          "publishedDraftRevision": {
+            "type": "number",
+            "nullable": true,
+            "example": 7,
+            "description": "The `draftRevision` last published; null before the first publish. The draft holds unpublished changes while it differs from `draftRevision`."
           }
         },
         "required": [
@@ -1417,7 +1423,8 @@
           "registryVersion",
           "draft",
           "version",
-          "draftRevision"
+          "draftRevision",
+          "publishedDraftRevision"
         ]
       },
       "UpdateSlugDto": {
@@ -1673,11 +1680,17 @@
             "format": "date-time",
             "type": "string",
             "example": "2026-09-01T10:00:00.000Z"
+          },
+          "publishedDraftRevision": {
+            "type": "number",
+            "example": 7,
+            "description": "The `draftRevision` this publish carried."
           }
         },
         "required": [
           "version",
-          "publishedAt"
+          "publishedAt",
+          "publishedDraftRevision"
         ]
       },
       "LinkHealthDto": {
