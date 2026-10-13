@@ -84,7 +84,8 @@ export class SectionsController {
 
   @Patch(':type')
   @ApiOperation({
-    summary: 'Toggle a section or replace its content (FR-CFG-1)',
+    summary:
+      'Toggle a section, reorder it, or replace its content (FR-CFG-1, FR-CFG-3)',
   })
   @ApiParam(TYPE_PARAM)
   @ApiHeader(IF_MATCH_HEADER)

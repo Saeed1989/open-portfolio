@@ -61,9 +61,13 @@ export class SectionsService {
       throw new NotFoundException('portfolio_not_found');
     if (!isSectionType(type))
       throw new NotFoundException('section_type_not_found');
-    if (dto.enabled === undefined && dto.content === undefined) {
+    if (
+      dto.enabled === undefined &&
+      dto.order === undefined &&
+      dto.content === undefined
+    ) {
       throw new SectionValidationException([
-        { path: '', message: 'Send enabled, content, or both.' },
+        { path: '', message: 'Send enabled, order, or content.' },
       ]);
     }
 
@@ -79,6 +83,7 @@ export class SectionsService {
     const set: Record<string, unknown> = {};
     if (dto.enabled !== undefined)
       set['draft.sections.$.enabled'] = dto.enabled;
+    if (dto.order !== undefined) set['draft.sections.$.order'] = dto.order;
     if (dto.content !== undefined) {
       const errors = validateDraftContent(type, dto.content);
       if (errors.length > 0) throw new SectionValidationException(errors);

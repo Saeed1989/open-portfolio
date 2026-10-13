@@ -113,7 +113,7 @@ export function SectionManagerPage() {
       .portfolio()
       .then((portfolio) => {
         setSections(sectionsOf(portfolio));
-        setVersion(portfolio.version);
+        setVersion(portfolio.draftRevision);
       })
       .catch((cause: unknown) => {
         setLoadError(cause instanceof AdminError ? cause.message : String(cause));
@@ -129,7 +129,7 @@ export function SectionManagerPage() {
    * One write per changed section, in sequence.
    *
    * Sequential rather than parallel because every write increments the
-   * document's `version` (§5.2) and each carries the previous one's result as
+   * draft's `draftRevision` and each carries the previous one's result as
    * its `If-Match` (D3). Issued together they would race, and all but the
    * first would come back `409 stale_write`.
    */
@@ -148,7 +148,7 @@ export function SectionManagerPage() {
             { enabled: section.enabled, order: section.order },
             at,
           );
-          at = result.version;
+          at = result.draftRevision;
         }
         setVersion(at);
         setStatus('saved');

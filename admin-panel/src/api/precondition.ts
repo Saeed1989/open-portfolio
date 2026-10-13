@@ -5,16 +5,16 @@
  * admin-panel/README.md; this is the whole of its implementation on the client
  * side, so changing the scheme means changing this file and nothing else.
  *
- * Every admin write carries `If-Match: <portfolio version>` — the `version`
- * field of SRS §5.2, which is already incremented by every write to the
- * document. A write whose precondition no longer holds is refused with
- * `409 stale_write` and the current document, so the client can show what
- * changed instead of guessing.
+ * Every draft write carries `If-Match: <draftRevision>` — the revision `api`
+ * returns with the portfolio and increments on every draft write. It is not
+ * the `version` of SRS §5.2, which moves only when `published` is written. A
+ * write whose precondition no longer holds is refused with `409 stale_write`
+ * and the current revision; the client refetches the draft to show what
+ * changed.
  *
- * Why the document's version rather than an ETag per section: §5.2 gives the
- * portfolio one `version`, and a section PATCH writes the portfolio. Two
- * sections edited in two tabs are two writes to one document, and the second
- * one *should* be told about the first.
+ * Why the draft's revision rather than an ETag per section: a section PATCH
+ * writes the portfolio. Two sections edited in two tabs are two writes to one
+ * document, and the second one *should* be told about the first.
  */
 
 /** The header name, in one place so a rename is one edit. */
@@ -41,9 +41,9 @@ export function preconditionHeaders(
 
 /** What a `409 stale_write` carries back. */
 export interface StaleWrite {
-  /** The document as the server now holds it. */
+  /** The document as the server now holds it, when the response carries it. */
   readonly current: unknown;
-  /** Its version, which a retry would have to match. */
+  /** Its draft revision, which a retry would have to match. */
   readonly currentVersion: number | undefined;
 }
 
@@ -52,17 +52,16 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Reads the current document out of a stale-write response.
- *
- * Tolerant on purpose: the useful half of this response is the document, and a
- * server that sends it under a slightly different key should still let the
- * client show "changed elsewhere" rather than falling back to a generic error.
+ * Reads a stale-write response. `api` sends `{ draftRevision }` and no
+ * document.
  */
 export function readStaleWrite(payload: unknown): StaleWrite {
   if (!isRecord(payload)) return { current: null, currentVersion: undefined };
 
   const current = payload.current ?? payload.portfolio ?? payload.document ?? null;
-  const version = isRecord(current) ? current.version : payload.currentVersion;
+  const version = isRecord(current)
+    ? current.draftRevision
+    : payload.draftRevision;
 
   return {
     current,

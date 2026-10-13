@@ -1,5 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Outlet,
+  Route,
+  RouterProvider,
+} from 'react-router';
 import { ONBOARDING_PATH } from './app-state/me';
 import { SIGN_IN_PATH } from './auth/navigation';
 import { PortfolioGate } from './app-state/PortfolioGate';
@@ -34,28 +41,34 @@ const queryClient = new QueryClient({
   },
 });
 
+/* A data router, because the editor's unsaved-changes warning blocks
+   navigation with `useBlocker`, which the plain `BrowserRouter` lacks. */
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path={SIGN_IN_PATH} element={<SignInPage />} />
+      <Route path="/dev/fields" element={<DevFields />} />
+      <Route
+        element={
+          <PortfolioGate>
+            <Outlet />
+          </PortfolioGate>
+        }
+      >
+        <Route path={ONBOARDING_PATH} element={<OnboardingSlugPage />} />
+        <Route path="/sections" element={<SectionManagerPage />} />
+        <Route path="/sections/:type" element={<SectionEditorPage />} />
+        <Route path="*" element={<Navigate to="/sections" replace />} />
+      </Route>
+    </>,
+  ),
+);
+
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <PublishAttemptedProvider>
-        <BrowserRouter>
-        <Routes>
-          <Route path={SIGN_IN_PATH} element={<SignInPage />} />
-          <Route path="/dev/fields" element={<DevFields />} />
-          <Route
-            element={
-              <PortfolioGate>
-                <Outlet />
-              </PortfolioGate>
-            }
-          >
-            <Route path={ONBOARDING_PATH} element={<OnboardingSlugPage />} />
-            <Route path="/sections" element={<SectionManagerPage />} />
-            <Route path="/sections/:type" element={<SectionEditorPage />} />
-            <Route path="*" element={<Navigate to="/sections" replace />} />
-          </Route>
-        </Routes>
-        </BrowserRouter>
+        <RouterProvider router={router} />
       </PublishAttemptedProvider>
     </QueryClientProvider>
   );

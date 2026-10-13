@@ -3,7 +3,6 @@ import { adminApi } from '../api/client';
 import { AdminError } from '../api/errors';
 import { readStaleWrite } from '../api/precondition';
 import {
-  DEBOUNCE_MS,
   INITIAL,
   reduce,
   type FailureKind,
@@ -15,8 +14,8 @@ import {
  * D2's machine, wired to timers and the transport.
  *
  * Everything that decides *what state comes next* is in `machine.ts`. This
- * file only decides *when* — the debounce, the backoff timer, the flush on
- * Cmd+S and on leaving the route — and turns one `AdminError` into one
+ * file only decides *when* — the Save button, Cmd+S, the backoff timer — and
+ * turns one `AdminError` into one
  * `FailureKind`. Keeping the split means the transitions are testable without
  * a DOM and the scheduling is testable without re-deriving the transitions.
  */
@@ -36,9 +35,9 @@ export function classify(error: unknown): FailureKind {
 
 export interface SectionSave {
   readonly state: SaveState;
-  /** Call on every content change. Schedules a debounced write. */
+  /** Call on every content change. Holds the content; sends nothing. */
   readonly edit: (content: unknown) => void;
-  /** Send now — Cmd+S, or leaving the route. */
+  /** Send now — the Save button, or Cmd+S. */
   readonly flush: () => void;
   /** "Retry now" on a failed save. */
   readonly retry: () => void;
@@ -52,7 +51,7 @@ export interface SectionSave {
 
 export interface UseSectionSaveOptions {
   readonly type: string;
-  /** The document version this section was read at (D3). */
+  /** The draft revision this section was read at (D3). */
   readonly version: number | undefined;
   /** Called with the version the server reports after a successful write. */
   readonly onVersion?: ((version: number) => void) | undefined;
@@ -73,7 +72,6 @@ export function useSectionSave({
   const pending = useRef<unknown>(undefined);
   const hasPending = useRef(false);
   const versionRef = useRef(version);
-  const debounce = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const backoff = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const inFlight = useRef(false);
 
@@ -102,8 +100,8 @@ export function useSectionSave({
         { content },
         versionRef.current,
       );
-      versionRef.current = result.version;
-      onVersion?.(result.version);
+      versionRef.current = result.draftRevision;
+      onVersion?.(result.draftRevision);
       send({ type: 'saveSucceeded', at: Date.now() });
     } catch (cause) {
       const kind = classify(cause);
@@ -127,8 +125,6 @@ export function useSectionSave({
   }, [type, send, onVersion]);
 
   const flush = useCallback(() => {
-    clearTimeout(debounce.current);
-    debounce.current = undefined;
     void write();
   }, [write]);
 
@@ -137,13 +133,8 @@ export function useSectionSave({
       pending.current = content;
       hasPending.current = true;
       send({ type: 'edit' });
-
-      clearTimeout(debounce.current);
-      debounce.current = setTimeout(() => {
-        void write();
-      }, DEBOUNCE_MS);
     },
-    [send, write],
+    [send],
   );
 
   const retry = useCallback(() => {
@@ -182,16 +173,6 @@ export function useSectionSave({
     };
   }, [state.status, state.retryDelayMs, state.attempt, send, write]);
 
-  /* A save landing after the request finished — the tenant typed while it was
-     in flight — earns another one, without waiting for a fresh keystroke. */
-  useEffect(() => {
-    if (state.status !== 'saved' || !hasPending.current) return;
-    clearTimeout(debounce.current);
-    debounce.current = setTimeout(() => {
-      void write();
-    }, DEBOUNCE_MS);
-  }, [state.status, write]);
-
   /* Cmd+S / Ctrl+S flushes. The browser's own Save dialog is never what the
      tenant wanted on a page like this. */
   useEffect(() => {
@@ -206,15 +187,12 @@ export function useSectionSave({
     };
   }, [flush]);
 
-  /* Leaving the route flushes. Unmount is the last moment this component can
-     send anything, so the debounce is not allowed to outlive it. */
+  /* Leaving the route sends nothing: unsaved edits are dropped with it. */
   useEffect(() => {
     return () => {
-      clearTimeout(debounce.current);
       clearTimeout(backoff.current);
-      if (hasPending.current) void write();
     };
-  }, [write]);
+  }, []);
 
   return {
     state,

@@ -339,7 +339,7 @@
     "/admin/portfolio/sections/{type}": {
       "patch": {
         "operationId": "SectionsController_update",
-        "summary": "Toggle a section or replace its content (FR-CFG-1)",
+        "summary": "Toggle a section, reorder it, or replace its content (FR-CFG-1, FR-CFG-3)",
         "parameters": [
           {
             "name": "X-User-Id",
@@ -1448,6 +1448,10 @@
           "enabled": {
             "type": "boolean",
             "example": true
+          },
+          "order": {
+            "type": "number",
+            "example": 2
           },
           "content": {
             "type": "object",

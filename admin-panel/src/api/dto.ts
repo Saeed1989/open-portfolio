@@ -96,6 +96,14 @@ export interface AdminPortfolio {
   readonly draft: Draft;
   readonly publishedAt?: string | null;
   readonly version: number;
+  /** The draft's concurrency token; a draft write echoes it in `If-Match`. */
+  readonly draftRevision: number;
+}
+
+/** What `PATCH /admin/portfolio/sections/:type` answers. */
+export interface UpdatedSection {
+  readonly draftRevision: number;
+  readonly section: AdminSection;
 }
 
 /**
