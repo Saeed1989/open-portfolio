@@ -18,11 +18,8 @@ import {
   UPLOADED_AT,
   userId,
 } from './ids';
-import {
-  buildPublishedTree,
-  type SeedAccount,
-  type SeedTenant,
-} from './tenant';
+import { buildPublishedTree } from '../common/published-tree';
+import type { SeedAccount, SeedTenant } from './tenant';
 import { ACCOUNTS, TENANTS } from './tenants';
 
 /*

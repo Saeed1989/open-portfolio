@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
+import { getConnectionToken } from '@nestjs/mongoose';
 import { SignJWT } from 'jose';
-import mongoose from 'mongoose';
+import mongoose, { type Connection } from 'mongoose';
 import request from 'supertest';
 import { AccessTokenService } from '../src/auth/access-token.service';
 import { userId } from '../src/seed/ids';
@@ -21,6 +22,12 @@ const operations: string[] = [];
 beforeAll(async () => {
   app = await createApp();
   tokens = app.get(AccessTokenService);
+  /* Index builds start at boot and finish on their own time; one landing
+     mid-test would be recorded as an operation of the request under test. */
+  const connection = app.get<Connection>(getConnectionToken());
+  await Promise.all(
+    Object.values(connection.models).map((model) => model.init()),
+  );
   mongoose.set('debug', (collection: string, method: string) => {
     operations.push(`${collection}.${method}`);
   });

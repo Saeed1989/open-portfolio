@@ -1011,6 +1011,15 @@
           },
           "401": {
             "description": "Missing or malformed user id."
+          },
+          "404": {
+            "description": "`portfolio_not_found`."
+          },
+          "409": {
+            "description": "`portfolio_suspended`."
+          },
+          "422": {
+            "description": "`validation_failed`, with every failing field path, or `nothing_to_publish` (FR-CFG-4)."
           }
         },
         "tags": [

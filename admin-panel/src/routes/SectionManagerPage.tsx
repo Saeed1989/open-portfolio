@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import { adminApi } from '../api/client';
 import { AdminError } from '../api/errors';
 import type { AdminSection } from '../api/dto';
+import { usePublishAttempted } from '../app-state/publish-attempted-context';
+import { SLUG_SUFFIX } from '../api/slug';
 import { SignOutControls } from '../auth/SignOutControls';
 import {
   DESCRIPTORS,
@@ -98,6 +100,7 @@ const STATE_TONE: Record<SectionState, PillTone> = {
 };
 
 export function SectionManagerPage() {
+  const [slug, setSlug] = useState<string | undefined>(undefined);
   const [sections, setSections] = useState<readonly AdminSection[]>([]);
   const [version, setVersion] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -105,6 +108,41 @@ export function SectionManagerPage() {
   const [status, setStatus] = useState<SaveStatus>('idle');
   const [savedAt, setSavedAt] = useState<number | undefined>(undefined);
   const [saveError, setSaveError] = useState<string | undefined>(undefined);
+  const { setAttempted } = usePublishAttempted();
+  const [publishing, setPublishing] = useState(false);
+  const [publishedAt, setPublishedAt] = useState<string | undefined>(undefined);
+  const [publishError, setPublishError] = useState<AdminError | undefined>(
+    undefined,
+  );
+
+  /* The server validates and decides (FR-PUB-6); a refusal comes back with
+     every failing field, each path led by its section type. */
+  const publish = () => {
+    setPublishing(true);
+    setPublishError(undefined);
+    adminApi
+      .publish()
+      .then((result) => {
+        setPublishedAt(result.publishedAt);
+        setAttempted(false);
+      })
+      .catch((cause: unknown) => {
+        const error =
+          cause instanceof AdminError
+            ? cause
+            : new AdminError({
+                kind: 'server',
+                status: 0,
+                message: 'The publish did not complete.',
+              });
+        setPublishError(error);
+        /* Turns the editors' publish-only gaps red (FR-REG-8). */
+        if (error.kind === 'validation') setAttempted(true);
+      })
+      .finally(() => {
+        setPublishing(false);
+      });
+  };
 
   const load = useCallback(() => {
     setLoading(true);
@@ -113,6 +151,8 @@ export function SectionManagerPage() {
       .portfolio()
       .then((portfolio) => {
         setSections(sectionsOf(portfolio));
+        setSlug(portfolio.slug);
+        setPublishedAt(portfolio.publishedAt ?? undefined);
         setVersion(portfolio.draftRevision);
       })
       .catch((cause: unknown) => {
@@ -252,10 +292,74 @@ export function SectionManagerPage() {
             </>
           ) : null}
         </div>
+        {slug !== undefined ? (
+          <a
+            href={`https://${slug}${SLUG_SUFFIX}`}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-field border border-line-strong bg-surface px-[11px] py-[6px] font-sans text-[12px] text-ink no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            {slug}
+            {SLUG_SUFFIX} <span aria-hidden="true">↗</span>
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        ) : null}
+        {/* Held while a toggle or reorder is being written, so a publish
+            cannot race a write. */}
+        <Button
+          variant="primary"
+          disabled={loading || publishing || status === 'saving'}
+          onClick={publish}
+        >
+          {publishing ? 'Publishing…' : 'Publish'}
+        </Button>
         <SignOutControls />
       </header>
 
       <main className="flex flex-col gap-[16px] p-[20px]">
+        {publishError !== undefined ? (
+          <Card className="flex flex-col gap-[8px] p-[12px]">
+            <div role="alert" className="flex items-center gap-[10px]">
+              <Pill tone="danger">Not published</Pill>
+              <span className="font-sans text-[11.5px] text-ink2">
+                {publishError.message}
+              </span>
+            </div>
+            {publishError.fields.length > 0 ? (
+              <ul className="m-0 flex list-none flex-col gap-[4px] p-0">
+                {publishError.fields.map((field) => {
+                  const type = field.path.split('.')[0] ?? '';
+                  const label =
+                    DESCRIPTORS.find((d) => d.type === type)?.label ?? type;
+                  return (
+                    <li
+                      key={field.path}
+                      className="font-sans text-[11.5px] leading-[1.45] text-ink2"
+                    >
+                      <Link to={`/sections/${type}`} className="text-accent">
+                        {label}
+                      </Link>
+                      {' — '}
+                      {field.message}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
+          </Card>
+        ) : publishedAt !== undefined ? (
+          <p
+            role="status"
+            className="m-0 font-mono text-[11px] text-ink2"
+          >
+            Published{' '}
+            {new Date(publishedAt).toLocaleString([], {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            })}
+          </p>
+        ) : null}
+
         <div>
           <h1 className="m-0 font-sans text-[17px] font-semibold leading-[1.3] text-ink">
             Sections

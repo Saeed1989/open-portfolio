@@ -7,12 +7,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiConflictResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiHeader,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Tenant, TenantScope } from '../../common/decorators/tenant.decorator';
 import { UserIdGuard } from '../guards/user-id.guard';
@@ -34,8 +37,14 @@ export class PublishController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Validate and publish the draft (FR-PUB-6)' })
   @ApiOkResponse({ type: PublishResultDto })
+  @ApiNotFoundResponse({ description: '`portfolio_not_found`.' })
+  @ApiConflictResponse({ description: '`portfolio_suspended`.' })
+  @ApiUnprocessableEntityResponse({
+    description:
+      '`validation_failed`, with every failing field path, or `nothing_to_publish` (FR-CFG-4).',
+  })
   publish(@Tenant() tenant: TenantScope): Promise<PublishResultDto> {
-    throw new NotImplementedException();
+    return this.publishing.publish(tenant.portfolioId);
   }
 
   @Post('unpublish')
