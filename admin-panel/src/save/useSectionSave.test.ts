@@ -5,11 +5,11 @@ import { AdminError } from '../api/errors';
 import { classify, useSectionSave } from './useSectionSave';
 
 /*
- * The scheduling half of D2: the debounce, the backoff, the flushes.
+ * The scheduling half of D2: the manual save and the backoff.
  *
  * Fake timers throughout, because every assertion here is about *when* a write
- * is sent, and a test that waits 800 ms of wall clock to find out is a test
- * nobody runs.
+ * is sent, and a test that waits out a backoff of wall clock to find out is a
+ * test nobody runs.
  *
  * `waitFor` is deliberately not used. Testing Library detects Jest's fake
  * timers and not Vitest's, so it polls against a clock that never moves and
@@ -25,10 +25,22 @@ async function tick(ms: number): Promise<void> {
   });
 }
 
+/** What the Save button does, with the write it starts settled. */
+async function save(result: {
+  current: ReturnType<typeof useSectionSave>;
+}): Promise<void> {
+  act(() => {
+    result.current.flush();
+  });
+  await tick(0);
+}
+
 const updateSection = vi.spyOn(adminApi, 'updateSection');
 
-function portfolio(version: number) {
-  return { version } as Awaited<ReturnType<typeof adminApi.updateSection>>;
+function portfolio(draftRevision: number) {
+  return { draftRevision } as Awaited<
+    ReturnType<typeof adminApi.updateSection>
+  >;
 }
 
 beforeEach(() => {
@@ -41,8 +53,8 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('debounce', () => {
-  test('one write, 800 ms after the last edit', async () => {
+describe('manual save', () => {
+  test('an edit alone sends nothing', async () => {
     const { result } = renderHook(() =>
       useSectionSave({ type: 'invented', version: 4 }),
     );
@@ -50,14 +62,13 @@ describe('debounce', () => {
     act(() => {
       result.current.edit({ a: 1 });
     });
-    await tick(700);
-    expect(updateSection).not.toHaveBeenCalled();
+    await tick(30_000);
 
-    await tick(100);
-    expect(updateSection).toHaveBeenCalledTimes(1);
+    expect(updateSection).not.toHaveBeenCalled();
+    expect(result.current.state.dirty).toBe(true);
   });
 
-  test('keystrokes restart the timer rather than queueing writes', async () => {
+  test('flush sends the latest edit, once', async () => {
     const { result } = renderHook(() =>
       useSectionSave({ type: 'invented', version: 4 }),
     );
@@ -66,32 +77,25 @@ describe('debounce', () => {
       act(() => {
         result.current.edit({ a: value });
       });
-      act(() => {
-        vi.advanceTimersByTime(400);
-      });
     }
-    expect(updateSection).not.toHaveBeenCalled();
+    await save(result);
 
-    await tick(800);
     expect(updateSection).toHaveBeenCalledTimes(1);
-    /* The last value wins — not three writes, and not the first one. */
     expect(updateSection.mock.calls[0]?.[1]).toEqual({ content: { a: 3 } });
   });
 
-  test('flush sends immediately, without waiting out the debounce', async () => {
-    const { result } = renderHook(() =>
+  test('leaving the route sends nothing', async () => {
+    const { result, unmount } = renderHook(() =>
       useSectionSave({ type: 'invented', version: 4 }),
     );
 
     act(() => {
       result.current.edit({ a: 1 });
     });
-    act(() => {
-      result.current.flush();
-    });
+    unmount();
     await tick(0);
 
-    expect(updateSection).toHaveBeenCalledTimes(1);
+    expect(updateSection).not.toHaveBeenCalled();
   });
 });
 
@@ -104,7 +108,7 @@ describe('the precondition', () => {
     act(() => {
       result.current.edit({ a: 1 });
     });
-    await tick(800);
+    await save(result);
 
     expect(updateSection).toHaveBeenCalledWith('invented', { content: { a: 1 } }, 4);
   });
@@ -117,14 +121,14 @@ describe('the precondition', () => {
     act(() => {
       result.current.edit({ a: 1 });
     });
-    await tick(800);
+    await save(result);
     expect(result.current.state.status).toBe('saved');
 
     updateSection.mockResolvedValue(portfolio(6));
     act(() => {
       result.current.edit({ a: 2 });
     });
-    await tick(800);
+    await save(result);
 
     expect(updateSection).toHaveBeenLastCalledWith(
         'invented',
@@ -147,7 +151,7 @@ describe('failure handling', () => {
     act(() => {
       result.current.edit({ a: 1 });
     });
-    await tick(800);
+    await save(result);
     expect(result.current.state.status).toBe('failed');
     expect(updateSection).toHaveBeenCalledTimes(1);
 
@@ -167,7 +171,7 @@ describe('failure handling', () => {
     act(() => {
       result.current.edit({ typed: 'do not lose me' });
     });
-    await tick(800);
+    await save(result);
     expect(result.current.state.status).toBe('failed');
 
     expect(result.current.pendingContent()).toEqual({ typed: 'do not lose me' });
@@ -190,7 +194,7 @@ describe('failure handling', () => {
     act(() => {
       result.current.edit({ a: 1 });
     });
-    await tick(800);
+    await save(result);
     expect(result.current.state.status).toBe('refused');
 
     const callsAtRefusal = updateSection.mock.calls.length;
@@ -206,7 +210,7 @@ describe('failure handling', () => {
         status: 409,
         message: 'changed elsewhere',
         code: 'stale_write',
-        payload: { current: { version: 11 } },
+        payload: { code: 'stale_write', draftRevision: 11 },
       }),
     );
 
@@ -217,7 +221,7 @@ describe('failure handling', () => {
     act(() => {
       result.current.edit({ mine: true });
     });
-    await tick(800);
+    await save(result);
     expect(result.current.state.status).toBe('stale');
 
     expect(result.current.state.stale?.currentVersion).toBe(11);

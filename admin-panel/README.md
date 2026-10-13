@@ -344,45 +344,54 @@ implemented in exactly one module, so changing one does not touch the renderer:
 `src/save/machine.ts`, `src/api/precondition.ts`, and
 `src/registry/shim/validate.ts` respectively.
 
-### D2 — autosave. Proposed as `FR-CFG-8`
+### D2 — manual save. Proposed as `FR-CFG-8`
 
-> **FR-CFG-8 (Should)** — Admin saves the draft automatically. An edit to a
-> section schedules one `PATCH /admin/portfolio/sections/:type` 800 ms after
-> the last change; a further edit within that window replaces the pending
-> write rather than queueing a second. A save is flushed immediately on
-> `Cmd/Ctrl+S` and on leaving the section. There is no discard control: the
-> draft *is* the working copy (§2.4) and `required` is not enforced until
-> publish (FR-REG-8), so a save has nothing to be confirmed against. The
-> tenant is shown one of five states — saving, saved with a timestamp, failed,
-> refused, or conflicted (FR-CFG-9) — and the indicator never blocks typing and
-> never opens a dialog. A failed save holds the edits in the tab and retries
-> with exponential backoff to a 30-second ceiling; a save the server refuses on
-> a content rule is not retried, because the only remedy is to change the
-> content. Publish is unavailable while a write is in flight, so a publish
-> cannot race a save.
+> **FR-CFG-8 (Should)** — Admin saves a section's draft when the tenant asks:
+> the Save button in the editor's top bar, or `Cmd/Ctrl+S`, sends one
+> `PATCH /admin/portfolio/sections/:type` carrying the section's whole content.
+> An edit sends nothing, and neither does leaving the section; edits made while
+> a save is in flight wait for the next save. Leaving the section with unsaved
+> work asks first — a confirmation on in-app navigation, the browser's own
+> prompt on reload or close. There is no discard control: the draft *is* the
+> working copy (§2.4) and `required` is not enforced until publish (FR-REG-8),
+> so a save has nothing to be confirmed against. The tenant is shown one of
+> five states — saving, saved with a timestamp, failed, refused, or conflicted
+> (FR-CFG-9) — and the indicator never blocks typing and never opens a dialog.
+> A failed save holds the edits in the tab and retries with exponential backoff
+> to a 30-second ceiling, sending the content as it then stands; a save the
+> server refuses on a content rule is not retried, because the only remedy is
+> to change the content. Publish is unavailable while a write is in flight, so
+> a publish cannot race a save.
 
 Note what "saved" does *not* mean, which artboard 39 is explicit about and a
 requirement should be too: shape and type were validated, `required` was not,
 so an incomplete draft still reads as saved.
 
-### D3 — optimistic concurrency. Proposed as `FR-CFG-9`, plus an amendment to §7.2
+This replaces the autosave first proposed here (a write 800 ms after the last
+edit, flushed on leaving the section).
 
-> **FR-CFG-9 (Should)** — Every admin write carries `If-Match` set to the
-> `version` of the portfolio document it was composed against (§5.2). The admin
-> surface compares it to the stored `version` before writing, and refuses a
-> mismatch with `409 stale_write` carrying the current document. Admin neither
+### D3 — optimistic concurrency. Proposed as `FR-CFG-9`, plus amendments to §5.2 and §7.2
+
+> **FR-CFG-9 (Should)** — A section write carries `If-Match` set to the
+> `draftRevision` of the portfolio it was composed against. The admin surface
+> returns `draftRevision` with the draft and with every section write, and
+> increments it on each. It compares the header to the stored value in the
+> write itself, and refuses a mismatch — or an absent header — with
+> `409 stale_write` carrying the current `draftRevision`. Admin neither
 > discards the tenant's edits nor overwrites the server's copy on that refusal:
 > it reports the conflict, keeps the local edits editable and copyable, and
-> takes up the server's version only on an explicit action.
+> reads the server's draft again only on an explicit action.
 
-§7.2's endpoint list would gain the header and the response code; `409` there
-currently means only `portfolio_exists` and `slug_taken`.
+§5.2 would gain `draftRevision` on `portfolios`. §7.2's endpoint list would gain
+the header and the response code; `409` there currently means only
+`portfolio_exists` and `slug_taken`.
 
-Why the document's `version` rather than a per-section ETag: §5.2 gives the
-portfolio one `version`, already incremented by every write including the sync
-fold (FR-INT-15). A section PATCH writes the portfolio, so two sections edited
-in two tabs are two writes to one document — and the second one should be told
-about the first.
+Why `draftRevision` rather than §5.2's `version`: `version` is incremented by
+writes to `published` — a publish or a sync fold (FR-INT-15) — and not by a
+draft write, so it cannot tell one draft edit from the next. Why one revision
+for the draft rather than a per-section ETag: a section PATCH writes the
+portfolio, so two sections edited in two tabs are two writes to one document —
+and the second one should be told about the first.
 
 ### D4 — browser-side publish validation. Proposed as an amendment to FR-PUB-6
 
@@ -466,7 +475,7 @@ what comes back, or renders nothing.
 | 7 | `contact.intro` | Not in FR-SEC-CON-1 | Not in the artboard | **Omitted** | Only the package has it |
 | 8 | `contact` layout | — | A four-column table: Channel / Value / **Link health** / Show on page | **Generic label + control + switch** | "No editor other than the generic page" is a DO-NOT-BUILD item; the table is per-section tuning |
 | 9 | `contact` link health | FR-SEC-PROJ-9 scopes weekly link checking to **project** links | Draws a link-health column on contact links | **Not built** | The mock extends FR-SEC-PROJ-9 beyond its stated scope — flagged rather than implemented |
-| 10 | Save model | Silent: §2.4 defines draft/publish and nothing about saving | Top bar says "All changes saved" **and** the footer has "Discard changes" + "Save draft" | **Autosave, no discard** (D2) | The mock is internally inconsistent; D2 resolves it |
+| 10 | Save model | Silent: §2.4 defines draft/publish and nothing about saving | Top bar says "All changes saved" **and** the footer has "Discard changes" + "Save draft" | **Manual save, no discard** (D2) | The mock is internally inconsistent; D2 resolves it |
 
 Items 1, 3 and 10 are cases where the mock disagrees with *itself* rather than
 with the SRS, which is worth separating from the rest.

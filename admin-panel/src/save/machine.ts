@@ -6,7 +6,7 @@ import type { FieldError } from '../api/errors';
  * PROVISIONAL. Not in srs.md. The proposed requirement text is in
  * admin-panel/README.md.
  *
- * Autosave, debounced 800 ms after the last edit, one PATCH per section.
+ * Manual save: the Save button or Cmd+S sends one PATCH per section.
  * There is no "Discard changes": a draft is the tenant's working copy
  * (SRS §2.4) and the publish is the gate (FR-REG-8), so a save has nothing to
  * be confirmed against and nothing to be taken back from.
@@ -82,9 +82,6 @@ export const INITIAL: SaveState = {
   fields: [],
   stale: undefined,
 };
-
-/** The debounce of D2. */
-export const DEBOUNCE_MS = 800;
 
 /**
  * Backoff for the retry of a `failed` save: 1s, 2s, 4s, 8s, 16s, then 30s.
@@ -232,6 +229,8 @@ export function reduce(state: SaveState, event: SaveEvent): SaveState {
       return {
         ...state,
         status: 'saved',
+        /* The server's copy replaced the local edits; nothing is unsent. */
+        dirty: false,
         savedAt: event.at,
         lastSavedAt: event.at,
         stale: undefined,
@@ -257,7 +256,7 @@ export function isSaving(state: SaveState): boolean {
 /**
  * Whether the tenant has work this tab has not managed to send.
  *
- * True while a debounce is pending and true through every failure, which is
+ * True while edits are unsent and true through every failure, which is
  * what a beforeunload guard would read.
  */
 export function hasUnsavedWork(state: SaveState): boolean {

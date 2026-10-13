@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useBlocker, useParams } from 'react-router';
 import { adminApi } from '../api/client';
 import { AdminError } from '../api/errors';
 import { usePublishAttempted } from '../app-state/publish-attempted-context';
@@ -12,6 +12,7 @@ import {
 } from '../registry';
 import { buildGapMap } from '../renderer/gaps';
 import { SectionForm } from '../renderer/SectionForm';
+import { hasUnsavedWork } from '../save/machine';
 import { SaveIndicator } from '../save/SaveIndicator';
 import { useSectionSave } from '../save/useSectionSave';
 import { Button, Card, Pill } from '../ui/primitives';
@@ -74,7 +75,7 @@ export function SectionEditorPage() {
   }
 
   /* Keyed on the type so switching sections remounts: a fresh save machine,
-     a fresh debounce, and no chance of one section's pending write landing
+     and no chance of one section's pending write landing
      on another's endpoint. */
   return <Editor key={type} type={type} descriptor={descriptor} />;
 }
@@ -104,6 +105,35 @@ function Editor({
     },
   });
 
+  /* Nothing saves on the way out, so leaving with unsent edits asks first:
+     in-app navigation through the router, reload and close through the
+     browser's own prompt. */
+  const unsaved = hasUnsavedWork(save.state);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      unsaved && currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useEffect(() => {
+    if (blocker.state !== 'blocked') return;
+    if (window.confirm('You have unsaved changes. Leave without saving?')) {
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
+
+  useEffect(() => {
+    if (!unsaved) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [unsaved]);
+
   const load = useCallback(() => {
     setLoading(true);
     setLoadError(undefined);
@@ -111,7 +141,7 @@ function Editor({
       .portfolio()
       .then((portfolio) => {
         setContent(contentFor(portfolio, type));
-        setVersion(portfolio.version);
+        setVersion(portfolio.draftRevision);
       })
       .catch((cause: unknown) => {
         setLoadError(
@@ -189,20 +219,36 @@ function Editor({
             <Pill tone="ok">Appears</Pill>
           )}
         </div>
-        <SaveIndicator
-          state={save.state}
-          onRetry={save.retry}
-          onDismiss={save.dismiss}
-          onCopyEdits={copyEdits}
-          onAcceptServer={() => {
-            const snapshot = save.state.stale;
-            if (!snapshot) return;
-            save.acceptServer(
-              contentFor(snapshot.current, type),
-              snapshot.currentVersion ?? 0,
-            );
-          }}
-        />
+        <div className="flex flex-wrap items-center gap-[10px]">
+          <SaveIndicator
+            state={save.state}
+            onRetry={save.retry}
+            onDismiss={save.dismiss}
+            onCopyEdits={copyEdits}
+            onAcceptServer={() => {
+              /* The refusal carries the revision, not the document, so the
+                 server's copy is read again. A failed read leaves the stale
+                 state, and the tenant's edits, as they were. */
+              void adminApi
+                .portfolio()
+                .then((portfolio) => {
+                  save.acceptServer(
+                    contentFor(portfolio, type),
+                    portfolio.draftRevision,
+                  );
+                })
+                .catch(() => undefined);
+            }}
+          />
+          <Button
+            sm
+            variant="primary"
+            disabled={!save.state.dirty || save.state.status === 'saving'}
+            onClick={save.flush}
+          >
+            Save
+          </Button>
+        </div>
       </header>
 
       {copied ? (

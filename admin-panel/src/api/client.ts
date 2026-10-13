@@ -7,6 +7,7 @@ import type {
   Me,
   PublishResult,
   SlugAvailabilityResult,
+  UpdatedSection,
   UploadUrl,
 } from './dto';
 import { goToSignIn } from '../auth/navigation';
@@ -33,7 +34,7 @@ interface RequestInit_ {
   readonly method?: string;
   readonly body?: unknown;
   readonly signal?: AbortSignal | undefined;
-  /** D3: the document version this write was composed against. */
+  /** D3: the draft revision this write was composed against. */
   readonly ifMatch?: number | undefined;
 }
 
@@ -154,7 +155,7 @@ export const adminApi = {
     ifMatch: number | undefined,
     signal?: AbortSignal,
   ) =>
-    call<AdminPortfolio>(
+    call<UpdatedSection>(
       `${ADMIN}/portfolio/sections/${encodeURIComponent(type)}`,
       { method: 'PATCH', body, ifMatch, signal },
     ),
