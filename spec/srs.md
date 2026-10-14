@@ -1,10 +1,11 @@
 # Software Requirements Specification — Portfolio Generator
 
-**Version** 0.13 (draft) · **Date** 14 October 2026
+**Version** 0.14 (draft) · **Date** 14 October 2026
 **Source** `portfolio-website-requirements.md` (business requirements, v1)
 
 **Change log**
 
+- **0.14** (14 October 2026) — In the render payload, a collection section's `data[type]` is its content object, with its items under `items` beside its section-level fields, not a bare array. Amended: §7.1.
 - **0.13** (14 October 2026) — `portfolios` gains two revision counters: `draftRevision`, the draft's concurrency token, and `publishedDraftRevision`, the draft revision the last publish carried. Amended: §2.3 step 7, §5.2, §7.2.
 - **0.12** (11 October 2026) — The admin SPA moves to its own static host at `admin.openfolio.site`, which proxies `/api/*` to `gateway` on `gateway`'s own hostname. `gateway` no longer serves the SPA. Amended: FR-EDGE-1, 2, 6; NFR-SEC-1; NFR-PERF-5; NFR-OPS-4; §2.1, §2.5 step 1, §2.6, §7.4, §10.3 question 24. Added: FR-EDGE-9, FR-EDGE-10. Open question 29 added.
 - **0.11** (11 October 2026) — Hosting-agnostic trust: `api` may be publicly reachable, and the hop from the proxy to `api` is authenticated by an API key instead of network placement. `edge` is renamed `gateway` (`apps/gateway`); FR-EDGE identifiers are retained, and requirements changed by the rename alone are not marked amended. Integration sync is started by an authenticated internal trigger instead of an in-process schedule. Amended: FR-AUTH-11, 12; FR-EDGE-3, 4, 5, 6, 7; FR-INT-2; NFR-SEC-1, 3, 7, 8; §2.1, §2.2 step 4, §2.5 step 1, §2.6, §3, §5.4, §5.6, §6.10 title, §7.3, §9, §10.4. Added: FR-EDGE-8, FR-INT-16. Open questions 11, 12 revised; 25–28 added.
@@ -611,14 +612,14 @@ The render payload is two top-level objects and nothing else:
   },
   data: {
     hero:      { ... },                  // a single-cardinality type: one object
-    projects:  [ ... ],                  // a collection type: its items, in order
-    skills:    [ ... ],
+    projects:  { items: [ ... ], ... },  // a collection type: its items, in order, beside its section-level fields
+    skills:    { items: [ ... ], ... },
     ...                                  // one key per entry in config.sections, and no other
   }
 }
 ```
 
-`config` is everything that decides whether and how content appears, and every value in it is public-safe in §2.1's sense: theme, SEO, and the analytics id all appear in the rendered page's source whether or not the API returns them. `data` is content only — no `enabled` flag, no section `order`, nothing the renderer consults to decide whether to draw a section, which `config.sections` has already decided. A disabled or empty section is absent from both halves. A key in `data` with no matching entry in `config.sections`, or the reverse, is a defect in the builder (FR-REG-9), not a state the renderer handles.
+`config` is everything that decides whether and how content appears, and every value in it is public-safe in §2.1's sense: theme, SEO, and the analytics id all appear in the rendered page's source whether or not the API returns them. `data` is content only — no `enabled` flag, no section `order`, nothing the renderer consults to decide whether to draw a section, which `config.sections` has already decided. A disabled or empty section is absent from both halves. `data[type]` is the section's content object as the builder left it: a collection's items stay under `items`, with unpublished items removed, alongside the section-level fields the descriptor declares, which a bare array would have nowhere to carry. A key in `data` with no matching entry in `config.sections`, or the reverse, is a defect in the builder (FR-REG-9), not a state the renderer handles.
 
 Keying `data` by type relies on a portfolio holding at most one section of each type, which the admin routes of §7.2 already assume by addressing a section as `:type`. A second instance of one type — two galleries, say — would need a key other than its type, and this shape would change with it.
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Derived from `srs.md` v0.13. On conflict, the SRS wins.
+Derived from `srs.md` v0.14. On conflict, the SRS wins.
 
 Multi-tenant portfolio SaaS. One portfolio per tenant at `{slug}.openfolio.site`. Admin edits `draft`; publish builds the render payload once and stores it; public pages serve it unchanged.
 
