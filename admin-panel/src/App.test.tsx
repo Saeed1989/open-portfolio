@@ -19,9 +19,9 @@ import {
 } from './test/auth-server';
 
 /*
- * FR-AUTH-7 and FR-AUTH-20 at the gate: what a guarded route renders, and
- * where it sends the tenant, for each answer `GET /admin/me` and the refresh
- * can give. Against the MSW handlers of `src/test/auth-server.ts`.
+ * The gate: what a guarded route renders, and where it sends the tenant, for
+ * each answer `GET /admin/me` and the refresh can give. Against the MSW
+ * handlers of `src/test/auth-server.ts`.
  */
 
 const goToSignIn = vi.hoisted(() => vi.fn());

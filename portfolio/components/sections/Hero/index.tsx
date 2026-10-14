@@ -10,16 +10,10 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * The hero (business req 1, FR-SEC-HERO-1..3).
- *
- * It is the one section with no section heading of its own — it labels the
- * landmark with the name itself — so it composes PageSection directly rather
- * than SectionShell, and takes the design's taller hero padding with no rule
- * above it.
- *
- * FR-SEC-HERO-3: with no avatar the `portrait` run renders nothing, and the
- * text column simply grows into the space. There is no placeholder and no
- * reserved gap.
+ * The hero. It has no section heading of its own — it labels the landmark
+ * with the name — so it composes PageSection directly rather than
+ * SectionShell. With no avatar the `portrait` run renders nothing and the text
+ * column grows into the space: no placeholder, no reserved gap.
  */
 const RENDERERS = {
   title: (content: HeroContent) =>

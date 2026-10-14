@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest';
 import { adminApi, authApi } from './client';
 
 /*
- * D0, FR-EDGE-9: the app speaks only to its own origin. Every request is a
+ * The app speaks only to its own origin. Every request is a
  * relative `/api/...` URL — no scheme, no host, and so nothing that could name
  * `gateway` or `api`.
  */

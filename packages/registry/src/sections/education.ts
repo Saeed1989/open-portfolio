@@ -6,7 +6,6 @@ export const education = {
   label: 'Education',
   description: 'Qualifications, with optional detail.',
   priority: 'should',
-  businessRef: 'BR 6',
   cardinality: 'collection',
   itemFields: [
     {

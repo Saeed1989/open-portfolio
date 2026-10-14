@@ -72,7 +72,7 @@ const CARD_RENDERERS = {
       <DescriptionListItem label="Problem">{item.problem}</DescriptionListItem>
     ) : null,
 
-  /* FR-SEC-PROJ-5: required, and the design gives it the heavier weight. */
+  /* Required, and the design gives it the heavier weight. */
   impact: (item: ProjectItem) =>
     item.impact ? (
       <DescriptionListItem label="Impact" emphasis>
@@ -160,7 +160,7 @@ const ALL = 'All';
 
 export interface ProjectGalleryProps {
   items: readonly ProjectItem[];
-  /** Tenant-editable filter categories (FR-SEC-PROJ-7). */
+  /** Tenant-editable filter categories. */
   categories?: readonly string[];
 }
 
@@ -173,10 +173,8 @@ export function ProjectGallery({ items, categories }: ProjectGalleryProps) {
   const triggerRef = useRef<HTMLElement | null>(null);
 
   /*
-   * Only categories some project actually uses. A tenant may leave a category
-   * configured after deleting the last project in it, and a filter that
-   * reliably yields nothing is worse than no filter — business req 18.1
-   * applied to a control rather than to a section.
+   * Only categories some project actually uses: a filter that reliably yields
+   * nothing is worse than no filter.
    */
   const used = (categories ?? []).filter((name) =>
     items.some((item) => item.category === name),
@@ -191,7 +189,7 @@ export function ProjectGallery({ items, categories }: ProjectGalleryProps) {
 
   return (
     <>
-      {/* Filtering is client-side over data already rendered (FR-SEC-PROJ-7),
+      {/* Filtering is client-side over data already rendered,
           so no project leaves the initial HTML when a filter is applied. */}
       {used.length > 0 ? (
         <Stack

@@ -23,14 +23,9 @@ export interface GapMap {
 }
 
 /**
- * Builds the map.
- *
- * `publishAttempted` is the whole of the pending/blocking distinction. Before
- * a publish is attempted every gap is `'pending'` — the dotted grey marker
- * that says "required to publish, not blocking this save" — because FR-REG-8
- * defers `required` to publish and a draft is allowed to be half-written. A
- * publish attempt turns the same set red. Nothing else changes: the same
- * errors, the same paths, one flag.
+ * Builds the map. Before a publish is attempted every gap is `'pending'`,
+ * because `required` is enforced only at publish; a publish attempt turns the
+ * same set red.
  */
 export function buildGapMap(
   errors: readonly ValidationError[],

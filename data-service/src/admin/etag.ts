@@ -2,8 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 
 /*
  * The admin surface's concurrency token is `portfolios.draftRevision`, served
- * as a strong ETag and echoed back in `If-Match` on every draft write. Not in
- * the SRS; see the note on `Portfolio.draftRevision`.
+ * as a strong ETag and echoed back in `If-Match` on every draft write.
  */
 
 export function etag(draftRevision: number): string {

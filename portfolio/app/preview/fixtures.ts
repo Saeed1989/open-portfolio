@@ -376,7 +376,7 @@ export const fixtureSections: TypedSectionInstance[] = [
 
   /*
    * Trainings, ordered directly after achievements the way the registry
-   * declares it (SRS §4.1). No `source` and no badge fields — the descriptor
+   * declares it. No `source` and no badge fields — the descriptor
    * declares neither, so this section cannot draw a Credly frame however the
    * payload is written.
    */
@@ -493,7 +493,7 @@ export const droppedSections: TypedSectionInstance[] = [
   },
 ];
 
-/** Hero alone — the "nothing else renders" check (FR-CFG-2). */
+/** Hero alone — the "nothing else renders" check. */
 export const heroOnlySections: TypedSectionInstance[] = [
   fixtureSections[0],
   ...droppedSections,

@@ -5,8 +5,8 @@ import { loadEnv } from 'vite';
 /*
  * Nothing that names `gateway`, `api`, or a credential may reach the bundle.
  *
- * The app is a plain client that calls `/api/*` on its own origin (D0). The
- * admin host forwards those calls (FR-EDGE-9), so `gateway`'s address is the
+ * The app is a plain client that calls `/api/*` on its own origin. The
+ * admin host forwards those calls, so `gateway`'s address is the
  * admin host's to know, and `api`'s address and the API key are `gateway`'s.
  * That is kept by two conventions — no variable is VITE_-prefixed, and nothing
  * under src/ mentions them — and both are conventions a future edit could
@@ -25,7 +25,7 @@ const DIST = join(ROOT, 'dist');
 
 /** Header names that must never appear, in any case, whatever the environment
  *  holds. Each is as good as a confession: `gateway` sets both on every
- *  request to `api` (FR-EDGE-4) and the browser never does, so its presence
+ *  request to `api` and the browser never does, so its presence
  *  means transport code learned about something it must not know. */
 const FORBIDDEN_LITERALS = ['X-Api-Key', 'X-User-Id'];
 

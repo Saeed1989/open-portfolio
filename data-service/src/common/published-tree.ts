@@ -4,7 +4,7 @@ import {
   type SectionType,
 } from '@portfolio/registry';
 
-/** A content tree in draft shape (§5.2). */
+/** A content tree in draft shape. */
 export interface DraftTree {
   readonly sections: readonly {
     readonly type: SectionType;
@@ -23,7 +23,7 @@ export interface PublishedTreeShape {
   readonly source: Record<string, unknown>;
 }
 
-/* §5.2: an item carrying `published: false` stays in the draft only. */
+/* An item carrying `published: false` stays in the draft only. */
 function withoutUnpublishedItems(content: unknown): unknown {
   if (!isRecord(content) || !Array.isArray(content.items)) return content;
   return {
@@ -35,21 +35,14 @@ function withoutUnpublishedItems(content: unknown): unknown {
 }
 
 /*
- * Builds the two served halves and `source` from a draft (SRS §2.3 step 7).
- * Called by publish and by the seed, so a seeded tenant and a published one
- * hold the same shape.
+ * Builds the two served halves and `source` from a draft. Called by publish
+ * and by the seed, so both store the same shape.
  *
- * **This is a stand-in.** FR-REG-9 puts this in the registry package — "It is
- * the only code that produces the shape" — and `@portfolio/registry` does not
- * export it yet.
+ * A stand-in: the builder belongs in `@portfolio/registry`, which does not
+ * export one yet. Generic over descriptors, with no hard-coded field list.
+ * Merges no integration payload: no sync writes one yet.
  *
- * TODO(FR-REG-9): delete this and call the registry's builder once it exists.
- *
- * It is deliberately generic over descriptors and hard-codes no field list
- * (FR-REG-1): it drops disabled sections and unpublished items, drops the
- * sections whose content satisfies their descriptor's `emptyCondition`, orders
- * by `order`, and keys `data` by type. It does not merge integration payloads:
- * no sync writes one yet.
+ * TODO: replace with the registry's builder once it exists.
  */
 export function buildPublishedTree(draft: DraftTree): PublishedTreeShape {
   const enabled = [...draft.sections]
@@ -67,12 +60,9 @@ export function buildPublishedTree(draft: DraftTree): PublishedTreeShape {
   const data: Record<string, unknown> = {};
   for (const section of survivors) {
     /*
-     * §7.1: `data[type]` is the section's content object verbatim, whatever
-     * its cardinality — a collection's items stay under `items`, alongside
-     * the section-level fields its descriptor declares (`skills.legend`,
-     * `projects.categories`, `achievements.credlyUsername`). Projecting a
-     * collection down to a bare array would discard those: `sectionFields`
-     * has nowhere to go in one.
+     * `data[type]` is the section's content object verbatim: a collection's
+     * items stay under `items`, alongside its section-level fields, which a
+     * bare array would discard.
      */
     data[section.type] = section.content;
   }

@@ -4,11 +4,11 @@ import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
 
 /*
- * public, admin and auth are separate surfaces in one process (SRS §2.1) and
+ * public, admin and auth are separate surfaces in one process and
  * may not import each other's internals — one zone per surface. common,
  * external and @portfolio/registry are shared.
  *
- * Auth has one declared way in (FR-AUTH-17): `account-access.ts`, the
+ * Auth has one declared way in: `account-access.ts`, the
  * interface, and `auth.module.ts`, which provides it. Nothing else under
  * src/auth is importable from another surface, so no other surface can
  * register a model for `users` or `sessions`. The shared trees may not reach
@@ -34,7 +34,7 @@ const zones = [
   },
 ].map((zone) => ({
   ...zone,
-  message: 'Surfaces may not import each other’s internals (SRS §2.1).',
+  message: 'Surfaces may not import each other’s internals.',
 }));
 
 export default defineConfig(

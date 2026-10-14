@@ -36,7 +36,7 @@ import { SectionsService } from './sections/sections.service';
       { name: IntegrationCache.name, schema: IntegrationCacheSchema },
       { name: LinkHealth.name, schema: LinkHealthSchema },
     ]),
-    /* For the interface of FR-AUTH-17 — the only way to account data. */
+    /* For the account-access interface — the only way to account data. */
     AuthModule,
   ],
   controllers: [

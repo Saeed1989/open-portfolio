@@ -15,23 +15,14 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Skills (business req 3, FR-SEC-SKILL-*).
+ * Skills. One array feeds both tiers: `prominent` is a flag on a skill, not a
+ * second list, so a rating is stored once.
  *
- * One array feeds both tiers (FR-SEC-SKILL-1): `prominent` is a flag on a
- * skill, not a second list, so a rating is stored once and can never disagree
- * between the two views.
- *
- * FR-SEC-SKILL-4 — every prominent card draws its bar in `var(--accent)` by
- * way of ProgressBar. There is no per-skill colour to configure, so the set
- * reads as "featured", not "ranked".
- *
- * FR-SEC-SKILL-6 — the detailed tier passes `size="sm"`, which selects the
- * `--size-bar-sm` theme constant. The height is not a tenant setting and not a
- * number this component knows.
- *
- * FR-SEC-SKILL-7 — the rating is rendered as text beside every bar, in both
- * tiers. ProgressBar additionally carries it as an ARIA value; neither bar
- * length nor colour is ever the only carrier.
+ * Every prominent card draws its bar in `var(--accent)`; there is no
+ * per-skill colour, so the set reads as "featured", not "ranked". The
+ * detailed tier passes `size="sm"`, a theme constant rather than a tenant
+ * setting. The rating is rendered as text beside every bar, in both tiers:
+ * neither bar length nor colour is ever its only carrier.
  */
 function ratingText(rating: number): string {
   return `${rating}/10`;
@@ -130,7 +121,7 @@ interface SkillGroup {
 
 /**
  * Groups by the tenant's category list, in the tenant's order. Categories with
- * no skills are dropped (FR-SEC-SKILL-8). A skill whose category is not on the
+ * no skills are dropped. A skill whose category is not on the
  * list is not silently lost — its category is appended after the declared
  * ones, so removing a category from the list never deletes content from view.
  */

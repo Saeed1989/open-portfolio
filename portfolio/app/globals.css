@@ -177,7 +177,7 @@
   --track-pair: 280px;         /* two-up split, e.g. contact */
   /* The case-study dialog. Width and height are both capped *and* relative, so
      the dialog is a panel on a desktop and very nearly the whole viewport on a
-     phone without a breakpoint deciding which (NFR-RESP-1). */
+     phone without a breakpoint deciding which. */
   --size-dialog: 980px;
   --size-dialog-h: 1100px;
   --size-dialog-vh: 96vh;
@@ -215,14 +215,14 @@
   /* --border and --track re-derive from the new --text automatically. */
 }
 
-/* A tenant whose theme mode is `system` (FR-THM-1) follows the visitor's
+/* A tenant whose theme mode is `system` follows the visitor's
    setting. Scoping the media query to the attribute rather than to :root keeps
    an explicit light or dark choice absolute, and does it with no client
    JavaScript — so there is no flash of the wrong theme on first paint.
 
    A tenant's own --accent is written inline on <html> and therefore wins over
-   the value below, in both modes. That is intended: it is their colour, and
-   FR-THM-3 has already checked it against both backgrounds. */
+   the value below, in both modes. That is intended: it is their colour.
+   Nothing checks its contrast against either background. */
 @media (prefers-color-scheme: dark) {
   [data-theme='system'] {
     --accent: #8aa4ff;
@@ -270,15 +270,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* The three case-study bodies are the only rich text the system renders, and
-   the only markup on the page this stylesheet does not author. Their tags
-   arrive from storage, so they cannot carry a class and have to be styled by
-   element — which is why these rules exist at all rather than living as
-   Tailwind utilities on a component.
-
-   The selector list is closed on purpose. It is exactly FR-SEC-PROJ-12's
-   allowlist, so a tag outside that list has no styling here — a visible
-   signal, in review, that something reached the page which should not have. */
+/* The three case-study bodies are the only markup on the page this
+   stylesheet does not author. Their tags arrive from storage and cannot carry
+   a class, so they are styled by element. The selector list is exactly the
+   rich-text allowlist, so a tag outside it has no styling here. */
 .rich-text > * {
   margin: 0;
 }

@@ -6,7 +6,6 @@ export const testimonials = {
   label: 'Testimonials',
   description: 'Two to four, in the words of people you worked with.',
   priority: 'should',
-  businessRef: 'BR 8',
   cardinality: 'collection',
   min: 2,
   max: 4,

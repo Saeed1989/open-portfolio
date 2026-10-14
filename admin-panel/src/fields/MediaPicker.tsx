@@ -8,17 +8,12 @@ import {
 import { Button, ErrorMessage, GapNote, Hint, Label } from '../ui/primitives';
 
 /**
- * An asset card with its alt text, as one field.
+ * An asset card with its alt text, as one field. Alt text sits inside the
+ * picker because an image cannot be attached without it; a separate field
+ * could be left empty while the image stayed.
  *
- * Alt text is inside the picker rather than beside it because FR-MED-5 makes
- * it a condition of attaching the image at all — "an image cannot be attached
- * to content without it". A separate field could be left empty while the image
- * stayed; a sub-field of the picker cannot.
- *
- * This component selects an already-uploaded asset and edits its alt text. It
- * does not upload: FR-MED-1 puts the bytes on a signed URL straight to storage
- * and the API never proxies them, so the upload is a transport concern that
- * belongs beside the media routes, not in a field component.
+ * Selects an already-uploaded asset and edits its alt text. It does not
+ * upload: bytes go to storage on a signed URL, which is a transport concern.
  */
 export interface MediaAsset {
   readonly id: string;
@@ -99,9 +94,8 @@ export function MediaPicker({
         ) : (
           <>
             <div className="flex items-start gap-[11px]">
-              {/* Dimensions are on the element, not only in the caption:
-                  NFR-PERF-2's layout-shift budget is spent by images that
-                  arrive without them (FR-MED-6). */}
+              {/* Dimensions are on the element, not only in the caption, so
+                  the image cannot shift the layout when it arrives. */}
               <img
                 src={value.url}
                 alt={value.altText}

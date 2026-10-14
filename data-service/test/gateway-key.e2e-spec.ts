@@ -8,7 +8,7 @@ import { loadGatewayKeys } from '../src/transport/gateway-key.config';
 import { createApp, gatewayKeys } from './helpers';
 
 /*
- * The API key (FR-EDGE-5, FR-EDGE-8, NFR-SEC-8): `api` at its own address,
+ * The API key: `api` at its own address,
  * with no stand-in for `gateway` in front. /auth/* and /admin/* answer 401
  * without a key this process accepts; /public/* asks for none.
  */
@@ -122,7 +122,7 @@ describe('api at its own address', () => {
   });
 });
 
-describe('rotation (FR-EDGE-8)', () => {
+describe('rotation', () => {
   const OLD = key();
   const NEW = key();
 
@@ -152,7 +152,7 @@ describe('rotation (FR-EDGE-8)', () => {
   });
 });
 
-describe('GATEWAY_API_KEYS (FR-EDGE-8): boot is refused when', () => {
+describe('GATEWAY_API_KEYS: boot is refused when', () => {
   const JWT_KEY = key();
   const env =
     (value: string | undefined) =>

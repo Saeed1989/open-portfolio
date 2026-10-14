@@ -1,19 +1,8 @@
 /*
- * The admin surface's wire types, hand-written, in one file.
- *
- * Every type below is transcribed from `data-service/openapi/admin.json`,
- * which `api` regenerates on each dev boot from the DTOs of SRS §7.2. When
- * these are swapped for generated output, this file is the only one that
- * changes: nothing outside it re-declares a wire shape, and the transport in
- * `client.ts` is generic over them.
- *
- * These are admin's own view of the wire. They are deliberately not `api`'s
- * classes: §2.1 shares no DTO between surfaces, and admin may not import from
- * `api` at all.
- *
- * Section content is `unknown` on purpose. Its shape is the registry's to
- * declare (FR-REG-1), and a hand-written copy here would be a second source of
- * truth for the thing the registry exists to be the only source of.
+ * The admin surface's wire types, hand-written from
+ * `data-service/openapi/admin.json`. They are admin's own view of the wire:
+ * no DTO is shared with `api`. Section content is `unknown` on purpose — its
+ * shape is the registry's to declare.
  */
 
 export type AuthProvider = 'github' | 'google';
@@ -25,23 +14,12 @@ export type IntegrationStatus = 'ok' | 'failing' | 'revoked';
 export type LinkState = 'ok' | 'broken' | 'unchecked';
 
 /**
- * A section type, as it travels on the wire.
- *
- * Deliberately `string` and not a union of the thirteen declared types. The
- * registry is the single source of truth for which types exist (FR-REG-1), and
- * FR-REG-3 requires that adding one costs a registry entry and no change to
- * `admin` — a union here would make every new section type an edit to this
- * file, which is the opposite of that.
- *
- * `api`'s OpenAPI document does enumerate them, because `api` validates
- * against the enum. This app does not validate section types: it asks the
- * registry for a descriptor and renders what comes back, or renders nothing.
- * The narrower type would buy checking that this app has no use for and cost
- * the property the registry exists to provide.
+ * A section type, as it travels on the wire. Deliberately `string`, not a
+ * union: a union would make every new section type an edit to this file.
  */
 export type SectionType = string;
 
-/** What `admin` branches on to choose dashboard or creation screen (FR-AUTH-7). */
+/** What `admin` branches on to choose dashboard or creation screen. */
 export interface MePortfolio {
   readonly slug: string;
   readonly status: PortfolioStatus;
@@ -109,12 +87,8 @@ export interface UpdatedSection {
 }
 
 /**
- * `GET /admin/slug-availability` (§7.2).
- *
- * Specified but not yet implemented by `api` — it is absent from
- * openapi/admin.json. Declared here because the onboarding screen is the first
- * thing built on this transport and the answer is advisory in any case: only
- * the write decides.
+ * `GET /admin/slug-availability`. The answer is advisory: only the write
+ * decides.
  */
 export type SlugAvailability = 'available' | 'taken' | 'reserved' | 'invalid';
 

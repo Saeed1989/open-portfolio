@@ -32,8 +32,8 @@ export class PublishService {
   ) {}
 
   /**
-   * SRS §2.3 steps 2–8, without step 4: no sync writes a payload yet, so
-   * there is none to merge.
+   * Validates the draft, builds and stores the published tree, then
+   * revalidates. Merges no integration payload: no sync writes one yet.
    */
   async publish(portfolioId: string | null): Promise<PublishResultDto> {
     if (portfolioId === null)

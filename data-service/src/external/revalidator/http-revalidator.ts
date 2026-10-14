@@ -5,12 +5,8 @@ const TIMEOUT_MS = 5000;
 
 /**
  * REVALIDATE_MODE=http — POSTs `{ slug }` to the portfolio app's revalidation
- * endpoint with the shared secret (§2.3 step 8, §7.3, NFR-SEC-3).
- *
- * A failure is logged and not thrown. By the time this runs the published
- * tree is already written, so the publish has happened; a portfolio app that
- * is down or slow leaves the cached page to expire by its own lifetime, and
- * must not turn a stored publish into an error.
+ * endpoint with the shared secret. A failure is logged, not thrown: the
+ * publish is already stored, and the cached page expires on its own.
  */
 export class HttpRevalidator implements Revalidator {
   private readonly logger = new Logger(HttpRevalidator.name);

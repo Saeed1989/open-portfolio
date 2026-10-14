@@ -4,13 +4,13 @@ import { AppModule } from '../src/app.module';
 import { setupApp } from '../src/app.setup';
 import { GATEWAY_KEYS } from '../src/transport/gateway-key.config';
 
-/** The keys the suite's `api` accepts, minted in global-setup (FR-EDGE-8). */
+/** The keys the suite's `api` accepts, minted in global-setup. */
 export const gatewayKeys = (): string[] =>
   JSON.parse(process.env.GATEWAY_API_KEYS!) as string[];
 
 /**
  * By default the app sits behind a stand-in for `gateway`, which attaches
- * the key to a request that carries none (FR-EDGE-4), so a spec about a
+ * the key to a request that carries none, so a spec about a
  * surface need not repeat it. `behindGateway: false` is `api` at its own
  * address, where a request carries only what the test sent.
  */
@@ -74,7 +74,7 @@ export function maxAge(cookie: SetCookie): number {
   return Number(attribute?.slice('max-age='.length));
 }
 
-/** FR-AUTH-3: both cleared, each with its own `Path` and `Max-Age=0`. */
+/** Both cleared, each with its own `Path` and `Max-Age=0`. */
 export function expectSessionCookiesCleared(res: {
   headers: Record<string, unknown>;
 }): void {
@@ -89,7 +89,7 @@ export function expectSessionCookiesCleared(res: {
   );
 }
 
-/** The attributes every cookie of the auth surface carries (FR-AUTH-3, FR-AUTH-8). */
+/** The attributes every cookie of the auth surface carries. */
 export function expectHostOnlyHardened(cookie: SetCookie): void {
   expect(cookie.attributes).toEqual(
     expect.arrayContaining(['httponly', 'secure', 'samesite=lax']),

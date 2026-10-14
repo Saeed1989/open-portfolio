@@ -1,10 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsObject, IsOptional, Min } from 'class-validator';
 
-/*
- * Toggle, reorder, replace content, or any of them together (FR-CFG-1,
- * FR-CFG-3). At least one is required.
- */
+/* Toggle, reorder, replace content, or any of them together. At least one is required. */
 export class UpdateSectionDto {
   @ApiProperty({ type: Boolean, required: false, example: true })
   @IsOptional()

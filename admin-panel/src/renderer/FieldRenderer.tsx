@@ -37,7 +37,7 @@ export interface FieldRendererProps {
   readonly id: string;
   readonly gap: Gap;
   readonly gapNote?: string | undefined;
-  /** A save the server refused on content (D2's `refused`), not a publish gap. */
+  /** A save the server refused on content, not a publish gap. */
   readonly error?: string | undefined;
   readonly disabled?: boolean | undefined;
   readonly onChange: (key: string, value: unknown) => void;
@@ -240,10 +240,9 @@ export function FieldRenderer({
   if (!field.hideable) return control;
 
   /*
-   * FR-SEC-CON-2: the toggle sits beside the field, and hiding keeps the
-   * value. The switch is a sibling control rather than something the field
-   * components know about — none of the eleven has a notion of visibility,
-   * and giving one would put a section's concern inside a generic component.
+   * The visibility toggle sits beside the field, and hiding keeps the value.
+   * It is a sibling control: none of the field components has a notion of
+   * visibility.
    */
   return (
     <div className="flex items-start gap-[14px]">

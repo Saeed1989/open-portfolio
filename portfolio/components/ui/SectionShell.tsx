@@ -12,8 +12,8 @@ import { Text } from './Text';
  * landmark navigation announces a real name.
  *
  * Deciding whether a section renders at all is NOT this component's job —
- * that belongs to the caller, driven by the registry's emptyCondition
- * (FR-CFG-2). If SectionShell is rendered, it draws its heading.
+ * that belongs to the caller, driven by the registry's emptyCondition. If
+ * SectionShell is rendered, it draws its heading.
  */
 const MEASURE = {
   content: 'max-w-content',

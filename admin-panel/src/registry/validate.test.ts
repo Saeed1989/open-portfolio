@@ -11,11 +11,8 @@ import {
 } from './index';
 
 /*
- * D4's validator, over descriptors it has never seen.
- *
- * Every descriptor below is invented for the test. That is the point: if any
- * of these needed a change inside the validator, the validator would not be
- * generic and FR-REG-3 would not hold.
+ * The validator, over descriptors invented for the test: if any needed a
+ * change inside the validator, it would not be generic.
  */
 
 const conditional = {
@@ -23,7 +20,6 @@ const conditional = {
   label: 'Invented',
   description: 'Not a real section type.',
   priority: 'must',
-  businessRef: '—',
   cardinality: 'single',
   fields: [
     { key: 'always', label: 'Always', kind: 'text', required: true },
@@ -81,7 +77,7 @@ describe('conditional required', () => {
     expect(errors.map((error) => error.path)).toContain('always');
   });
 
-  test('every failure is collected, never only the first (FR-PUB-6)', () => {
+  test('every failure is collected, never only the first', () => {
     const errors = validateForPublish(conditional, { trigger: 'b' });
     expect(errors.map((error) => error.path).sort()).toEqual([
       'always',
@@ -107,7 +103,6 @@ const hideable = {
   label: 'Hideable',
   description: '',
   priority: 'must',
-  businessRef: '—',
   cardinality: 'single',
   fields: [hideableLink],
   emptyCondition: () => false,
@@ -172,7 +167,6 @@ describe('items with a publish flag', () => {
     label: 'Badges',
     description: '',
     priority: 'should',
-    businessRef: '—',
     cardinality: 'collection',
     min: 2,
     itemNoun: 'badge',
@@ -182,7 +176,7 @@ describe('items with a publish flag', () => {
   } satisfies CollectionSectionDescriptor;
 
   test('an unpublished item is not validated', () => {
-    /* FR-SEC-ACH-5: an imported badge the tenant has not promoted must not
+    /* An imported badge the tenant has not promoted must not
        block a publish for want of a field they were never asked to fill. */
     const errors = validateForPublish(badges, {
       items: [
@@ -232,7 +226,6 @@ const collection = {
   label: 'Collection',
   description: '',
   priority: 'should',
-  businessRef: '—',
   cardinality: 'collection',
   min: 2,
   max: 3,

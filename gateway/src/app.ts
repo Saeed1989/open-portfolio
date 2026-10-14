@@ -19,7 +19,7 @@ const USER_ID = /^[0-9a-f]{24}$/i;
 
 const RESOLVE_TIMEOUT_MS = 2000;
 
-/** The two paths FR-AUTH-16 limits more strictly than the rest of auth. */
+/** The two paths limited more strictly than the rest of auth. */
 const OAUTH_STEPS = new Set(['/auth/google/start', '/auth/google/callback']);
 
 /**
@@ -37,9 +37,9 @@ function plainSpelling(path: string): string | null {
 }
 
 /**
- * FR-EDGE-7. The request serializer emits no header at all and no query
- * string — the OAuth callback carries its code there — so the redaction
- * paths are the second line, for anything that logs a header object whole.
+ * The request serializer emits no header and no query string — the OAuth
+ * callback carries its code there — so the redaction paths are the second
+ * line, for anything that logs a header object whole.
  */
 export const loggerOptions = {
   redact: [
@@ -66,17 +66,15 @@ export const loggerOptions = {
 
 /**
  * The whole of `gateway`: host matching, path routing, the identity subrequest,
- * header overwrite, API key attachment, rate limiting and request ids (SRS
- * §2.1, FR-EDGE-1..8, 10). It serves no page: the admin build belongs to the
- * admin host, which forwards `/api/*` here (FR-EDGE-9).
- * The rules below are the same in every environment (FR-EDGE-6); everything
+ * header overwrite, API key attachment, rate limiting and request ids. It
+ * serves no page. The rules are the same in every environment; everything
  * that differs arrives in `config`.
  */
 export async function buildApp(
   config: Config,
   logger: FastifyServerOptions['logger'] = loggerOptions,
 ) {
-  /* FR-EDGE-1: case-insensitive, port stripped, matched exactly. */
+  /* Case-insensitive, port stripped, matched exactly. */
   const hostOf = (req: IncomingMessage): GatewayHost | undefined => {
     const host = req.headers.host?.toLowerCase().replace(/:\d*$/, '');
     if (host === config.adminRouteHost) return 'admin';
@@ -87,12 +85,12 @@ export async function buildApp(
   const app = fastify({
     logger,
     https: config.tls,
-    /* FR-EDGE-10: the client address is the rightmost X-Forwarded-For entry
+    /* The client address is the rightmost X-Forwarded-For entry
        that is not a trusted proxy, and only when the peer is one; otherwise
        it is the peer. Rate limits and logs both read it as `req.ip`. */
     trustProxy:
       config.trustedProxyCidrs.length > 0 ? config.trustedProxyCidrs : false,
-    /* NFR-OPS-4: an inbound id is kept only if it is a UUID. */
+    /* An inbound id is kept only if it is a UUID. */
     requestIdHeader: false,
     genReqId: (req) => {
       const inbound = req.headers['x-request-id'];
@@ -101,7 +99,7 @@ export async function buildApp(
         : randomUUID();
     },
     /* Every route below names the host it belongs to, so a path declared
-       for one host does not exist on the other (FR-EDGE-2). */
+       for one host does not exist on the other. */
     routerOptions: {
       constraints: {
         gatewayHost: {
@@ -134,7 +132,7 @@ export async function buildApp(
     },
   });
 
-  /* FR-EDGE-1: an unmatched Host gets no response, only a closed socket. */
+  /* An unmatched Host gets no response, only a closed socket. */
   const drop = (req: FastifyRequest, reply: FastifyReply) => {
     reply.hijack();
     req.raw.socket.destroy();
@@ -150,14 +148,14 @@ export async function buildApp(
   app.addContentTypeParser('*', (_req, payload, done) => done(null, payload));
 
   /* One keepalive pool carries both the identity subrequest and the proxied
-     request (§2.6, per-request cost). */
+     request. */
   const api = new Pool(config.apiUpstream);
   app.addHook('onClose', () => api.close());
 
   await app.register(replyFrom, { base: config.apiUpstream, undici: api });
   await app.register(rateLimit, { global: false });
 
-  /* Per IP, counted in this process (FR-AUTH-16, Q23). */
+  /* Per IP, counted in this process. */
   const limiter = ({ max, windowMs }: RateLimit) =>
     app.createRateLimit({ max, timeWindow: windowMs });
   const limits = {
@@ -197,7 +195,7 @@ export async function buildApp(
     return pathname.startsWith(to) ? pathname : null;
   };
 
-  /* FR-EDGE-4, NFR-SEC-8: X-User-Id is set on every proxied request, to the
+  /* X-User-Id is set on every proxied request, to the
      resolved id or to the empty value, and X-Api-Key to the key, so no
      client-supplied value of either survives. */
   const proxy = (
@@ -222,9 +220,9 @@ export async function buildApp(
     });
 
   /**
-   * FR-EDGE-3. Sends only the inbound Cookie, the request id and the API
-   * key, and takes only X-User-Id back; nothing is cached, so this runs on every admin
-   * request. The cookie is forwarded as an opaque string (FR-EDGE-7).
+   * Sends only the inbound Cookie, the request id and the API key, and takes
+   * only X-User-Id back. Nothing is cached, so this runs on every admin
+   * request. The cookie is forwarded as an opaque string.
    */
   const resolveIdentity = async (
     req: FastifyRequest,
@@ -267,7 +265,7 @@ export async function buildApp(
     reply.code(404).send();
 
   // -------------------------------------------------------------------------
-  // Admin route (FR-EDGE-2)
+  // Admin route
   // -------------------------------------------------------------------------
   const admin = { constraints: { gatewayHost: 'admin' satisfies GatewayHost } };
 
@@ -295,7 +293,7 @@ export async function buildApp(
   });
 
   // -------------------------------------------------------------------------
-  // Public-read host (FR-EDGE-2)
+  // Public-read host
   // -------------------------------------------------------------------------
   app.route({
     method: ['GET', 'HEAD'],
@@ -309,7 +307,7 @@ export async function buildApp(
     },
   });
 
-  /* Every other path, on either host, is a 404 (FR-EDGE-2). */
+  /* Every other path, on either host, is a 404. */
   app.setNotFoundHandler(notFound);
 
   return app;

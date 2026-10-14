@@ -12,10 +12,10 @@ import type { PortfolioTheme } from './theme';
 /**
  * The public API client. The only module in this app that performs a fetch.
  *
- * A page render makes exactly one upstream read and zero third-party calls
- * (NFR-PERF-3, FR-INT-1). Integration data — GitHub statistics, RSS posts — is
- * already merged into the payload by the API from its own cache, so nothing
- * here knows a third party exists.
+ * A page render makes exactly one upstream read and zero third-party calls.
+ * Integration data — GitHub statistics, RSS posts — is already merged into
+ * the payload by the API from its own cache, so nothing here knows a third
+ * party exists.
  *
  * `getPortfolio` is wrapped in React's `cache()`, which memoises it for the
  * duration of one request. The layout needs the theme, `generateMetadata`
@@ -24,14 +24,13 @@ import type { PortfolioTheme } from './theme';
  */
 
 export interface PortfolioSeo {
-  /** FR-PUB-1. Absent values are derived from hero content at render time. */
+  /** Absent values are derived from hero content at render time. */
   readonly title?: string;
   readonly description?: string;
   readonly keywords?: readonly string[];
-  /** FR-PUB-3: uploaded by the tenant or generated at publish time. */
+  /** Uploaded by the tenant or generated at publish time. */
   readonly ogImageUrl?: string;
   readonly ogImageAlt?: string;
-  /** FR-PUB-2 / 17.2. */
   readonly twitterHandle?: string;
   readonly canonicalUrl?: string;
 }
@@ -39,10 +38,11 @@ export interface PortfolioSeo {
 /**
  * The render-ready document for one tenant.
  *
- * This is the public surface's response shape (SRS §7.1) — published content
- * only, with disabled sections already stripped server-side (FR-TEN-5). It
- * carries no email address, no draft, no integration credentials and no
- * analytics configuration, because the public DTO never contains them.
+ * This is the public surface's response shape — published content
+ * only, with disabled sections already stripped server-side. It
+ * carries no email address, no draft and no integration credentials, because
+ * the public DTO never contains them. The DTO's analytics configuration is not
+ * declared here: nothing in this app reads it.
  */
 export interface PortfolioPayload {
   readonly slug: string;
@@ -51,9 +51,8 @@ export interface PortfolioPayload {
   readonly theme: PortfolioTheme;
   readonly seo: PortfolioSeo;
   /**
-   * Fixture-only. The §7.1 render payload carries neither, and nothing in
-   * this app reads them — they survive because the fixtures declare them and
-   * dropping a field a fixture sets would be a silent contract change.
+   * Fixture-only. The render payload carries neither, and nothing in this app
+   * reads them; they survive because the fixtures declare them.
    */
   readonly publishedAt?: string;
   readonly version?: number;
@@ -191,40 +190,17 @@ async function fromFixtures(slug: string): Promise<PortfolioPayload | null> {
 }
 
 /**
- * The §7.1 render payload, rejoined into the shape this app renders from.
- *
- * The public surface returns two halves: `config.sections` — `{ type, order }`
- * for each section that survived the publish — and `data`, holding each
- * survivor's content object keyed by type. The tree below `getPortfolio`
- * wants one array with content inline, so the halves are rejoined here. This
- * is the only function in the app that knows the wire shape and the render
- * shape differ; `fromFixtures` produces the render shape directly.
- *
- * `enabled` is synthesised as `true` rather than read: FR-TEN-5 removes
- * disabled sections when the published tree is built, so a section listed in
- * `config.sections` is enabled by construction and the wire carries no flag
- * to copy. `slug` likewise comes from the caller — §7.1 does not return it.
- *
- * Structural checks only. The rejoined object then goes through
- * `assertPayload`, so both sources land on one validator and one error
- * vocabulary.
+ * The render payload, rejoined into the shape this app renders from. The
+ * public surface returns `config.sections` — `{ type, order }` per section —
+ * and `data`, each section's content keyed by type; this rejoins them into
+ * one array with content inline. `enabled` is synthesised as `true`, since a
+ * listed section is enabled by construction, and `slug` comes from the caller.
  */
 /**
- * A collection's content, whichever of the two encodings it arrives in.
- *
- * §7.1 as first written encoded a collection as a bare array of its items,
- * which has nowhere to put the section-level fields its descriptor declares.
- * The builder now emits the content object verbatim, but any tree published
- * before that change still holds the array, so both shapes reach this client.
- * An array for a collection type is rewrapped as `{ items }`.
- *
- * This recovers the items and nothing else. `skills.legend`,
- * `projects.categories` and `achievements.credlyUsername` were discarded by
- * the old builder at publish time — they are absent from the payload, not
- * merely reshaped, so no mapping can bring them back. Republishing the tenant
- * against the current builder is what restores them.
- *
- * An unknown type falls through untouched; assertPayload rejects it by name.
+ * A collection's content, whichever of the two encodings it arrives in: the
+ * content object, or — from a tree published by an older builder — a bare
+ * array of items, which is rewrapped as `{ items }`. Section-level fields
+ * lost to the old encoding are restored only by republishing.
  */
 function collectionContent(type: string, value: unknown): unknown {
   if (!Array.isArray(value)) return value;
@@ -257,10 +233,8 @@ function fromRenderPayload(
     const ref = isRecord(entry) ? entry : {};
     const type = String(ref.type);
 
-    /* §7.1: one key in `data` per entry in `config.sections`, and no other.
-       A gap either way is a builder defect (FR-REG-9), not a state to render
-       around — so it fails here naming the half that is missing, rather than
-       reaching assertPayload as an absent `content`. */
+    /* One key in `data` per entry in `config.sections`, and no other. A gap
+       is a builder defect, so it fails here naming the missing half. */
     if (!(type in data)) {
       return fail(
         `config.sections[${index}] is "${type}", but data.${type} is missing`,
@@ -293,17 +267,15 @@ async function fromApi(slug: string): Promise<PortfolioPayload | null> {
 
   const response = await fetch(url, {
     headers: { accept: 'application/json' },
-    /* TODO(FR-PUB-7): restore ISR + on-demand revalidate —
-       `next: { revalidate, tags: [portfolioTag(slug)] }`. The endpoint at
-       app/api/internal/revalidate already exists and still calls
-       `revalidateTag(portfolioTag(slug))`, but nothing tags this fetch any
-       more, so that call is inert until this line goes back. Every render
-       reads upstream meanwhile, against NFR-PERF-1 and NFR-PERF-3's budget. */
+    /* TODO: restore ISR + on-demand revalidate —
+       `next: { revalidate, tags: [portfolioTag(slug)] }`. Nothing tags this
+       fetch, so the revalidation endpoint is inert and every render reads
+       upstream. */
     cache: 'no-store',
   });
 
   /* An unknown, unpublished or suspended slug is one indistinguishable 404
-     (FR-TEN-3). This code never learns which it was. */
+     . This code never learns which it was. */
   if (response.status === 404) return null;
 
   if (!response.ok) {

@@ -11,13 +11,9 @@ import {
 } from './machine';
 
 /*
- * D2's machine, wired to timers and the transport.
- *
- * Everything that decides *what state comes next* is in `machine.ts`. This
- * file only decides *when* — the Save button, Cmd+S, the backoff timer — and
- * turns one `AdminError` into one
- * `FailureKind`. Keeping the split means the transitions are testable without
- * a DOM and the scheduling is testable without re-deriving the transitions.
+ * The save machine, wired to timers and the transport. `machine.ts` decides
+ * what state comes next; this file decides when, and turns one `AdminError`
+ * into one `FailureKind`.
  */
 
 /** Maps a transport failure onto the three the machine distinguishes. */
@@ -26,9 +22,8 @@ export function classify(error: unknown): FailureKind {
   if (error.kind === 'stale_write') return 'stale';
   /* Permanent: the endpoint is unbuilt, so a retry is a loop. */
   if (error.kind === 'unsupported') return 'unsupported';
-  /* A 422 on a *save* is a save-time content rule — the 3–5 project cap
-     (FR-SEC-PROJ-2), an emptied impact field (FR-SEC-PROJ-5). It is not a
-     publish gap, and there is nothing to retry. */
+  /* A 422 on a *save* is a save-time content rule, such as the project
+     cap. It is not a publish gap, and there is nothing to retry. */
   if (error.kind === 'validation') return 'refused';
   return 'retryable';
 }
@@ -51,7 +46,7 @@ export interface SectionSave {
 
 export interface UseSectionSaveOptions {
   readonly type: string;
-  /** The draft revision this section was read at (D3). */
+  /** The draft revision this section was read at. */
   readonly version: number | undefined;
   /** Called with the version the server reports after a successful write. */
   readonly onVersion?: ((version: number) => void) | undefined;

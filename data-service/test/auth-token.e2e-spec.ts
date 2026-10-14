@@ -4,7 +4,7 @@ import { AccessTokenService } from '../src/auth/access-token.service';
 import { loadAuthConfig } from '../src/auth/auth.config';
 
 /*
- * The access JWT (FR-AUTH-11, FR-AUTH-19) and the boot-time key rules.
+ * The access JWT and the boot-time key rules.
  * No app and no database: tokens are minted through the token service with
  * test keys.
  */
@@ -134,7 +134,7 @@ describe('access JWT', () => {
   });
 });
 
-describe('auth environment (FR-AUTH-19): boot is refused when', () => {
+describe('auth environment: boot is refused when', () => {
   const k = () => key().toString('base64url');
 
   it.each([

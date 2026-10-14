@@ -6,7 +6,7 @@ import {
   type IntegrationProvider,
 } from '../../../schemas/integration-connection.schema';
 
-/** The cached payload, returned as input to the admin preview (FR-CFG-5). */
+/** The cached payload, returned as input to the admin preview. */
 export class IntegrationCacheDto {
   @ApiProperty({
     type: 'object',
@@ -27,7 +27,7 @@ export class IntegrationCacheDto {
   stale: boolean;
 }
 
-/** A connection's status and cache. Never its credentials (FR-INT-6). */
+/** A connection's status and cache. Never its credentials. */
 export class IntegrationDto {
   @ApiProperty({
     enum: [...INTEGRATION_PROVIDERS],

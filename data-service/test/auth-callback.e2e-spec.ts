@@ -19,7 +19,7 @@ import {
 } from './helpers';
 
 /*
- * Google sign-in, start to callback (§2.5, FR-AUTH-8, 15, 21, 22). Google is
+ * Google sign-in, start to callback. Google is
  * mocked at the HTTP boundary: the token endpoint and the published signing
  * keys are nock interceptors, and the ID tokens are real RS256 JWTs signed by
  * a key generated here. Nothing else leaves the process.
@@ -207,7 +207,7 @@ describe('GET /auth/google/start', () => {
     expect(location.href).not.toContain(process.env.GOOGLE_CLIENT_SECRET);
   });
 
-  it('sets the state cookie of FR-AUTH-8', async () => {
+  it('sets the state cookie', async () => {
     const { cookie } = await start();
     expectHostOnlyHardened(cookie);
     expect(cookie.attributes).toEqual(
@@ -268,7 +268,7 @@ describe('GET /auth/google/callback', () => {
     expect(user.lastLoginAt).toBeInstanceOf(Date);
     expect(user.createdAt).toBeInstanceOf(Date);
 
-    /* FR-AUTH-22: no Google token is stored. */
+    /* No Google token is stored. */
     expect(Object.keys(user).sort()).toEqual(
       [
         '__v',
@@ -293,7 +293,7 @@ describe('GET /auth/google/callback', () => {
       .lean())!;
     expect(session.userId.toHexString()).toBe(id);
 
-    /* FR-AUTH-2: no portfolio. */
+    /* No portfolio. */
     expect(await portfolios.countDocuments()).toBe(portfoliosBefore);
     expect(await portfolios.exists({ userId: user._id })).toBeNull();
   });
@@ -336,7 +336,7 @@ describe('GET /auth/google/callback', () => {
     expect((await callback(attempt)).headers.location).toBe('/');
   });
 
-  describe('returnTo (FR-AUTH-15)', () => {
+  describe('returnTo', () => {
     it.each(['/sections', '/onboarding/slug', '/'])(
       'lands on the allowlisted path %s',
       async (returnTo) => {

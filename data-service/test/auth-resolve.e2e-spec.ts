@@ -8,7 +8,7 @@ import { userId } from '../src/seed/ids';
 import { createApp } from './helpers';
 
 /*
- * GET /auth/resolve (FR-AUTH-11, §7.3): 204 with X-User-Id or 401, no body
+ * GET /auth/resolve: 204 with X-User-Id or 401, no body
  * either way, and no database read on any path.
  */
 

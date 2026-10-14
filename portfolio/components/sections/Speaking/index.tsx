@@ -15,7 +15,7 @@ import {
 } from '@/components/ui';
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
-/** Speaking (business req 10, FR-SEC-SPK-1). */
+/** Speaking. */
 const RENDERERS = {
   date: (item: SpeakingItem) =>
     item.date ? (

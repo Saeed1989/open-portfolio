@@ -14,24 +14,9 @@ import { trainings } from './trainings';
 import { gallery } from './gallery';
 
 /**
- * The thirteen section descriptors — the single source of truth (FR-REG-1).
- *
- * One file per section type, assembled here. The order of the keys below is
- * the registry order, and so the default section order (SRS §4.1).
- *
- * The order of each `fields` / `itemFields` array is the public render order
- * (FR-REG-2). It is not a hint: section components iterate these arrays and
- * look up a renderer per key, so no component can drift from the declared
- * order, and every item in a collection is laid out identically by
- * construction.
- *
- * Where the approved design (spec/uiDesign/portfolio.html) fixes an order, the array
- * below matches it — the design's project card reads screenshot, category,
- * year, title, then Problem, Impact and Stack.
- *
- * `projects` carries two runs of fields rather than one: the card-level run
- * ending at `role`, and the `body` run behind it, which is the case-study
- * modal (FR-SEC-PROJ-6). Both are walked from this one array.
+ * The section descriptors — the single source of truth. Key order here is the
+ * default section order, and the order of each `fields` / `itemFields` array
+ * is the public render order: section components iterate those arrays.
  */
 export const REGISTRY = {
   hero,
@@ -55,10 +40,7 @@ export function getDescriptor(type: SectionType): SectionDescriptor {
   return REGISTRY[type];
 }
 
-/**
- * FR-CFG-2. An enabled section whose content satisfies this is omitted from
- * the page entirely — no heading, no wrapper, no empty state.
- */
+/** An enabled section whose content satisfies this is omitted from the page entirely. */
 export function isSectionEmpty(type: SectionType, content: unknown): boolean {
   return REGISTRY[type].emptyCondition(content);
 }

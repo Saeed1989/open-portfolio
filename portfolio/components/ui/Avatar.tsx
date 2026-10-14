@@ -5,7 +5,7 @@ import { cn } from './cn';
  *
  * With no `src` it renders the design's bordered placeholder rather than a
  * broken image or a blank box. Omitting the avatar entirely is the caller's
- * decision — the hero reflows around its absence (FR-SEC-HERO-3), so this
+ * decision — the hero reflows around its absence, so this
  * primitive never renders "nothing".
  */
 export type AvatarSize = 'fluid' | 'fixed';

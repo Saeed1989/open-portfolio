@@ -25,7 +25,7 @@
     },
 
     {
-      "_note": "Disabled. FR-CFG-1 — dropped before emptyCondition is even consulted.",
+      "_note": "Disabled — dropped before emptyCondition is even consulted.",
       "type": "projects",
       "enabled": false,
       "order": 1,
@@ -43,7 +43,7 @@
     },
 
     {
-      "_note": "Enabled, empty items array. FR-CFG-2 — no heading, no rule, no gap.",
+      "_note": "Enabled, empty items array — no heading, no rule, no gap.",
       "type": "skills",
       "enabled": true,
       "order": 2,
@@ -72,7 +72,7 @@
     },
 
     {
-      "_note": "Enabled, but every link is toggled off (FR-SEC-CON-2), so the section is empty.",
+      "_note": "Enabled, but every link is toggled off, so the section is empty.",
       "type": "contact",
       "enabled": true,
       "order": 5,

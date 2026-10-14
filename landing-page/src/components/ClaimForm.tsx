@@ -1,6 +1,6 @@
 // Slug field + Claim button, used by the hero and the closing CTA.
 // Validates format only and hands the slug to the admin host, where availability
-// is checked behind a session (SRS §7.2); it holds no reserved list (FR-DAT-1).
+// is checked behind a session; it holds no reserved list.
 import { useState, type FormEvent } from 'react';
 import { copy } from '../content/copy';
 import { normalizeSlug, SLUG_MAX_LENGTH, validateSlug } from '../lib/slug';

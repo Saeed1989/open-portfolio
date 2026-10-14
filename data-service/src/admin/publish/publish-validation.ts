@@ -8,14 +8,10 @@ import {
 
 /*
  * Publish-time checks for one section's content: `required`, and a
- * collection's `min` and `max` (FR-REG-8). Every failure is collected
- * (FR-PUB-6).
- *
- * The registry exports no generic publish validator, so this walks its
- * descriptors, as section-content.ts does for a draft write. It names no
- * section type and no field (FR-REG-1). Rules a descriptor cannot express —
- * the prominent-skill count of FR-SEC-SKILL-3, a project's link unless
- * confidential (FR-SEC-PROJ-3) — are not checked here.
+ * collection's `min` and `max`. Every failure is collected. Walks the
+ * registry's descriptors generically, naming no section type or field. Rules
+ * a descriptor cannot express — the prominent-skill count, a project's link
+ * unless confidential — are not checked here.
  */
 export function validateSectionForPublish(
   type: SectionType,
@@ -27,7 +23,7 @@ export function validateSectionForPublish(
   }
 
   /* An unpublished item is not published, so it is neither validated nor
-     counted (§5.2). Indexes stay those of the stored array. */
+     counted. Indexes stay those of the stored array. */
   const items: unknown[] =
     isRecord(content) && Array.isArray(content.items) ? content.items : [];
   const counted = items

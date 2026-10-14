@@ -3,7 +3,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 
-/* Portfolio creation failures (§7.2), in the same `code` + field-level
+/* Portfolio creation failures, in the same `code` + field-level
    `errors` shape as sections.exceptions.ts. */
 
 /** `slug_invalid` or `slug_reserved`: 422 with a field-level error. */

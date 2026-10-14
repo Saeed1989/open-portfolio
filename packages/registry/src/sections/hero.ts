@@ -6,7 +6,6 @@ export const hero = {
   label: 'Hero',
   description: 'Who you are, in one screen.',
   priority: 'must',
-  businessRef: 'BR 1',
   cardinality: 'single',
   fields: [
     {

@@ -20,10 +20,7 @@ import {
   setCookies,
 } from './helpers';
 
-/*
- * Refresh rotation and reuse detection (FR-AUTH-18), the cookies of
- * FR-AUTH-3, and the two sign-out routes (FR-AUTH-14).
- */
+/* Refresh rotation and reuse detection, the session cookies, and the two sign-out routes. */
 
 let app: INestApplication;
 let sessions: SessionService;
@@ -54,7 +51,7 @@ const byPrevious = (token: string) =>
 
 const SECOND = 1000;
 
-describe('a new session (§5.8)', () => {
+describe('a new session', () => {
   it('stores the hash only, with a 30-day idle and a 90-day absolute window', async () => {
     const before = Date.now();
     const { refreshToken } = await sessions.create(freshUserId());
@@ -90,7 +87,7 @@ describe('a new session (§5.8)', () => {
     );
   });
 
-  it('has the indexes of §5.8', async () => {
+  it('has its indexes', async () => {
     const indexes = await model.collection.indexes();
     const find = (key: string) => indexes.find((index) => key in index.key);
     expect(find('tokenHash')?.unique).toBe(true);
@@ -188,7 +185,7 @@ describe('POST /auth/refresh', () => {
     expect((await refresh(third)).status).toBe(204);
   });
 
-  it('concurrent refreshes with one token: one wins, and reuse revokes (open question 17)', async () => {
+  it('concurrent refreshes with one token: one wins, and reuse revokes', async () => {
     const { refreshToken } = await sessions.create(freshUserId());
     const results = await Promise.all([
       refresh(refreshToken),
@@ -312,7 +309,7 @@ describe('POST /auth/logout-all', () => {
   });
 });
 
-describe('FR-AUTH-17 revokeAllForUser', () => {
+describe('revokeAllForUser', () => {
   it('revokes by user id', async () => {
     const user = freshUserId();
     const { refreshToken } = await sessions.create(user);

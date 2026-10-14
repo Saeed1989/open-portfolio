@@ -23,7 +23,7 @@ export class LinkHealthController {
   constructor(private readonly linkHealth: LinkHealthService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Link check results (FR-SEC-PROJ-9)' })
+  @ApiOperation({ summary: 'Link check results' })
   @ApiOkResponse({ type: [LinkHealthDto] })
   list(@Tenant() tenant: TenantScope): Promise<LinkHealthDto[]> {
     return this.linkHealth.list(tenant.portfolioId);

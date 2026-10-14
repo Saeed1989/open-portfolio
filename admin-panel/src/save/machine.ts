@@ -1,35 +1,25 @@
 import type { FieldError } from '../api/errors';
 
 /*
- * D2 — the save model, in one module.
+ * The save model, in one module.
  *
- * PROVISIONAL. Not in srs.md. The proposed requirement text is in
- * admin-panel/README.md.
- *
- * Manual save: the Save button or Cmd+S sends one PATCH per section.
- * There is no "Discard changes": a draft is the tenant's working copy
- * (SRS §2.4) and the publish is the gate (FR-REG-8), so a save has nothing to
- * be confirmed against and nothing to be taken back from.
- *
- * The states are artboard 39's, plus two:
+ * Manual save: the Save button or Cmd+S sends one PATCH per section. There is
+ * no "Discard changes": a draft is the tenant's working copy and publish is
+ * the gate.
  *
  *   idle     nothing sent this session
  *   saving   a PATCH is in flight; Publish is held so it cannot race a write
- *   saved    a timestamp, not a tick that fades — shape and type were
- *            validated, `required` was not, which is why an incomplete draft
- *            still reads as saved (FR-REG-8)
+ *   saved    a timestamp; `required` was not validated, so an incomplete
+ *            draft still reads as saved
  *   failed   the server was not reached, or answered 5xx; the edits are held
- *            in this tab and retried with backoff
- *   refused  the server rejected the write on content — a save-time rule, not
- *            a publish gap. Nothing to retry, something to change
- *   stale    D3: the precondition failed. The server moved. Neither copy is
+ *            and retried with backoff
+ *   refused  the server rejected the write on content. Nothing to retry
+ *   stale    the precondition failed: the server moved. Neither copy is
  *            thrown away
- *   unsupported  the server does not implement this write — every admin write
- *            on the current api answers 501. Nothing to retry and nothing to
- *            change; the edits are held and stay copyable
+ *   unsupported  the server does not implement this write. Nothing to retry;
+ *            the edits are held and stay copyable
  *
- * This file is pure. Timers, fetches and React live in `useSectionSave`, so
- * every transition below is reachable in a test without either.
+ * Pure. Timers, fetches and React live in `useSectionSave`.
  */
 
 export type SaveStatus =

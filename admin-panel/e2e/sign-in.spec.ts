@@ -1,8 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 /*
- * M10a's stopping condition, end to end through `gateway`: §2.5, §2.6 step 4,
- * FR-AUTH-7, FR-AUTH-14, FR-AUTH-20.
+ * Sign-in, refresh and sign-out, end to end through `gateway`.
  *
  * Needs a Google account that signs in with a password alone — no second
  * factor and no challenge — in E2E_GOOGLE_EMAIL and E2E_GOOGLE_PASSWORD.
@@ -33,10 +32,10 @@ test('sign-in round trip, refresh on an expired access JWT, and sign-out', async
   await page.getByLabel('Enter your password').fill(password ?? '');
   await page.getByRole('button', { name: 'Next' }).click();
 
-  /* Callback → admin → /me 200 → whichever branch FR-AUTH-7 picks. */
+  /* Callback → admin → /me 200 → dashboard or onboarding. */
   await expect(page).toHaveURL(SIGNED_IN);
 
-  /* FR-AUTH-3, as the admin host returned them (FR-EDGE-9): host-only — no
+  /* As the admin host returned them: host-only — no
      Domain, so no leading dot — and scoped to /api. */
   const host = new URL(page.url()).hostname;
   const cookies = await context.cookies();

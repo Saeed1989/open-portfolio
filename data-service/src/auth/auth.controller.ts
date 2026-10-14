@@ -34,7 +34,7 @@ type FailureCode = 'auth_failed' | 'account_suspended';
 const random = () => randomBytes(32).toString('base64url');
 
 /**
- * The auth surface (SRS §7.3, §7.4). Paths are without `/api`, which `gateway`
+ * The auth surface. Paths are without `/api`, which `gateway`
  * strips. Every handler writes its own response: redirects, cookies, and
  * `401`s with no body are not what the global filter produces.
  */
@@ -51,11 +51,11 @@ export class AuthController {
   ) {}
 
   @Get('google/start')
-  @ApiOperation({ summary: 'Begin Google sign-in (FR-AUTH-8)' })
+  @ApiOperation({ summary: 'Begin Google sign-in' })
   @ApiQuery({
     name: 'returnTo',
     required: false,
-    description: 'Honoured only when it is on the allowlist (FR-AUTH-15).',
+    description: 'Honoured only when it is on the allowlist.',
   })
   @ApiFoundResponse({ description: "To Google's authorization endpoint." })
   start(
@@ -78,7 +78,7 @@ export class AuthController {
   }
 
   @Get('google/callback')
-  @ApiOperation({ summary: 'Complete Google sign-in (§2.5)' })
+  @ApiOperation({ summary: 'Complete Google sign-in' })
   @ApiFoundResponse({
     description:
       'To the admin panel with both cookies set, or to `/sign-in?error=auth_failed|account_suspended`.',
@@ -99,7 +99,7 @@ export class AuthController {
       outcome = 'auth_failed';
     }
 
-    /* Cleared on completion or failure (FR-AUTH-8). */
+    /* Cleared on completion or failure. */
     clearCookie(response, STATE_COOKIE);
     if (typeof outcome === 'string') {
       redirect(response, `/sign-in?error=${outcome}`);
@@ -111,7 +111,7 @@ export class AuthController {
 
   @Post('refresh')
   @ApiOperation({
-    summary: 'Rotate the refresh token, issue a new access JWT (FR-AUTH-18)',
+    summary: 'Rotate the refresh token, issue a new access JWT',
   })
   @ApiNoContentResponse({ description: 'Both cookies re-set.' })
   @ApiUnauthorizedResponse({
@@ -133,7 +133,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @ApiOperation({ summary: 'Revoke the presented session (FR-AUTH-14)' })
+  @ApiOperation({ summary: 'Revoke the presented session' })
   @ApiNoContentResponse({
     description: 'Whether or not a session was found. Both cookies cleared.',
   })
@@ -149,7 +149,7 @@ export class AuthController {
 
   @Post('logout-all')
   @ApiOperation({
-    summary: 'Revoke every session of the access JWT’s user (FR-AUTH-14)',
+    summary: 'Revoke every session of the access JWT’s user',
   })
   @ApiNoContentResponse({ description: 'Both cookies cleared.' })
   @ApiUnauthorizedResponse({ description: 'Access JWT absent or invalid.' })
@@ -159,8 +159,8 @@ export class AuthController {
   ): Promise<void> {
     const userId = await this.tokens.verify(readCookie(request, ACCESS_COOKIE));
     if (!userId) {
-      /* Cookies are left alone: the admin app refreshes and retries
-         (FR-AUTH-20), which needs the refresh cookie. */
+      /* Cookies are left alone: the admin app refreshes and retries, which
+         needs the refresh cookie. */
       end(response, 401);
       return;
     }
@@ -171,7 +171,7 @@ export class AuthController {
 
   @Get('resolve')
   @ApiOperation({
-    summary: 'Identity subrequest target, called by gateway (FR-AUTH-11)',
+    summary: 'Identity subrequest target, called by gateway',
   })
   @ApiNoContentResponse({ description: '`X-User-Id` carries the user id.' })
   @ApiUnauthorizedResponse({ description: 'No body.' })
@@ -189,7 +189,7 @@ export class AuthController {
     end(response, 204);
   }
 
-  /* §2.5 steps 4–6. `state` is verified before the code is exchanged. */
+  /* `state` is verified before the code is exchanged. */
   private async completeSignIn(
     request: IncomingMessage,
     code: unknown,
@@ -219,7 +219,7 @@ export class AuthController {
     };
   }
 
-  /* FR-AUTH-3. The refresh cookie lives as long as the session can: until
+  /* The refresh cookie lives as long as the session can: until
      `idleExpiresAt`, which is already the earlier of the two windows. */
   private async setSessionCookies(
     response: ServerResponse,

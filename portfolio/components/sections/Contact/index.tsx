@@ -14,19 +14,13 @@ import {
 import { fieldRuns, runsInGroup } from '../fields';
 
 /**
- * Contact (business req 4, FR-SEC-CON-*).
+ * Contact. The design puts the heading and intro in the left column of a
+ * two-up grid, so this composes PageSection directly instead of SectionShell.
+ * Each link carries its own `visible` flag, and a hidden one renders nothing.
  *
- * The design puts the heading and intro in the left column of a two-up grid
- * rather than in the standard full-width section header, so this composes
- * PageSection directly instead of SectionShell.
- *
- * FR-SEC-CON-2: each link carries its own `visible` flag and a hidden one
- * renders nothing at all.
- *
- * NOT SATISFIED — FR-SEC-CON-3 asks for the published address to be assembled
- * client-side against naive scrapers. That needs a client component, which
- * would make this section the only one that is not server-rendered. The
- * mailto: below is plain. Flagged rather than quietly skipped.
+ * NOT SATISFIED — the published address should be assembled client-side
+ * against naive scrapers. That needs a client component; the mailto: below is
+ * plain.
  */
 function row(link: ContactLink | undefined) {
   if (!link || !link.visible || !link.value) return null;

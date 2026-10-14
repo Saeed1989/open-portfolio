@@ -5,7 +5,7 @@ import {
 import type { FieldError } from '@portfolio/registry';
 
 /*
- * Typed so the FR-API-4 envelope can be built from `code` and `errors` later;
+ * Typed so a shared error envelope can be built from `code` and `errors` later;
  * until then AllExceptionsFilter serialises these bodies as they are.
  */
 
@@ -19,7 +19,7 @@ export class StaleWriteException extends ConflictException {
   }
 }
 
-/** Every failure at once, per field (FR-PUB-6, FR-API-4). */
+/** Every failure at once, per field. */
 export class SectionValidationException extends UnprocessableEntityException {
   constructor(errors: readonly FieldError[]) {
     super({

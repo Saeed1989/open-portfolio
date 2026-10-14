@@ -1,12 +1,9 @@
 /**
- * Host → slug resolution. Deliberately dependency-free and side-effect-free so
- * middleware can import it into the edge runtime.
+ * Host → slug resolution. Dependency-free and side-effect-free, so middleware
+ * can import it into the edge runtime.
  *
- * FR-TEN-2: tenant identity for a public request derives solely from the Host
- * header. Nothing here reads a query parameter, a cookie, or a client-supplied
- * header, and middleware strips any inbound `x-portfolio-slug` before setting
- * its own — a visitor cannot ask to be served as another tenant.
- *
+ * Tenant identity for a public request derives solely from the Host header:
+ * nothing here reads a query parameter, cookie or client-supplied header.
  * This is the only place in the app that parses a Host header for a tenant.
  */
 
@@ -14,12 +11,9 @@
 export const SLUG_HEADER = 'x-portfolio-slug';
 
 /**
- * FR-DAT-1. The spec's list (SRS §5.2) plus `preview` and `styleguide`, which
- * are routes in this app and so cannot also be tenants.
- *
- * The requirement's "plus any label matching the operator's infrastructure
- * hostnames" is deployment configuration, not a constant — it belongs in an
- * env-supplied addition once those hostnames exist.
+ * Reserved labels, plus `preview` and `styleguide`, which are routes in this
+ * app and so cannot also be tenants. The operator's infrastructure hostnames
+ * are deployment configuration and are not listed here.
  */
 export const RESERVED_LABELS: ReadonlySet<string> = new Set([
   'www',
@@ -47,13 +41,12 @@ export function isValidSlug(candidate: string): boolean {
 }
 
 /**
- * `alice.openfolio.site` → `alice`, for base domain `openfolio.site`
- * (FR-TEN-1). Anything that is not exactly `{label}.{PORTFOLIO_BASE_DOMAIN}` —
+ * `alice.openfolio.site` → `alice`, for base domain `openfolio.site`.
+ * Anything that is not exactly `{label}.{PORTFOLIO_BASE_DOMAIN}` —
  * the apex, another domain, a nested subdomain, a reserved or malformed label —
- * is null, and all of those render the same 404 (FR-TEN-3).
+ * is null, and all of those render the same 404.
  *
- * `gateway` overwrites `Host` on every proxied request, so the header read here is
- * the one nginx set. Set PORTFOLIO_BASE_DOMAIN=localhost to test
+ * Set PORTFOLIO_BASE_DOMAIN=localhost to test
  * `alice.localhost:3000` locally.
  */
 export function resolveSlugFromHost(host: string | null): string | null {

@@ -10,10 +10,8 @@ import {
 } from './machine';
 
 /*
- * Every transition of D2's machine.
- *
- * The reducer is pure, so this suite needs no DOM, no timers and no network —
- * which is the reason the scheduling was kept out of it.
+ * Every transition of the save machine. The reducer is pure, so this needs no
+ * DOM, timers or network.
  */
 
 const run = (events: readonly SaveEvent[], from: SaveState = INITIAL) =>
@@ -160,7 +158,7 @@ describe('refused — a save-time content rule', () => {
   });
 });
 
-describe('stale — D3', () => {
+describe('stale', () => {
   test('holds the server copy and keeps the local edits pending', () => {
     const state = run([
       { type: 'edit' },

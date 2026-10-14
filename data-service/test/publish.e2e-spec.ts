@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp, freshUserId } from './helpers';
 
 /*
- * Publish (SRS §2.3, FR-PUB-6, FR-CFG-4). One fresh tenant; tests run in
+ * Publish. One fresh tenant; tests run in
  * order and each relies on the draft the one before it left.
  */
 

@@ -3,8 +3,7 @@ import request from 'supertest';
 import { createApp, freshUserId } from './helpers';
 
 /*
- * Reordering a section through PATCH /admin/portfolio/sections/:type
- * (FR-CFG-3, §7.2).
+ * Reordering a section through PATCH /admin/portfolio/sections/:type.
  */
 
 let app: INestApplication;

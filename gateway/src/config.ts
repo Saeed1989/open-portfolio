@@ -12,19 +12,19 @@ export interface Config {
   publicReadHost: string;
   /** Origin `api` is reached at, e.g. `http://10.0.0.5:3001`. */
   apiUpstream: string;
-  /** Sent to `api` as `X-Api-Key` on every request (FR-EDGE-4, FR-EDGE-8). */
+  /** Sent to `api` as `X-Api-Key` on every request. */
   apiKey: string;
   port: number;
-  /** Null when a load balancer terminates TLS instead (SRS §10.3 Q24). */
+  /** Null when a load balancer terminates TLS instead. */
   tls: { cert: Buffer; key: Buffer } | null;
-  /** The only peers `X-Forwarded-For` is believed from (FR-EDGE-10). Empty: none. */
+  /** The only peers `X-Forwarded-For` is believed from. Empty: none. */
   trustedProxyCidrs: string[];
   rateLimits: {
-    /** `/api/auth/google/start` and `/callback` (FR-AUTH-16). */
+    /** `/api/auth/google/start` and `/callback`. */
     oauth: RateLimit;
-    /** Every other `/api/auth/*` path (FR-AUTH-16). */
+    /** Every other `/api/auth/*` path. */
     auth: RateLimit;
-    /** The public-read host (SRS §10.3 Q23). */
+    /** The public-read host. */
     publicRead: RateLimit;
   };
 }
@@ -41,7 +41,7 @@ function isCidr(value: string): boolean {
 }
 
 /**
- * Reads and validates every variable `gateway` takes (FR-EDGE-6). Throws one
+ * Reads and validates every variable `gateway` takes. Throws one
  * error naming every problem, so a misconfigured deploy fails at boot and
  * says everything that is wrong with it at once.
  */
@@ -102,7 +102,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     }
   }
 
-  /* FR-EDGE-8. The message names the rule, never the value. */
+  /* The message names the rule, never the value. */
   const apiKey = required('GATEWAY_API_KEY');
   if (
     apiKey !== '' &&

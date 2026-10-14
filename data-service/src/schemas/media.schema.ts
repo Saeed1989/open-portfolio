@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { Portfolio } from './portfolio.schema';
 
-/** SRS §5.3. Every query is scoped by `portfolioId`. */
+/** Every query is scoped by `portfolioId`. */
 @Schema({ collection: 'media' })
 export class Media {
   @Prop({

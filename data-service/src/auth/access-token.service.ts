@@ -2,11 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { jwtVerify, SignJWT } from 'jose';
 import { AUTH_CONFIG, type AuthConfig } from './auth.config';
 
-/** FR-AUTH-3: an access JWT expires 15 minutes after issue. */
+/** An access JWT expires 15 minutes after issue. */
 export const ACCESS_TTL_SECONDS = 900;
 
 /**
- * Signs and verifies the access JWT (FR-AUTH-11, FR-AUTH-19). The only holder
+ * Signs and verifies the access JWT. The only holder
  * of the signing keys; nothing outside `src/auth` verifies a token.
  */
 @Injectable()

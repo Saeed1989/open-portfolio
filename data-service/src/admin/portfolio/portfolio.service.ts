@@ -36,7 +36,7 @@ export class PortfolioService {
   ) {}
 
   /* Answers with or without a portfolio, so it takes the user id rather than
-     the scope's portfolio id (§7.2). */
+     the scope's portfolio id. */
   async getMe(userId: string): Promise<MeDto> {
     const [user, portfolio] = await Promise.all([
       this.accounts.getDisplayFields(userId),
@@ -47,7 +47,7 @@ export class PortfolioService {
     ]);
     if (!user) throw new NotFoundException('user_not_found');
 
-    /* Allowlisted: `providerId` and `status` never leave auth (FR-AUTH-17). */
+    /* Allowlisted: `providerId` and `status` never leave auth. */
     return {
       provider: user.provider,
       email: user.email,
@@ -60,7 +60,7 @@ export class PortfolioService {
   }
 
   /* Taken by the same rules as `409 slug_taken`: a live slug, or one held in
-     a portfolio's `slugHistory` (§7.2). */
+     a portfolio's `slugHistory`. */
   async slugAvailability(raw: string): Promise<SlugAvailabilityDto> {
     const slug = normaliseSlug(raw);
     const problem = slugProblem(slug);
@@ -73,24 +73,23 @@ export class PortfolioService {
   }
 
   /**
-   * Creates the tenant's one portfolio (§7.2, FR-AUTH-7). Uniqueness of the
-   * owner and of the slug is decided by the unique indexes at the write, so
-   * a concurrent claim fails there rather than slipping past a read.
+   * Creates the tenant's one portfolio. The unique indexes on owner and slug
+   * decide at the write, so a concurrent claim cannot slip past a read.
    */
   async create(
     userId: string,
     portfolioId: string | null,
     dto: CreatePortfolioDto,
   ): Promise<AdminPortfolioDto> {
-    /* Takes precedence over every slug error (§7.2). */
+    /* Takes precedence over every slug error. */
     if (portfolioId !== null) throw new PortfolioExistsException();
 
     const slug = normaliseSlug(dto.slug);
     const problem = slugProblem(slug);
     if (problem) throw new SlugRejectedException(problem);
 
-    /* A retired slug stays held (FR-DAT-2). No index can say so: see I-5 in
-       portfolio.schema.ts. */
+    /* A retired slug stays held. No index can enforce that, so it is checked
+       here. */
     if (await this.portfolios.exists({ 'slugHistory.slug': slug })) {
       throw new SlugTakenException();
     }
@@ -115,7 +114,7 @@ export class PortfolioService {
         throw error;
       }
       /* Mongo names whichever unique index it hit first. A slug collision
-         can still be this tenant's own concurrent claim, which §7.2 reports
+         can still be this tenant's own concurrent claim, which is reported
          as portfolio_exists. */
       if (
         error.keyPattern?.userId ||
@@ -135,7 +134,7 @@ export class PortfolioService {
     if (portfolioId === null)
       throw new NotFoundException('portfolio_not_found');
 
-    /* `published` is excluded: admin reads and writes `draft` only (§2.4). */
+    /* `published` is excluded: admin reads and writes `draft` only. */
     const portfolio = await this.portfolios
       .findById(new Types.ObjectId(portfolioId))
       .select('-published')

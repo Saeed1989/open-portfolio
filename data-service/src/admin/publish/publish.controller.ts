@@ -35,13 +35,13 @@ export class PublishController {
 
   @Post('publish')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Validate and publish the draft (FR-PUB-6)' })
+  @ApiOperation({ summary: 'Validate and publish the draft' })
   @ApiOkResponse({ type: PublishResultDto })
   @ApiNotFoundResponse({ description: '`portfolio_not_found`.' })
   @ApiConflictResponse({ description: '`portfolio_suspended`.' })
   @ApiUnprocessableEntityResponse({
     description:
-      '`validation_failed`, with every failing field path, or `nothing_to_publish` (FR-CFG-4).',
+      '`validation_failed`, with every failing field path, or `nothing_to_publish`.',
   })
   publish(@Tenant() tenant: TenantScope): Promise<PublishResultDto> {
     return this.publishing.publish(tenant.portfolioId);
@@ -50,7 +50,7 @@ export class PublishController {
   @Post('unpublish')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Return the subdomain to the 404 state (FR-PUB-8)',
+    summary: 'Return the subdomain to the 404 state',
   })
   @ApiNoContentResponse({ description: 'Unpublished.' })
   unpublish(@Tenant() tenant: TenantScope): Promise<void> {

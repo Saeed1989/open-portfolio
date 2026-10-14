@@ -1,24 +1,13 @@
 import { cn } from './cn';
 
 /**
- * Renders stored HTML.
+ * Renders stored HTML. The only component that injects markup it did not
+ * author, and safe only because the write path sanitises against the
+ * allowlist: storage holds nothing but paragraphs, lists, `strong`, `em`, `u`
+ * and `br`, with no attributes. Nothing here re-checks the string, by design,
+ * so it must not be pointed at an unsanitised source.
  *
- * This is the only component in the app that injects markup it did not author,
- * and it is safe **only** because of what is supposed to have happened before
- * the string arrived: FR-SEC-PROJ-12 requires an allowlist sanitiser to run at
- * write time, so storage never holds anything but paragraphs, lists, `strong`,
- * `em`, `u` and `br`, with no attributes on any of them.
- *
- * That sanitiser belongs to the write path — the api — which does not exist in
- * this repository yet. Nothing here re-checks the string, by design: sanitising
- * on render would make the render path the security boundary, which is
- * precisely the arrangement FR-SEC-PROJ-12 rules out. The consequence is worth
- * stating plainly rather than burying: until the api sanitises on write, this
- * component will render whatever it is given, so it must not be pointed at a
- * source that has not been through that step.
- *
- * Styling is by element, in globals.css under `.rich-text` — the tags come
- * from storage and cannot carry a class.
+ * Styling is by element, in globals.css under `.rich-text`.
  */
 export interface RichTextProps {
   /** Sanitised at write time. See above. */

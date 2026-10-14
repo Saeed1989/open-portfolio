@@ -28,7 +28,7 @@ export class SitemapController {
 
   @Get(':slug/sitemap.xml')
   @Header('Content-Type', 'application/xml')
-  @ApiOperation({ summary: 'Sitemap for a published portfolio (FR-PUB-5)' })
+  @ApiOperation({ summary: 'Sitemap for a published portfolio' })
   @ApiParam({ name: 'slug', example: 'alice' })
   @ApiProduces('application/xml')
   @ApiOkResponse({ description: 'sitemap.xml', schema: { type: 'string' } })

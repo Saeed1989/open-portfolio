@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
- * Fonts — self-hosted, latin subset (no third-party request, FR-ANL-3 spirit)
+ * Fonts — self-hosted, latin subset (no third-party request)
  * ------------------------------------------------------------------------- */
 @font-face {
   font-family: 'Archivo';

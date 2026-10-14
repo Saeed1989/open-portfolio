@@ -20,36 +20,18 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Achievements (business req 11, FR-SEC-ACH-1) and Trainings (business §11a,
- * FR-SEC-TRN-1) — one component, two section types.
+ * Achievements and Trainings — one component, two section types. Both declare
+ * the same fields in the same order; the walk is driven by whichever
+ * descriptor `sectionType` selects, and the heading is that descriptor's
+ * label.
  *
- * The two declare the same fields in the same order, so they get the same
- * renderers and the same card. Nothing below names a section: the walk is
- * driven by whichever descriptor `sectionType` selects, and the heading is
- * that descriptor's own label. Adding the second type therefore cost one
- * registry entry and one parameter, which is the whole of FR-REG-3.
+ * Credly badges are items in the achievements collection, told apart by
+ * `source` and drawn as a group of their own. Trainings declares no badge
+ * field, so the badge treatment is switched off for it — see `BADGE_FIELD`.
  *
- * `type` is an enum in the registry, so the four values are fixed and their
- * display form is derived rather than stored — a tenant cannot invent a fifth
- * kind by typing one. The enum reads oddly for a training; SRS open question 7
- * records that and specifies option (a), the enum unchanged, for now.
- *
- * Credly is the one thing the two do not share. Badges are items in the
- * achievements collection, told apart by `source` and drawn as a group of
- * their own. There is no second collection and no `credly` section type: one
- * flat array keeps the registry contract intact (FR-REG-3) and lets an
- * imported badge be edited, reordered and deleted exactly like a hand-written
- * entry. Trainings declares no badge field, so the badge treatment below is
- * switched off for it by the registry rather than by a check on the section
- * name — see `BADGE_FIELD`.
- *
- * Nothing here is fetched. A badge is stored as a UUID; the element below is
- * built by us from that UUID, and Credly's own script — loaded once for the
- * whole section — turns it into an iframe in the visitor's browser. The
- * pasted embed code is parsed server-side and thrown away, never stored and
- * never injected, so there is no `dangerouslySetInnerHTML` anywhere in this
- * path and no route from a tenant's paste box to executable markup
- * (FR-THM-6, NFR-SEC-2).
+ * Nothing here is fetched. A badge is stored as a UUID; the element is built
+ * from it, and Credly's script turns it into an iframe in the visitor's
+ * browser. No pasted markup is ever injected.
  */
 /**
  * The section types this component serves.
@@ -102,7 +84,7 @@ const CREDLY_EMBED_SCRIPT = 'https://cdn.credly.com/assets/utilities/embed.js';
  * iframe's own inline size from those two numbers. The style below therefore
  * survives only as long as the div does — its job is to hold the same box open
  * beforehand so the frame lands into space that already exists rather than
- * shoving the page down (FR-MED-6, NFR-PERF-2). The two must agree, which is
+ * shoving the page down. The two must agree, which is
  * why both read from here.
  *
  * The reserved box carries no border or background, so one the script never
@@ -161,20 +143,12 @@ const RENDERERS = {
 };
 
 /**
- * The same fields, drawn for a badge: the frame, and nothing visible beside it.
+ * The same fields, drawn for a badge: the frame, and nothing visible beside
+ * it. Fields with no renderer here are skipped by the walk.
  *
- * `type`, `date`, `url` and `verifyUrl` have no renderer here. A field with no
- * renderer is skipped by the walk, which is the mechanism for exactly this —
- * each stays declared and ordered, it simply draws nothing in this treatment.
- * The verification link is not lost with it: Credly's own markup wraps the
- * badge image in a link to that same page, so the frame carries it.
- *
- * The title and issuer are rendered but visually hidden, and that is the whole
- * of this section's accessibility. The frame is a cross-origin iframe whose
- * contents we cannot read and whose only title is Credly's generic "View my
- * verified achievement on Credly" — so without this text a screen reader is
- * never told which badge it is looking at. Hiding it visually satisfies the
- * design; deleting it would leave NFR-A11Y-1 with nothing behind it.
+ * The title and issuer are rendered but visually hidden: the frame is a
+ * cross-origin iframe with a generic title, so without this text a screen
+ * reader is never told which badge it is.
  */
 const CREDLY_RENDERERS = {
   credlyBadgeId: (item: AchievementItem) =>

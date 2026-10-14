@@ -1,11 +1,7 @@
 import { REGISTRY } from './sections';
 import { SECTION_TYPES, type SectionInstance } from './types';
 
-/**
- * Presets (FR-REG-6, FR-REG-10): named starting configurations, applied once
- * at portfolio creation. A preset only sets initial state; everything it
- * produces is editable afterwards.
- */
+/** Named starting configurations, applied once at portfolio creation. */
 export const PRESET_IDS = ['software-engineer'] as const;
 
 export type PresetId = (typeof PRESET_IDS)[number];
@@ -45,12 +41,9 @@ export function isPresetId(value: unknown): value is PresetId {
 }
 
 /**
- * The initial draft tree for a preset (FR-REG-10): one entry per declared
- * section type, in registry order, enabled and defaulted as the preset sets.
- * Pure — reads no environment and touches no database.
- *
- * `name` is the display name collected on the creation screen (FR-AUTH-5).
- * It lands in the hero's `name` here, so the caller need not know that key.
+ * The initial draft tree for a preset: one entry per section type, in registry
+ * order. Pure. `name` is the display name from the creation screen and lands
+ * in the hero's `name`.
  */
 export function createInitialDraft(
   presetId: PresetId,

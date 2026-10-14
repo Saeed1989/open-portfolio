@@ -13,7 +13,7 @@ export function setupApp(app: INestApplication): void {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      /* A malformed body is 422 with field-level errors (§7.2, FR-API-4). */
+      /* A malformed body is 422 with field-level errors. */
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     }),
   );

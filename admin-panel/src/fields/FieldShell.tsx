@@ -17,7 +17,7 @@ import { ErrorMessage, GapNote, Hint, Label } from '../ui/primitives';
 export interface FieldBaseProps {
   readonly id: string;
   readonly label: string;
-  /** Required *for publish* (FR-REG-8). Draws the asterisk. */
+  /** Required *for publish*. Draws the asterisk. */
   readonly required?: boolean | undefined;
   readonly optional?: boolean | undefined;
   readonly hint?: string | undefined;

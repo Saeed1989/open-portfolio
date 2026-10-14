@@ -5,21 +5,10 @@ import type {
 } from './types';
 
 /*
- * TEMPORARY. Publish validation, generic over descriptors.
- *
- * The package has `validateProjectsForPublish`, which hand-lists the seven
- * modal-level fields of FR-SEC-PROJ-11 and walks only those. That is the right
- * shape for a rule the descriptor cannot express, and the wrong shape for
- * `required` — which every descriptor already declares. Nothing here knows a
- * section type: it reads `required`, `requiredWhen`, `hideable`, `min` and
- * `max` off whatever descriptor it is handed, which is what makes FR-REG-3
- * hold — a new section type is a registry entry and no change here.
- *
- * FR-REG-8: this is publish-time only. Draft writes validate shape, type and
- * enumeration; `required` is not checked until a publish is attempted, so a
- * tenant can leave a field half-written and still save.
- *
- * FR-PUB-6: every failure is collected. Nothing returns early.
+ * TEMPORARY. Publish validation, generic over descriptors: it reads
+ * `required`, `requiredWhen`, `hideable`, `min` and `max` off whatever
+ * descriptor it is handed and names no section type. Publish-time only —
+ * draft writes do not check `required`. Every failure is collected.
  */
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -75,7 +64,7 @@ export function isFieldHidden(
  *
  * Only meaningful where the descriptor sets `itemPublishFlag`. Absent means
  * published: a hand-entered item is published by default, and only an import
- * arrives unpublished (FR-SEC-ACH-5).
+ * arrives unpublished.
  */
 export function isItemUnpublished(
   descriptor: SectionDescriptor,
@@ -209,7 +198,7 @@ export function validateForPublish(
   const errors: ValidationError[] = [];
 
   /* A collection's minimum is a publish rule, never a save rule: a tenant
-     cannot hold three projects while writing their first (FR-SEC-PROJ-2). */
+     cannot hold three projects while writing their first. */
   if (descriptor.min !== undefined && rows.length < descriptor.min) {
     errors.push({
       path: 'items',

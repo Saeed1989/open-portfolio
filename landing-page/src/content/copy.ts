@@ -18,8 +18,8 @@ export const copy = {
   },
 
   links: {
-    // Admin host (FR-AUTH-1, SRS §2.1). The slug is carried as a query param;
-    // availability is checked on the creation screen, behind a session (FR-AUTH-5, §7.2).
+    // Admin host. The slug is carried as a query param;
+    // availability is checked on the creation screen, behind a session.
     signIn: 'https://admin.openfolio.site/sign-in',
     slugParam: 'slug',
   },
@@ -118,7 +118,7 @@ export const copy = {
     title: 'Thirteen section types. Four are on from the start.',
     legend: 'Enabled by the software-engineer preset',
     presetTag: 'preset',
-    // Registry order (SRS §4.1); the preset enables the first four (FR-REG-6).
+    // Registry order; the preset enables the first four.
     items: [
       { name: 'Hero', desc: 'Name, role, a short intro', preset: true },
       { name: 'Projects', desc: 'Case studies with stack and outcomes', preset: true },

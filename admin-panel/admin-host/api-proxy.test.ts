@@ -10,9 +10,9 @@ import { afterAll, beforeAll, beforeEach, expect, test } from 'vitest';
 import { apiProxy } from './api-proxy';
 
 /*
- * FR-EDGE-9, on the real dev server with the real rule, against a stub
- * standing in for `gateway`. Plain HTTP on both hops: the rule is the same,
- * and TLS is the config's business, not the rule's.
+ * The admin host's `/api/*` rule, on the real dev server, against a stub
+ * standing in for `gateway`. Plain HTTP on both hops: TLS is the config's
+ * business, not the rule's.
  */
 
 const ADMIN_HOST = 'admin.openfolio.test:5174';

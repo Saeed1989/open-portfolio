@@ -1,19 +1,13 @@
 import type { CSSProperties } from 'react';
 
 /**
- * Theme constants and the mapping from a tenant's theme to custom properties.
- *
- * FR-THM-2: theme values render as CSS custom properties on the document root.
- * No per-tenant stylesheet is generated or stored, and nothing here is baked
- * into the build — the token layer in globals.css supplies every default, and
- * a tenant overrides only what they have configured.
- *
- * FR-THM-6: a tenant supplies values, never CSS. Everything below is either a
- * colour string written into a named property or an id looked up in a table
- * declared here. There is no path from tenant input to a rule.
+ * Theme constants and the mapping from a tenant's theme to CSS custom
+ * properties on the document root. No per-tenant stylesheet is generated.
+ * A tenant supplies values, never CSS: each is a colour string written into a
+ * named property or an id looked up in a table declared here.
  */
 
-/** FR-THM-1: a curated list, not a free font field. */
+/** A curated list, not a free font field. */
 export type FontPairingId = 'grotesk-spline' | 'grotesk-inter' | 'serif-sans';
 
 export interface FontPairing {
@@ -65,15 +59,8 @@ export const DEFAULT_FONT_PAIRING: FontPairingId = 'grotesk-spline';
 
 /**
  * The pairing for an id, falling back to the default for one this build does
- * not know.
- *
- * `PortfolioTheme.fontPairing` is typed `FontPairingId`, but that types our own
- * constants, not the payload: the value arrives from the public API as JSON and
- * is cast, never validated (lib/api.ts). An id from a newer admin, an older
- * build, or a hand-edited document therefore reaches this map as a miss, and an
- * unguarded lookup would throw inside the root layout — taking that tenant's
- * whole page down over a font. FR-THM-1's curated list lives here rather than
- * in packages/registry, so nothing upstream can reject the value first.
+ * not know. The id arrives from the public API as JSON and is cast, never
+ * validated, so an unguarded lookup could throw inside the root layout.
  */
 function pairingFor(id: string | undefined): FontPairing {
   return (
@@ -81,13 +68,13 @@ function pairingFor(id: string | undefined): FontPairing {
   );
 }
 
-/** FR-THM-1: light, dark, or follow the visitor's system setting. */
+/** Light, dark, or follow the visitor's system setting. */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export interface PortfolioTheme {
   /**
    * Accent colour. The API rejects a value failing WCAG AA against both
-   * backgrounds and offers the nearest compliant shade (FR-THM-3), so anything
+   * backgrounds and offers the nearest compliant shade, so anything
    * arriving here has already passed.
    */
   readonly accent?: string;

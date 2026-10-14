@@ -8,7 +8,7 @@
  * at compile time.
  */
 
-/** A stored image. `alt` is non-optional: FR-MED-5 enforces it at upload. */
+/** A stored image. `alt` is required at upload, so it is never optional here. */
 export interface ImageRef {
   readonly src: string;
   readonly alt: string;
@@ -16,7 +16,7 @@ export interface ImageRef {
   readonly height: number;
 }
 
-/** FR-SEC-HERO-2: a typed choice, not a free-form button. */
+/** A typed choice, not a free-form button. */
 export type CtaKind = 'resume' | 'schedule' | 'url';
 
 export interface Cta {
@@ -30,22 +30,16 @@ export interface HeroContent {
   readonly title: string;
   readonly tagline?: string;
   readonly bio?: string;
-  /** First entry renders as the primary treatment (FR-SEC-HERO-1). */
+  /** First entry renders as the primary treatment. */
   readonly ctas?: readonly Cta[];
-  /** Absent means the layout reflows, never a gap (FR-SEC-HERO-3). */
+  /** Absent means the layout reflows, never a gap. */
   readonly avatar?: ImageRef | null;
 }
 
 /**
- * The three rich-text bodies behind a project's case-study modal
- * (business 2.17, 2.18, 2.20).
- *
- * Stored as HTML, and rendered by injecting that HTML directly. FR-SEC-PROJ-12
- * makes that safe by requiring an allowlist sanitiser to run at *write* time,
- * so what is stored is already clean. That sanitiser belongs to the write path
- * — the api — which does not exist in this repository yet, so nothing here
- * enforces it. Until it does, treat these three strings as trusted input and
- * do not point the portfolio at an unsanitised source.
+ * The three rich-text bodies behind a project's case-study modal. Stored as
+ * HTML and injected as-is at render, which is safe only because the write path
+ * sanitises them against the allowlist in `sanitize.ts`.
  */
 export interface ProjectBodies {
   readonly business: string;
@@ -54,16 +48,9 @@ export interface ProjectBodies {
 }
 
 /**
- * A project, at both of the depths FR-SEC-PROJ-6 asks for.
- *
- * The first block is card-level: the fifteen-second read. The second is
- * modal-level: the case study behind it. The two are stored separately and one
- * is never derived from the other — the card is not a truncation of the modal
- * (business §2A).
- *
- * Every modal-level field is optional here and required by the descriptor.
- * A draft is allowed to be half-written; it is *publishing* that insists on
- * all seven, which is what `validateProjectItem` in `publish.ts` checks.
+ * A project at two depths: card-level fields, then the modal-level case study.
+ * The two are stored separately; the card is never a truncation of the modal.
+ * Modal-level fields are optional in a draft and required at publish.
  */
 export interface ProjectItem {
   readonly id: string;
@@ -78,10 +65,10 @@ export interface ProjectItem {
   readonly role?: string;
   readonly demoUrl?: string;
   readonly repoUrl?: string;
-  /** FR-SEC-PROJ-4: suppresses the repo-link requirement, shows a note. */
+  /** Suppresses the repo-link requirement and shows a note instead. */
   readonly confidential?: boolean;
 
-  /* -- Modal-level (business 2.17–2.23) ---------------------------------- */
+  /* -- Modal-level ------------------------------------------------------- */
 
   readonly bodies?: ProjectBodies;
   /** The title held on the engagement, e.g. "Lead front-end engineer". */
@@ -96,11 +83,11 @@ export interface ProjectItem {
 
 export interface ProjectsContent {
   readonly items: readonly ProjectItem[];
-  /** Tenant-editable filter categories (FR-SEC-PROJ-7). */
+  /** Tenant-editable filter categories. */
   readonly categories?: readonly string[];
 }
 
-/** FR-SEC-SKILL-1: stored once, both tiers derive from this single row. */
+/** Stored once; the prominent and detailed tiers both derive from this row. */
 export interface SkillItem {
   readonly id: string;
   readonly name: string;
@@ -115,7 +102,7 @@ export interface SkillsContent {
   readonly items: readonly SkillItem[];
   /** Tenant-editable. A category with no skills is not rendered. */
   readonly categories: readonly string[];
-  /** Optional published rating scale (FR-SEC-SKILL-10). */
+  /** Optional published rating scale. */
   readonly legend?: string;
 }
 
@@ -123,7 +110,7 @@ export interface ContactLink {
   readonly label: string;
   readonly value: string;
   readonly href: string;
-  /** Independent per-link toggle (FR-SEC-CON-2). */
+  /** Independent per-link toggle. */
   readonly visible: boolean;
 }
 
@@ -152,7 +139,7 @@ export interface EducationItem {
   readonly degree: string;
   readonly institution: string;
   readonly graduated: string;
-  /** Each of the four below is individually hideable (FR-SEC-EDU-1). */
+  /** Each of the four below is individually hideable. */
   readonly gpa?: string;
   readonly coursework?: readonly string[];
   readonly scholarships?: readonly string[];
@@ -205,7 +192,7 @@ export interface OpenSourceStats {
  *
  * They are rendered as `<img>` embeds pointed at the card service, so the
  * visitor's browser makes the request and this system makes none — no fetch at
- * render, no worker, no cache entry, no credential (FR-INT-1, NFR-PERF-3).
+ * render, no worker, no cache entry, no credential.
  */
 export const GITHUB_EMBED_CARDS = ['stats', 'languages', 'streak'] as const;
 
@@ -244,7 +231,7 @@ export type AchievementType =
  * Credly is a *source* of achievements, not a kind of section: an imported
  * badge is an ordinary item in the one flat `achievements` collection, marked
  * so the page can group it and so a re-import can recognise it. Nothing is
- * nested, and no second collection exists (FR-REG-3).
+ * nested, and no second collection exists.
  */
 export type AchievementSource = 'manual' | 'credly';
 
@@ -259,13 +246,9 @@ export interface AchievementItem {
   /** Absent means `manual` — the value every item authored by hand takes. */
   readonly source?: AchievementSource;
   /**
-   * The badge's UUID, and *only* the UUID.
-   *
-   * The tenant supplies a Credly embed snippet; the api parses the id out of
-   * it server-side and throws the rest away. The markup is never stored,
-   * because storing tenant HTML and injecting it at render is stored XSS
-   * (FR-THM-6, NFR-SEC-2). The render path builds the embed element itself
-   * from this value.
+   * The badge's UUID only. The pasted embed markup is never stored: injecting
+   * tenant HTML at render would be stored XSS, so the render path builds the
+   * embed element from this value.
    */
   readonly credlyBadgeId?: string;
   /** Public verification page. Restricted to Credly's own hosts. */
@@ -273,19 +256,10 @@ export interface AchievementItem {
 }
 
 /**
- * A completed course, workshop, bootcamp or structured programme
- * (business §11a, FR-SEC-TRN-1).
- *
- * Field for field an achievement, minus the three Credly fields and minus the
- * per-item publish flag that only an import needs. That is not a coincidence
- * to be tidied away later: §11a.4 asks that a credential be listed once, as an
- * achievement *or* as a training, which only works if the two carry the same
- * information and differ in where the tenant files it.
- *
- * `type` reuses `AchievementType` deliberately. Certification / award /
- * ranking / hackathon reads oddly for a training — SRS open question 7 records
- * exactly that, along with the alternatives — and option (a), the enum
- * unchanged, is what is specified today. It is not this section's to fix.
+ * A completed course, workshop, bootcamp or structured programme. Field for
+ * field an achievement, minus the Credly fields and the per-item publish flag,
+ * so a credential can be filed as either one. `type` deliberately reuses
+ * `AchievementType`, although its values fit a training poorly.
  */
 export interface TrainingItem {
   readonly id: string;
@@ -300,7 +274,7 @@ export interface GalleryItem {
   readonly id: string;
   readonly image?: ImageRef | null;
   readonly caption?: string;
-  /** Embedded video from the provider allowlist (FR-SEC-GAL-1). */
+  /** Embedded video from the provider allowlist. */
   readonly videoUrl?: string;
 }
 
@@ -318,17 +292,12 @@ export interface AchievementsContent {
   readonly items: readonly AchievementItem[];
   /**
    * Used once, on explicit tenant action, to populate items from a public
-   * Credly wallet. It is not a connection: no credential is held, nothing is
-   * scheduled, and no cached payload sits behind it (the FR-INT-10 pattern).
+   * Credly wallet. Not a connection: no credential, schedule, or cache.
    */
   readonly credlyUsername?: string;
 }
-/*
- * No `credlyUsername` alongside `items`, unlike AchievementsContent. Trainings
- * shares the field schema, not the import path: there is no badge import, no
- * embed-code paste and no per-item publish state on this side (FR-SEC-ACH-2
- * … 7 belong to `achievements` alone).
- */
+/* No `credlyUsername`, unlike AchievementsContent: trainings shares the field
+   schema but has no badge import and no per-item publish state. */
 export type TrainingsContent = Collection<TrainingItem>;
 export type GalleryContent = Collection<GalleryItem>;
 

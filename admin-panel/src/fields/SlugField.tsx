@@ -1,12 +1,10 @@
 import { FieldShell, type FieldBaseProps } from './FieldShell';
 
 /**
- * Input and the fixed `.openfolio.site` suffix, drawn as one control.
- *
- * The suffix is not editable and is not part of the value: a slug is the
- * subdomain label alone (§1.3), and FR-DAT-1 validates that label. Showing it
- * inside the control rather than beside it is what stops a tenant typing their
- * own domain into the box.
+ * Input and the fixed `.openfolio.site` suffix, drawn as one control. The
+ * suffix is not editable and not part of the value: a slug is the subdomain
+ * label alone. Drawing it inside the control stops a tenant typing their own
+ * domain into the box.
  */
 export interface SlugFieldProps extends FieldBaseProps {
   readonly value: string;

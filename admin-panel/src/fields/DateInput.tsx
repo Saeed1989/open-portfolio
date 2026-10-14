@@ -4,8 +4,8 @@ import { FieldShell, type FieldBaseProps } from './FieldShell';
  * A date at one of two precisions.
  *
  * The content model needs both and does not mix them: `graduationDate` and an
- * experience period are months (FR-SEC-EDU-1, FR-SEC-EXP-1), while a talk or a
- * blog post is a day (FR-SEC-SPK-1, FR-SEC-BLOG-1). Precision is the caller's
+ * experience period are months, while a talk or a
+ * blog post is a day. Precision is the caller's
  * declaration, not something the tenant toggles, so a field cannot change what
  * it means between two drafts.
  *

@@ -21,18 +21,17 @@ import { SignInPage } from './routes/SignInPage';
  * `/sections/:type` is one page for every section type the
  * registry declares — there is no route per type and no component per type.
  *
- * Every route but `/sign-in` and `/dev/fields` sits behind the portfolio gate
- * (FR-AUTH-7). Neither reads an account, so both are reachable in any state.
+ * Every route but `/sign-in` and `/dev/fields` sits behind the portfolio
+ * gate. Neither reads an account, so both are reachable in any state.
  *
- * The section manager, sidebar navigation beyond a link list, section
- * reordering, the preview and the publish flow are all out of this milestone.
+ * Sidebar navigation beyond a link list and the preview are not built yet.
  */
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       /* A 401 that reaches here has already been through the client's one
-         refresh and one retry (FR-AUTH-20). Retrying cannot change that. */
+         refresh and one retry. Retrying cannot change that. */
       retry: (failureCount, error) =>
         failureCount < 2 &&
         !(error instanceof Error && error.name === 'AdminError'),

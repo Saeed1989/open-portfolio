@@ -14,17 +14,16 @@ import { itemLabelFor } from './item-label';
 /*
  * A descriptor, drawn as a form.
  *
- * `single` and `collection` are the two cardinalities the registry declares
- * (SRS §4). Field order is registry order in both, identically for every item
- * in a collection (FR-REG-2) — this file never sorts, filters by name, or
- * special-cases a key.
+ * `single` and `collection` are the two cardinalities the registry declares.
+ * Field order is registry order in both, identically for every item in a
+ * collection — this file never sorts, filters by name, or special-cases a key.
  */
 
 export interface SectionFormProps {
   readonly descriptor: SectionDescriptor;
   readonly content: unknown;
   readonly gaps: GapMap;
-  /** Field errors from a refused save (D2), keyed by the same paths. */
+  /** Field errors from a refused save, keyed by the same paths. */
   readonly refusedErrors: ReadonlyMap<string, string>;
   readonly disabled?: boolean | undefined;
   readonly onChange: (content: unknown) => void;
@@ -142,9 +141,8 @@ function SingleForm({
   };
 
   /* Visibility lives beside the values, never wrapped around them, so a
-     field's value type is the same whether or not it is hideable. Toggling
-     touches only the map — FR-SEC-CON-2's "a hidden link keeps its value" is
-     then true by construction rather than by care. */
+     field's value type is the same whether or not it is hideable, and a
+     hidden field keeps its value. */
   const setVisibility = (key: string, visible: boolean) => {
     onChange({
       ...record,
@@ -193,9 +191,8 @@ function CollectionForm({
     writeRows(next);
   };
 
-  /* Per-item visibility, in the item's own map — FR-SEC-EDU-1's four fields
-     are hideable per entry, so the map belongs to the entry, not the
-     section. */
+  /* Per-item visibility, in the item's own map: the fields are hideable per
+     entry, so the map belongs to the entry, not the section. */
   const setItemVisibility = (index: number, key: string, visible: boolean) => {
     const next = [...rows];
     const item = asObject(next[index]);
@@ -206,7 +203,7 @@ function CollectionForm({
     writeRows(next);
   };
 
-  /* FR-SEC-ACH-5: an imported badge arrives unpublished and the tenant
+  /* An imported badge arrives unpublished and the tenant
      promotes it. Absent means published, so only the demotion is recorded. */
   const setItemPublished = (index: number, published: boolean) => {
     const next = [...rows];
@@ -245,7 +242,7 @@ function CollectionForm({
             <Pill tone={atMax ? 'warn' : 'neutral'}>max {descriptor.max}</Pill>
           ) : null}
         </div>
-        {/* FR-SEC-PROJ-2: the cap is refused at save, so the refusal has to
+        {/* The cap is refused at save, so the refusal has to
             arrive before authoring rather than after — it sits on the Add
             control, with the reason stated on it. */}
         <Button

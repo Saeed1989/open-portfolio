@@ -4,7 +4,7 @@ import { IsIn, IsOptional, IsString } from 'class-validator';
 const THEME_MODES = ['light', 'dark', 'system'] as const;
 
 /**
- * The tenant-supplied theme (FR-THM-1): the draft's theme, and the body of
+ * The tenant-supplied theme: the draft's theme, and the body of
  * PATCH /admin/portfolio/theme.
  */
 export class AdminThemeDto {

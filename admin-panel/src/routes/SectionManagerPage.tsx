@@ -20,12 +20,12 @@ import { Button, Card, Pill, type PillTone } from '../ui/primitives';
  *
  * One row per section type: order, name, a content summary, the published
  * state, and the enable switch. Drag to reorder; the order here is the order
- * on the page (FR-CFG-3).
+ * on the page.
  *
  * Nothing here names a section type. Every column is derived from the
  * descriptor and the content: the summary from cardinality, the state from
  * `emptyCondition` and the publish validator. A section type added to the
- * registry appears here with no change to this file (FR-REG-3).
+ * registry appears here with no change to this file.
  *
  * The mock's rejected alternative is worth keeping in view: a three-way
  * segmented control per row (off / draft / live) "reads as a workflow the
@@ -120,7 +120,7 @@ export function SectionManagerPage() {
   );
   const unpublishedChanges = version !== publishedRevision;
 
-  /* The server validates and decides (FR-PUB-6); a refusal comes back with
+  /* The server validates and decides; a refusal comes back with
      every failing field, each path led by its section type. */
   const publish = () => {
     setPublishing(true);
@@ -142,7 +142,7 @@ export function SectionManagerPage() {
                 message: 'The publish did not complete.',
               });
         setPublishError(error);
-        /* Turns the editors' publish-only gaps red (FR-REG-8). */
+        /* Turns the editors' publish-only gaps red. */
         if (error.kind === 'validation') setAttempted(true);
       })
       .finally(() => {
@@ -177,7 +177,7 @@ export function SectionManagerPage() {
    *
    * Sequential rather than parallel because every write increments the
    * draft's `draftRevision` and each carries the previous one's result as
-   * its `If-Match` (D3). Issued together they would race, and all but the
+   * its `If-Match`. Issued together they would race, and all but the
    * first would come back `409 stale_write`.
    */
   const persist = useCallback(
@@ -216,7 +216,7 @@ export function SectionManagerPage() {
   );
 
   const rows: readonly Row[] = useMemo(() => {
-    /* Registry order is the default order (§4.1); a section the tenant has
+    /* Registry order is the default order; a section the tenant has
        reordered carries its own. Sections the registry declares but the draft
        has never held still appear, so a new section type is visible the first
        time it exists. */
@@ -437,7 +437,7 @@ export function SectionManagerPage() {
                   >
                     {/* Drag is a pointer gesture and unusable from a keyboard,
                         so the handle is a button that also moves its row with
-                        the arrow keys (NFR-A11Y-2). */}
+                        the arrow keys. */}
                     <button
                       type="button"
                       aria-label={`Reorder ${row.descriptor.label}, position ${String(index + 1)} of ${String(rows.length)}. Use the arrow keys to move it.`}
@@ -508,7 +508,7 @@ export function SectionManagerPage() {
               </ol>
             </Card>
 
-            {/* FR-CFG-4: publishing requires at least one enabled, non-empty
+            {/* Publishing requires at least one enabled, non-empty
                 section. Stated as a running count rather than surfaced only as
                 a publish failure. */}
             <Card className="flex flex-col gap-[4px] p-[12px]">

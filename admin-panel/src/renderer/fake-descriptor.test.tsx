@@ -11,16 +11,9 @@ import { itemLabelFor } from './item-label';
 import { SectionForm } from './SectionForm';
 
 /*
- * The FR-REG-3 proof.
- *
- * "Adding a new section type requires a registry entry plus one React
- * component in `portfolio`. It must not require changes to `admin`."
- *
- * The descriptors below are invented here, in the test file, and exist nowhere
- * else in the app. Nothing was added to the renderer, the validator, the map,
- * or the editor page to make them work. If any of these assertions needed a
- * change outside this file, admin would be failing FR-REG-3 and the registry
- * would not be doing the job it exists to do.
+ * A new section type must need no change to `admin`. The descriptors below
+ * are invented here and exist nowhere else in the app; if an assertion needed
+ * a change outside this file, the renderer would not be generic.
  */
 
 const fakeSingle = {
@@ -28,7 +21,6 @@ const fakeSingle = {
   label: 'Widget audit',
   description: 'A section type that does not exist.',
   priority: 'should',
-  businessRef: '—',
   cardinality: 'single',
   fields: [
     {
@@ -70,7 +62,6 @@ const fakeCollection = {
   label: 'Widget batches',
   description: 'Also does not exist.',
   priority: 'could',
-  businessRef: '—',
   cardinality: 'collection',
   min: 1,
   max: 2,

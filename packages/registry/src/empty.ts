@@ -1,11 +1,6 @@
 /**
- * Predicate helpers behind every `emptyCondition`.
- *
- * They take `unknown` on purpose: the api runs them over documents straight
- * out of MongoDB and the portfolio runs them over a payload it did not
- * construct, so neither can assume the shape is already valid. A malformed
- * content object counts as empty — the section disappears rather than
- * rendering broken (FR-INT-5).
+ * Predicate helpers behind every `emptyCondition`. They take `unknown`
+ * because they run over stored documents; malformed content counts as empty.
  */
 
 type Dict = Record<string, unknown>;

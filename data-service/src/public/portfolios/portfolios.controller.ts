@@ -21,7 +21,7 @@ export class PortfoliosController {
 
   @Get(':slug')
   @ApiOperation({
-    summary: 'Render payload for a published portfolio (FR-TEN-5)',
+    summary: 'Render payload for a published portfolio',
   })
   @ApiParam({ name: 'slug', example: 'alice' })
   @ApiOkResponse({ type: RenderPayloadDto })

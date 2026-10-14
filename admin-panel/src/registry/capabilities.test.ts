@@ -48,8 +48,8 @@ describe('invariant A — hideable and publish-required are exclusive', () => {
   });
 });
 
-describe('the overlay declares what the SRS says it should', () => {
-  test('contact has five independently hideable links (FR-SEC-CON-2)', () => {
+describe('the overlay declares the expected capabilities', () => {
+  test('contact has five independently hideable links', () => {
     const contact = descriptorFor('contact');
     expect(contact?.cardinality).toBe('single');
     if (contact?.cardinality !== 'single') throw new Error('unreachable');
@@ -60,7 +60,7 @@ describe('the overlay declares what the SRS says it should', () => {
     expect(hideable).toEqual(['email', 'github', 'linkedin', 'x', 'site']);
   });
 
-  test('education has four hideable fields, per entry (FR-SEC-EDU-1)', () => {
+  test('education has four hideable fields, per entry', () => {
     const education = descriptorFor('education');
     expect(education?.cardinality).toBe('collection');
     if (education?.cardinality !== 'collection') throw new Error('unreachable');
@@ -72,7 +72,7 @@ describe('the overlay declares what the SRS says it should', () => {
   });
 
   test('achievements and trainings both carry the item publish flag', () => {
-    /* trainings reuses the achievements schema verbatim (§4.1, FR-SEC-TRN-1),
+    /* trainings reuses the achievements schema verbatim,
        so it inherits the flag whether or not it has an importer of its own. */
     for (const type of ['achievements', 'trainings']) {
       const descriptor = descriptorFor(type);
@@ -83,7 +83,7 @@ describe('the overlay declares what the SRS says it should', () => {
   });
 
   test('no other section carries the item publish flag', () => {
-    /* §5.2 calls it "the only per-item publish flag in the model". */
+    /* The only per-item publish flag in the model. */
     const flagged = DESCRIPTORS.filter(
       (d) => d.cardinality === 'collection' && d.itemPublishFlag,
     ).map((d) => d.type);

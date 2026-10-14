@@ -42,7 +42,7 @@ export class MeDto {
     type: MePortfolioDto,
     required: true,
     nullable: true,
-    description: 'Null when the tenant has no portfolio yet (FR-AUTH-7).',
+    description: 'Null when the tenant has no portfolio yet.',
   })
   portfolio: MePortfolioDto | null;
 }

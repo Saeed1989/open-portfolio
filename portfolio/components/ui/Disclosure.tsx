@@ -2,16 +2,13 @@ import type { ReactNode } from 'react';
 import { cn } from './cn';
 
 /**
- * A native `<details>` disclosure.
- *
- * The design opens a project's "Solution and my role" this way, and
- * FR-SEC-EXP-1 asks for individually collapsible experience entries. Native
- * details/summary is deliberate: it is keyboard operable and announced
- * correctly with no JavaScript, which keeps every section a server component
- * and keeps the detail text in the initial HTML for crawlers (FR-PUB-4).
+ * A native `<details>` disclosure, used for collapsible entries. Native
+ * details/summary is keyboard operable and announced correctly with no
+ * JavaScript, which keeps every section a server component and the detail
+ * text in the initial HTML.
  *
  * The native marker is suppressed here and in globals.css, matching the
- * design, which draws no triangle.
+ * design.
  */
 export interface DisclosureProps {
   /** The always-visible summary line. */

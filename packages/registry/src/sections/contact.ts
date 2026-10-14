@@ -6,7 +6,6 @@ export const contact = {
   label: 'Contact',
   description: 'How to reach you. Each link toggles independently.',
   priority: 'must',
-  businessRef: 'BR 4',
   cardinality: 'single',
   fields: [
     { key: 'intro', label: 'Intro', kind: 'longtext', max: 200 },

@@ -4,15 +4,10 @@ import { HIT_AREA, isInvalid, type Gap } from '../ui/field-chrome';
 import { Button, ErrorMessage, GapNote, Hint } from '../ui/primitives';
 
 /**
- * An ordered list of items: drag handle, add, remove.
- *
- * Order is the field's value, not a presentation detail — FR-CFG-3 and
- * FR-SEC-SKILL-9 both persist it, and FR-REG-2 renders collection items in it.
- *
- * Drag is not the only way to reorder. A pointer gesture is unusable from a
- * keyboard, so the handle is a button that also moves its item with the arrow
- * keys, and each move is announced (NFR-A11Y-2, NFR-A11Y-5). Reordering that
- * only works with a mouse is a field that only works with a mouse.
+ * An ordered list of items: drag handle, add, remove. Order is the field's
+ * value, not a presentation detail. The handle is also a button that moves
+ * its item with the arrow keys, and each move is announced, so reordering
+ * works from a keyboard.
  */
 export interface RepeaterProps<T> {
   readonly id: string;
@@ -25,8 +20,8 @@ export interface RepeaterProps<T> {
   readonly onChange?: ((items: readonly T[]) => void) | undefined;
   readonly onAdd?: (() => void) | undefined;
   readonly addLabel?: string | undefined;
-  /** Set when the collection is at its `max` (FR-SEC-PROJ-2 refuses at save,
-   *  so the refusal belongs on the Add control rather than after authoring). */
+  /** Set when the collection is at its `max`, which is refused at save, so
+   *  the refusal belongs on the Add control rather than after authoring. */
   readonly addDisabledReason?: string | undefined;
   readonly hint?: string | undefined;
   readonly error?: string | undefined;

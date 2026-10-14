@@ -8,13 +8,10 @@ const digest = (value: string): Buffer =>
   createHash('sha256').update(value).digest();
 
 /**
- * FR-EDGE-5. A request to `/auth/*` or `/admin/*` carries an `X-Api-Key`
- * equal to a key this process accepts, or it is answered `401` with no body
- * here — before any guard, pipe, controller or database access, so
- * `X-User-Id` is never read on a request that has not passed (NFR-SEC-8).
- *
- * The key says the caller is `gateway`. It says nothing about a tenant: the
- * session is still resolved by the auth module, and scope by the admin guard.
+ * A request to `/auth/*` or `/admin/*` carries an `X-Api-Key` this process
+ * accepts, or is answered `401` with no body here — before any guard,
+ * controller or database access, so `X-User-Id` is never read on a request
+ * that has not passed. The key identifies `gateway`, not a tenant.
  */
 @Injectable()
 export class GatewayKeyMiddleware implements NestMiddleware {

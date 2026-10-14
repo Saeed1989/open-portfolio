@@ -9,11 +9,11 @@ portfolio through an admin panel, and publishes it at `{slug}.openfolio.site` �
 |---|---|
 | [`spec/BusinessRequirements.md`](spec/BusinessRequirements.md) | The content model — what a portfolio holds, prioritised Must/Should/Could |
 | [`spec/srs.md`](spec/srs.md) | The system spec — architecture, data model, `FR-*`/`NFR-*` requirements, traceability |
-| [`spec/architecture.md`](spec/architecture.md) | One-page map — components, topology, flows. Derived from the SRS |
+| [`spec/architecture.md`](spec/architecture.md) | One-page map — components, topology, flows. Derived from `spec/srs.md` |
 | [`spec/adminRequestFlow.md`](spec/adminRequestFlow.md) | Sequence diagram for the authenticated admin request |
 
 `spec/srs.md` is the source of truth. The other two are derived from it; where one disagrees, the
-SRS wins and the derived file is wrong.
+system spec wins and the derived file is wrong.
 
 ## Architecture
 
@@ -124,8 +124,8 @@ npm install
 npm run build
 ```
 
-The admin SPA is served by the admin host, which also forwards `/api/*` to `gateway` unchanged
-(SRS FR-EDGE-9); `gateway` serves no page. In development the admin host is the admin dev server:
+The admin SPA is served by the admin host, which also forwards `/api/*` to `gateway` unchanged;
+`gateway` serves no page. In development the admin host is the admin dev server:
 `npm run dev`.
 
 ```
