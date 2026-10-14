@@ -1,6 +1,6 @@
 %% Openfolio — authenticated admin request flow
 %% Covers the per-request path only. Sign-in is a separate diagram.
-%% Normative source: srs.md v0.14 §2.6, FR-AUTH-3, FR-AUTH-10..12, FR-AUTH-18..20, FR-EDGE-1..10.
+%% Normative source: srs.md v0.17 §2.6, FR-AUTH-3, FR-AUTH-10..12, FR-AUTH-18..20, FR-EDGE-1..10.
 %% If this diagram and srs.md disagree, srs.md wins.
 
 sequenceDiagram

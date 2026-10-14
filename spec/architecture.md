@@ -1,6 +1,6 @@
 # Architecture
 
-Derived from `srs.md` v0.14. On conflict, the SRS wins.
+Derived from `srs.md` v0.17. On conflict, the SRS wins.
 
 Multi-tenant portfolio SaaS. One portfolio per tenant at `{slug}.openfolio.site`. Admin edits `draft`; publish builds the render payload once and stores it; public pages serve it unchanged.
 
@@ -14,7 +14,7 @@ Multi-tenant portfolio SaaS. One portfolio per tenant at `{slug}.openfolio.site`
 | `portfolio` | Next.js SSR + ISR on Vercel | `*.openfolio.site`, not through `gateway` |
 | `www` | static client-rendered SPA | `openfolio.site` |
 | `db` | MongoDB | internal |
-| `redis-cache` | Redis (`allkeys-lru`) | internal; present and unused (SRS §10.3 Q16) |
+| `redis-cache` | Redis (`allkeys-lru`) | internal; present and unused |
 | `storage` | S3-compatible + CDN | public read, signed write |
 | `packages/registry` | TS library, dual ESM/CJS — descriptors, validation, sanitiser allowlist, render-tree builder | not deployed; used by `api`, `admin`, `portfolio` |
 
