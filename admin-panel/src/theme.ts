@@ -1,10 +1,8 @@
 /*
- * Dark mode on <html>, by class.
- *
- * FR-THM-1 gives light / dark / system as an explicit choice, so `system` is
- * resolved here rather than left to a media query the tenant cannot override.
- * This is the admin panel's own chrome; the tenant's theme (FR-THM-1..3)
- * belongs to the published page and does not recolour this app.
+ * Dark mode on <html>, by class. Light / dark / system is an explicit choice,
+ * so `system` is resolved here rather than left to a media query the tenant
+ * cannot override. This is the admin panel's own chrome, not the tenant's
+ * published theme.
  */
 export type ThemeMode = 'light' | 'dark' | 'system';
 

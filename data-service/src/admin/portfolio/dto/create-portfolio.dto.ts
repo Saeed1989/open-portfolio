@@ -3,7 +3,7 @@ import { PRESET_IDS, type PresetId } from '@portfolio/registry';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 /**
- * The body of POST /admin/portfolio (§7.2, FR-AUTH-5). Format and reservation
+ * The body of POST /admin/portfolio. Format and reservation
  * of `slug` are checked by the service, so they answer with their own codes.
  */
 export class CreatePortfolioDto {

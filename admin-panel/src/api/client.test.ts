@@ -18,9 +18,7 @@ import {
   TENANTS,
 } from '../test/auth-server';
 
-/*
- * FR-AUTH-20, against the MSW handlers of `src/test/auth-server.ts`.
- */
+/* Refresh-and-retry, against the MSW handlers of `src/test/auth-server.ts`. */
 
 const goToSignIn = vi.hoisted(() => vi.fn());
 vi.mock('../auth/navigation', () => ({ goToSignIn }));

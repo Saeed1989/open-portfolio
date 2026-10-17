@@ -23,26 +23,16 @@ import type { SeedAccount, SeedTenant } from './tenant';
 import { ACCOUNTS, TENANTS } from './tenants';
 
 /*
- * Deterministic seed for local development and for the test suites.
- *
- * Nothing here may be random or clock-dependent: ids, slugs and timestamps are
- * fixed in ids.ts so that a test can assert on a seeded value, and so that
- * running the seed twice leaves the same state rather than a second copy.
- * Every write is an upsert addressed by a fixed `_id`, issued through the raw
- * driver rather than through a Mongoose document. That is deliberate: both
- * `users` and `portfolios` declare `timestamps`, and a Mongoose write would
- * stamp `updatedAt` from the clock on every run, so the second run would
- * differ from the first. The fixtures are already in final stored form, so
- * there is nothing for casting or defaults to add.
+ * Deterministic seed for local development and the test suites. Nothing is
+ * random or clock-dependent: ids, slugs and timestamps are fixed in ids.ts,
+ * and every write is an upsert by fixed `_id` through the raw driver, since a
+ * Mongoose write would stamp `updatedAt` from the clock on every run.
  *
  *   npm run seed         upsert; safe to run repeatedly
- *   npm run seed:reset   drop the eight collections, then seed
+ *   npm run seed:reset   drop the collections, then seed
  *
- * `MONGODB_URI` is required and is not defaulted: seeding the wrong database
- * because a variable was missing is worse than not seeding at all, and a
- * silent fallback to localhost would do exactly that against a developer who
- * had pointed the service at a cluster. The npm scripts load `.env` through
- * Node's own `--env-file`, so the seed targets whatever the service targets.
+ * `MONGODB_URI` is required and never defaulted, so a missing variable cannot
+ * seed the wrong database.
  */
 
 /** Registered here rather than through Nest DI — this is a plain script. */
@@ -102,6 +92,7 @@ async function seedTenant(tenant: SeedTenant): Promise<void> {
     publishedAt: tenant.publish ? PUBLISHED_AT : null,
     version: tenant.version,
     draftRevision: 0,
+    publishedDraftRevision: tenant.publish ? 0 : null,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
   });
@@ -126,11 +117,7 @@ async function seedTenant(tenant: SeedTenant): Promise<void> {
  * caller has opened. Exported for the e2e suite.
  */
 export async function seed(): Promise<void> {
-  /*
-   * Before writing, not after: the unique indexes of §5 are part of what the
-   * seed is asserting, and a duplicate slug should fail the seed rather than
-   * land and be found later.
-   */
+  /* Before writing, so a duplicate slug fails the seed on the unique indexes. */
   for (const model of Object.values(MODELS)) {
     await model.syncIndexes();
   }

@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 /*
- * FR-AUTH-7 and FR-AUTH-20 with no session, through the dev topology: the dev
- * admin host, `gateway`, and `api`. Needs no account, so it runs wherever the
- * topology does.
+ * The no-session paths, through the dev topology: the dev admin host,
+ * `gateway`, and `api`. Needs no account.
  */
 
 const api = (url: string) => new URL(url).pathname.startsWith('/api/');

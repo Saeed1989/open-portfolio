@@ -14,8 +14,7 @@ import { cn } from './cn';
  * label/value rows. `row` lays the pairs out along a wrapping line with the
  * value above its label — the figure block the open-source section uses for
  * repos / commits / pull requests, which has to be a real description list
- * because those are the numbers a screen reader has to be able to read
- * (FR-SEC-OSS-1).
+ * because those are the numbers a screen reader has to be able to read.
  */
 export type DescriptionListLayout = 'stack' | 'inline' | 'row';
 

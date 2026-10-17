@@ -2,8 +2,8 @@ import { MEDIA_HOST } from '../ids';
 import type { SeedAccount } from '../tenant';
 
 /*
- * Signed in, no portfolio: the onboarding path (FR-AUTH-7). `GET /admin/me`
- * answers `portfolio: null`, and every admin route but the three of §7.2
+ * Signed in, no portfolio: the onboarding path. `GET /admin/me`
+ * answers `portfolio: null`, and every admin route but the onboarding ones
  * answers `404 portfolio_not_found` until eve claims a slug.
  *
  * Deliberately has no row in `portfolios`. A test that creates one mutates

@@ -15,7 +15,7 @@ const BASE64URL = /^[A-Za-z0-9_-]+$/;
 
 /**
  * Reads and validates the auth environment. Called while `AuthModule` is
- * instantiated, so a violation refuses the boot (FR-AUTH-19). Messages name
+ * instantiated, so a violation refuses the boot. Messages name
  * the variable and the rule, never a value.
  */
 export function loadAuthConfig(env: Env): AuthConfig {
@@ -51,7 +51,7 @@ export function loadAuthConfig(env: Env): AuthConfig {
       throw new Error(`AUTH_JWT_KEYS: key "${kid}" is not base64url.`);
     }
     const bytes = Buffer.from(key, 'base64url');
-    /* RFC 7518 §3.2: an HS256 key is at least as long as the hash output. */
+    /* RFC 7518: an HS256 key is at least as long as the hash output. */
     if (bytes.length < 32) {
       throw new Error(`AUTH_JWT_KEYS: key "${kid}" is shorter than 256 bits.`);
     }

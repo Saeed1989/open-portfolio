@@ -6,7 +6,7 @@ export class ConnectIntegrationDto {
     type: 'object',
     additionalProperties: true,
     required: true,
-    description: 'Per provider: `{ username }`, `{ feedUrl }`, ... (§5.4).',
+    description: 'Per provider: `{ username }`, `{ feedUrl }`, ...',
     example: { feedUrl: 'https://alice.dev/rss.xml' },
   })
   @IsObject()

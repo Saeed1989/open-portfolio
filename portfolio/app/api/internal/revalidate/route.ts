@@ -4,11 +4,9 @@ import { portfolioTag } from '@/lib/api';
 import { isValidSlug } from '@/lib/tenant';
 
 /**
- * On-demand revalidation, called by the API after a publish (SRS §2.3 step 4,
- * FR-PUB-7).
- *
- * Guarded by a shared secret. This endpoint is excluded from the middleware
- * matcher: it is machine-to-machine and has no tenant of its own.
+ * On-demand revalidation, called by the API after a publish. Guarded by a
+ * shared secret, and excluded from the middleware matcher: it is
+ * machine-to-machine and has no tenant of its own.
  *
  * `POST /api/internal/revalidate  { "slug": "alice" }`
  * `Authorization: Bearer <REVALIDATE_SECRET>`

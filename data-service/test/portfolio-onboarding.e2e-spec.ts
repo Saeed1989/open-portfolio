@@ -10,7 +10,7 @@ import { createApp } from './helpers';
 
 /*
  * Onboarding: slug availability, portfolio creation, and the
- * no-portfolio rule of the admin guard (§7.2, FR-AUTH-7, FR-DAT-1).
+ * no-portfolio rule of the admin guard.
  * Runs against the seeded fixture; eve is the tenant with no portfolio.
  * Tests run in order and eve's claim is relied on by the ones after it.
  */

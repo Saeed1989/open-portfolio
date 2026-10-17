@@ -5,7 +5,6 @@ import { AUTH_PROVIDERS, type AuthProvider } from '../account-access';
 export const USER_STATUSES = ['active', 'suspended'] as const;
 export type UserStatus = (typeof USER_STATUSES)[number];
 
-/** SRS §5.1. */
 @Schema({
   collection: 'users',
   timestamps: { createdAt: true, updatedAt: false },

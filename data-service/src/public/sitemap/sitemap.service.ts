@@ -9,7 +9,7 @@ export class SitemapService {
     @InjectModel(Portfolio.name) private readonly portfolios: Model<Portfolio>,
   ) {}
 
-  /** XML for a published portfolio; others are excluded (FR-PUB-5). */
+  /** XML for a published portfolio; others are excluded. */
   getSitemap(slug: string): Promise<string> {
     throw new NotImplementedException();
   }

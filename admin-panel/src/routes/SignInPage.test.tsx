@@ -19,7 +19,7 @@ test('the link is a plain navigation to the start endpoint', () => {
   expect(screen.queryByRole('alert')).toBeNull();
 });
 
-test('a returnTo in the query is not passed on (open question 28)', () => {
+test('a returnTo in the query is not passed on', () => {
   expect(
     renderAt('/sign-in?returnTo=%2Fsections%2Fprojects').getAttribute('href'),
   ).toBe('/api/auth/google/start');

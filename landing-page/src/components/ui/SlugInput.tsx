@@ -4,7 +4,7 @@ import { Input, type InputSize, type InputTone } from './Input';
 
 /**
  * `taken` and `reserved` are built but not reachable from this app: no
- * unauthenticated slug lookup exists (SRS §10.3 Q4); this component calls nothing.
+ * unauthenticated slug lookup exists; this component calls nothing.
  */
 export type SlugState = 'idle' | 'invalid' | 'checking' | 'available' | 'taken' | 'reserved';
 

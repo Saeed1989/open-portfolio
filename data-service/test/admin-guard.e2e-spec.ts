@@ -5,7 +5,7 @@ import { portfolioId, userId } from '../src/seed/ids';
 import { createApp, freshUserId } from './helpers';
 
 /*
- * The admin guard (FR-AUTH-12, FR-TEN-4, FR-API-3): X-User-Id is the only
+ * The admin guard: X-User-Id is the only
  * identity input, and it scopes every read. Every request here carries the
  * API key, as one sent by `gateway` does; gateway-key.e2e-spec.ts covers one
  * that does not.
@@ -84,7 +84,7 @@ describe('scope comes from X-User-Id and nothing else', () => {
     expect(JSON.stringify(sections.body)).not.toContain('Alice');
   });
 
-  it('GET /admin/me returns the display fields of the header’s user (FR-AUTH-17)', async () => {
+  it('GET /admin/me returns the display fields of the header’s user', async () => {
     const res = await get('/admin/me')
       .query({ userId: alice })
       .set('X-User-Id', bob);

@@ -33,7 +33,7 @@ export class IntegrationsService {
     const scope = { portfolioId: new Types.ObjectId(portfolioId) };
 
     /* Staleness is read from the cache, not from the portfolio: the published
-       tree carries none (FR-INT-3). */
+       tree carries none. */
     const [connections, cached] = await Promise.all([
       this.connections.find(scope).lean(),
       this.cache.find(scope).lean(),
@@ -49,7 +49,7 @@ export class IntegrationsService {
         lastSyncAt: connection.lastSyncAt ?? null,
         lastError: connection.lastError ?? null,
         consecutiveFailures: connection.consecutiveFailures ?? 0,
-        /* `credentials` is named nowhere above, by allowlist (FR-INT-6). */
+        /* `credentials` is named nowhere above, by allowlist. */
         cache: entry
           ? {
               payload: entry.payload ?? {},
@@ -83,7 +83,7 @@ export class IntegrationsService {
     throw new NotImplementedException();
   }
 
-  /** Appends imported badges to the draft achievements, unpublished (§5.2). */
+  /** Appends imported badges to the draft achievements, unpublished. */
   importCredly(
     portfolioId: string,
     dto: CredlyImportDto,

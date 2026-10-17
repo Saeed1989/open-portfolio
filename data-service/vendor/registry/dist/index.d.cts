@@ -1,46 +1,25 @@
-import { S as SectionType, a as SectionDescriptor, b as SectionInstance, F as FieldError } from './types-DhxjKKQp.cjs';
-export { C as CollectionSectionDescriptor, c as FieldDescriptor, d as FieldKind, P as Priority, e as SECTION_TYPES, f as SingleSectionDescriptor } from './types-DhxjKKQp.cjs';
+import { S as SectionType, a as SectionDescriptor, b as SectionInstance, F as FieldError } from './types-DjzuMzCj.cjs';
+export { C as CollectionSectionDescriptor, c as FieldDescriptor, d as FieldKind, P as Priority, e as SECTION_TYPES, f as SingleSectionDescriptor } from './types-DjzuMzCj.cjs';
 
 /**
- * The registry's version (FR-REG-4).
+ * The registry's version. A portfolio records the one it was authored against
+ * (`registryVersion`), so a later registry cannot retroactively invalidate it.
  *
- * A portfolio records the version it was authored against (`registryVersion`,
- * SRS §5.2) so that a later registry cannot retroactively invalidate content
- * that was valid when it was written.
- *
- * **The compatibility rule.** A bump is *additive only*: a new section type, a
- * new optional field, new help text, a new enum option. None of those can make
- * an older document invalid, because validation is driven by what a document
- * contains, not by what the registry now offers — an absent section type is a
- * section the tenant has not enabled, and an absent optional field is absent.
- * A document at any supported version therefore still validates and still
- * publishes against this one.
- *
- * A change that could fail an older document — removing a field, making an
- * optional one required, narrowing an enum, tightening a bound — is not a bump
- * and is not covered by this constant. It needs a migration, and the version a
- * portfolio carries is what tells the migration which documents to touch.
+ * A bump is additive only: a new section type, optional field, help text, or
+ * enum option. A change that could fail an older document needs a migration,
+ * not a bump.
  *
  * History:
- *   1  The twelve types of SRS v0.1.
- *   2  Adds `trainings` (SRS v0.2 §4.1, FR-SEC-TRN-1). Purely additive: a
- *      portfolio at version 1 has no `trainings` entry in its sections array,
- *      which reads as disabled everywhere that matters.
+ *   1  The first twelve section types.
+ *   2  Adds `trainings`.
  */
 declare const REGISTRY_VERSION = 2;
 /** The oldest version this registry can still read without a migration. */
 declare const MIN_SUPPORTED_REGISTRY_VERSION = 1;
 /**
- * True when a portfolio authored at `version` can be validated, rendered and
- * published against this registry as it stands.
- *
- * Every version from `MIN_SUPPORTED_REGISTRY_VERSION` up to the current one
- * qualifies, because every bump between them was additive. A version from the
- * future does not: it may carry a section type or a field this build has never
- * heard of. The public render path is deliberately more forgiving than this —
- * SectionRenderer drops a type it does not know rather than refusing the page
- * — but a *write* path has no such luxury and should not silently re-save a
- * document it only partly understands.
+ * True when a portfolio authored at `version` can be validated and published
+ * against this registry. A version from the future cannot: it may carry a
+ * section type or field this build does not know.
  */
 declare function isSupportedRegistryVersion(version: unknown): boolean;
 
@@ -53,14 +32,14 @@ declare function isSupportedRegistryVersion(version: unknown): boolean;
  * them. These interfaces exist so TypeScript consumers get the same guarantees
  * at compile time.
  */
-/** A stored image. `alt` is non-optional: FR-MED-5 enforces it at upload. */
+/** A stored image. `alt` is required at upload, so it is never optional here. */
 interface ImageRef {
     readonly src: string;
     readonly alt: string;
     readonly width: number;
     readonly height: number;
 }
-/** FR-SEC-HERO-2: a typed choice, not a free-form button. */
+/** A typed choice, not a free-form button. */
 type CtaKind = 'resume' | 'schedule' | 'url';
 interface Cta {
     readonly kind: CtaKind;
@@ -72,21 +51,15 @@ interface HeroContent {
     readonly title: string;
     readonly tagline?: string;
     readonly bio?: string;
-    /** First entry renders as the primary treatment (FR-SEC-HERO-1). */
+    /** First entry renders as the primary treatment. */
     readonly ctas?: readonly Cta[];
-    /** Absent means the layout reflows, never a gap (FR-SEC-HERO-3). */
+    /** Absent means the layout reflows, never a gap. */
     readonly avatar?: ImageRef | null;
 }
 /**
- * The three rich-text bodies behind a project's case-study modal
- * (business 2.17, 2.18, 2.20).
- *
- * Stored as HTML, and rendered by injecting that HTML directly. FR-SEC-PROJ-12
- * makes that safe by requiring an allowlist sanitiser to run at *write* time,
- * so what is stored is already clean. That sanitiser belongs to the write path
- * — the api — which does not exist in this repository yet, so nothing here
- * enforces it. Until it does, treat these three strings as trusted input and
- * do not point the portfolio at an unsanitised source.
+ * The three rich-text bodies behind a project's case-study modal. Stored as
+ * HTML and injected as-is at render, which is safe only because the write path
+ * sanitises them against the allowlist in `sanitize.ts`.
  */
 interface ProjectBodies {
     readonly business: string;
@@ -94,16 +67,9 @@ interface ProjectBodies {
     readonly role: string;
 }
 /**
- * A project, at both of the depths FR-SEC-PROJ-6 asks for.
- *
- * The first block is card-level: the fifteen-second read. The second is
- * modal-level: the case study behind it. The two are stored separately and one
- * is never derived from the other — the card is not a truncation of the modal
- * (business §2A).
- *
- * Every modal-level field is optional here and required by the descriptor.
- * A draft is allowed to be half-written; it is *publishing* that insists on
- * all seven, which is what `validateProjectItem` in `publish.ts` checks.
+ * A project at two depths: card-level fields, then the modal-level case study.
+ * The two are stored separately; the card is never a truncation of the modal.
+ * Modal-level fields are optional in a draft and required at publish.
  */
 interface ProjectItem {
     readonly id: string;
@@ -118,7 +84,7 @@ interface ProjectItem {
     readonly role?: string;
     readonly demoUrl?: string;
     readonly repoUrl?: string;
-    /** FR-SEC-PROJ-4: suppresses the repo-link requirement, shows a note. */
+    /** Suppresses the repo-link requirement and shows a note instead. */
     readonly confidential?: boolean;
     readonly bodies?: ProjectBodies;
     /** The title held on the engagement, e.g. "Lead front-end engineer". */
@@ -132,10 +98,10 @@ interface ProjectItem {
 }
 interface ProjectsContent {
     readonly items: readonly ProjectItem[];
-    /** Tenant-editable filter categories (FR-SEC-PROJ-7). */
+    /** Tenant-editable filter categories. */
     readonly categories?: readonly string[];
 }
-/** FR-SEC-SKILL-1: stored once, both tiers derive from this single row. */
+/** Stored once; the prominent and detailed tiers both derive from this row. */
 interface SkillItem {
     readonly id: string;
     readonly name: string;
@@ -149,14 +115,14 @@ interface SkillsContent {
     readonly items: readonly SkillItem[];
     /** Tenant-editable. A category with no skills is not rendered. */
     readonly categories: readonly string[];
-    /** Optional published rating scale (FR-SEC-SKILL-10). */
+    /** Optional published rating scale. */
     readonly legend?: string;
 }
 interface ContactLink {
     readonly label: string;
     readonly value: string;
     readonly href: string;
-    /** Independent per-link toggle (FR-SEC-CON-2). */
+    /** Independent per-link toggle. */
     readonly visible: boolean;
 }
 interface ContactContent {
@@ -182,7 +148,7 @@ interface EducationItem {
     readonly degree: string;
     readonly institution: string;
     readonly graduated: string;
-    /** Each of the four below is individually hideable (FR-SEC-EDU-1). */
+    /** Each of the four below is individually hideable. */
     readonly gpa?: string;
     readonly coursework?: readonly string[];
     readonly scholarships?: readonly string[];
@@ -230,7 +196,7 @@ interface OpenSourceStats {
  *
  * They are rendered as `<img>` embeds pointed at the card service, so the
  * visitor's browser makes the request and this system makes none — no fetch at
- * render, no worker, no cache entry, no credential (FR-INT-1, NFR-PERF-3).
+ * render, no worker, no cache entry, no credential.
  */
 declare const GITHUB_EMBED_CARDS: readonly ["stats", "languages", "streak"];
 type GitHubEmbedCard = (typeof GITHUB_EMBED_CARDS)[number];
@@ -260,7 +226,7 @@ type AchievementType = 'certification' | 'award' | 'ranking' | 'hackathon';
  * Credly is a *source* of achievements, not a kind of section: an imported
  * badge is an ordinary item in the one flat `achievements` collection, marked
  * so the page can group it and so a re-import can recognise it. Nothing is
- * nested, and no second collection exists (FR-REG-3).
+ * nested, and no second collection exists.
  */
 type AchievementSource = 'manual' | 'credly';
 interface AchievementItem {
@@ -274,32 +240,19 @@ interface AchievementItem {
     /** Absent means `manual` — the value every item authored by hand takes. */
     readonly source?: AchievementSource;
     /**
-     * The badge's UUID, and *only* the UUID.
-     *
-     * The tenant supplies a Credly embed snippet; the api parses the id out of
-     * it server-side and throws the rest away. The markup is never stored,
-     * because storing tenant HTML and injecting it at render is stored XSS
-     * (FR-THM-6, NFR-SEC-2). The render path builds the embed element itself
-     * from this value.
+     * The badge's UUID only. The pasted embed markup is never stored: injecting
+     * tenant HTML at render would be stored XSS, so the render path builds the
+     * embed element from this value.
      */
     readonly credlyBadgeId?: string;
     /** Public verification page. Restricted to Credly's own hosts. */
     readonly verifyUrl?: string;
 }
 /**
- * A completed course, workshop, bootcamp or structured programme
- * (business §11a, FR-SEC-TRN-1).
- *
- * Field for field an achievement, minus the three Credly fields and minus the
- * per-item publish flag that only an import needs. That is not a coincidence
- * to be tidied away later: §11a.4 asks that a credential be listed once, as an
- * achievement *or* as a training, which only works if the two carry the same
- * information and differ in where the tenant files it.
- *
- * `type` reuses `AchievementType` deliberately. Certification / award /
- * ranking / hackathon reads oddly for a training — SRS open question 7 records
- * exactly that, along with the alternatives — and option (a), the enum
- * unchanged, is what is specified today. It is not this section's to fix.
+ * A completed course, workshop, bootcamp or structured programme. Field for
+ * field an achievement, minus the Credly fields and the per-item publish flag,
+ * so a credential can be filed as either one. `type` deliberately reuses
+ * `AchievementType`, although its values fit a training poorly.
  */
 interface TrainingItem {
     readonly id: string;
@@ -313,7 +266,7 @@ interface GalleryItem {
     readonly id: string;
     readonly image?: ImageRef | null;
     readonly caption?: string;
-    /** Embedded video from the provider allowlist (FR-SEC-GAL-1). */
+    /** Embedded video from the provider allowlist. */
     readonly videoUrl?: string;
 }
 /** A collection section's content object. */
@@ -329,8 +282,7 @@ interface AchievementsContent {
     readonly items: readonly AchievementItem[];
     /**
      * Used once, on explicit tenant action, to populate items from a public
-     * Credly wallet. It is not a connection: no credential is held, nothing is
-     * scheduled, and no cached payload sits behind it (the FR-INT-10 pattern).
+     * Credly wallet. Not a connection: no credential, schedule, or cache.
      */
     readonly credlyUsername?: string;
 }
@@ -370,13 +322,8 @@ type TypedSectionInstance = {
 }[keyof SectionContentMap];
 
 /**
- * Predicate helpers behind every `emptyCondition`.
- *
- * They take `unknown` on purpose: the api runs them over documents straight
- * out of MongoDB and the portfolio runs them over a payload it did not
- * construct, so neither can assume the shape is already valid. A malformed
- * content object counts as empty — the section disappears rather than
- * rendering broken (FR-INT-5).
+ * Predicate helpers behind every `emptyCondition`. They take `unknown`
+ * because they run over stored documents; malformed content counts as empty.
  */
 type Dict = Record<string, unknown>;
 declare function isRecord(value: unknown): value is Dict;
@@ -392,24 +339,9 @@ declare function allBlank(content: unknown, keys: readonly string[]): boolean;
 declare function collectionIsEmpty(content: unknown, keep?: (item: unknown) => boolean): boolean;
 
 /**
- * The thirteen section descriptors — the single source of truth (FR-REG-1).
- *
- * One file per section type, assembled here. The order of the keys below is
- * the registry order, and so the default section order (SRS §4.1).
- *
- * The order of each `fields` / `itemFields` array is the public render order
- * (FR-REG-2). It is not a hint: section components iterate these arrays and
- * look up a renderer per key, so no component can drift from the declared
- * order, and every item in a collection is laid out identically by
- * construction.
- *
- * Where the approved design (spec/uiDesign/portfolio.html) fixes an order, the array
- * below matches it — the design's project card reads screenshot, category,
- * year, title, then Problem, Impact and Stack.
- *
- * `projects` carries two runs of fields rather than one: the card-level run
- * ending at `role`, and the `body` run behind it, which is the case-study
- * modal (FR-SEC-PROJ-6). Both are walked from this one array.
+ * The section descriptors — the single source of truth. Key order here is the
+ * default section order, and the order of each `fields` / `itemFields` array
+ * is the public render order: section components iterate those arrays.
  */
 declare const REGISTRY: {
     readonly hero: {
@@ -417,7 +349,6 @@ declare const REGISTRY: {
         readonly label: "Hero";
         readonly description: "Who you are, in one screen.";
         readonly priority: "must";
-        readonly businessRef: "BR 1";
         readonly cardinality: "single";
         readonly fields: readonly [{
             readonly key: "title";
@@ -466,7 +397,6 @@ declare const REGISTRY: {
         readonly label: "Selected work";
         readonly description: "Three to five projects, each scannable in fifteen seconds.";
         readonly priority: "must";
-        readonly businessRef: "BR 2";
         readonly cardinality: "collection";
         readonly min: 3;
         readonly max: 5;
@@ -596,7 +526,6 @@ declare const REGISTRY: {
         readonly label: "Prominent skills";
         readonly description: "One list, two tiers.";
         readonly priority: "must";
-        readonly businessRef: "BR 3";
         readonly cardinality: "collection";
         readonly sectionFields: readonly [{
             readonly key: "legend";
@@ -638,7 +567,6 @@ declare const REGISTRY: {
         readonly label: "Contact";
         readonly description: "How to reach you. Each link toggles independently.";
         readonly priority: "must";
-        readonly businessRef: "BR 4";
         readonly cardinality: "single";
         readonly fields: readonly [{
             readonly key: "intro";
@@ -678,7 +606,6 @@ declare const REGISTRY: {
         readonly label: "Experience";
         readonly description: "Roles, most recent first.";
         readonly priority: "should";
-        readonly businessRef: "BR 5";
         readonly cardinality: "collection";
         readonly itemFields: readonly [{
             readonly key: "title";
@@ -719,7 +646,6 @@ declare const REGISTRY: {
         readonly label: "Education";
         readonly description: "Qualifications, with optional detail.";
         readonly priority: "should";
-        readonly businessRef: "BR 6";
         readonly cardinality: "collection";
         readonly itemFields: readonly [{
             readonly key: "degree";
@@ -766,7 +692,6 @@ declare const REGISTRY: {
         readonly label: "Writing";
         readonly description: "Posts, entered manually or synced from a feed.";
         readonly priority: "should";
-        readonly businessRef: "BR 7";
         readonly cardinality: "collection";
         readonly itemFields: readonly [{
             readonly key: "date";
@@ -796,7 +721,6 @@ declare const REGISTRY: {
         readonly label: "Testimonials";
         readonly description: "Two to four, in the words of people you worked with.";
         readonly priority: "should";
-        readonly businessRef: "BR 8";
         readonly cardinality: "collection";
         readonly min: 2;
         readonly max: 4;
@@ -834,7 +758,6 @@ declare const REGISTRY: {
         readonly label: "Open source";
         readonly description: "Profile, statistics, and named contributions.";
         readonly priority: "should";
-        readonly businessRef: "BR 9";
         readonly cardinality: "single";
         readonly fields: readonly [{
             readonly key: "stats";
@@ -874,7 +797,6 @@ declare const REGISTRY: {
         readonly label: "Speaking";
         readonly description: "Talks, with a link to video or slides.";
         readonly priority: "could";
-        readonly businessRef: "BR 10";
         readonly cardinality: "collection";
         readonly itemFields: readonly [{
             readonly key: "date";
@@ -904,7 +826,6 @@ declare const REGISTRY: {
         readonly label: "Achievements";
         readonly description: "Certifications, awards, rankings, hackathons.";
         readonly priority: "should";
-        readonly businessRef: "BR 11";
         readonly cardinality: "collection";
         readonly sectionFields: readonly [{
             readonly key: "credlyUsername";
@@ -962,7 +883,6 @@ declare const REGISTRY: {
         readonly label: "Training";
         readonly description: "Courses, workshops, bootcamps and structured programmes. Recent and role-relevant learning only — an entry earns its place by supporting the role you are aiming at, not by having been completed.";
         readonly priority: "could";
-        readonly businessRef: "BR 11a";
         readonly cardinality: "collection";
         readonly itemFields: readonly [{
             readonly key: "type";
@@ -998,7 +918,6 @@ declare const REGISTRY: {
         readonly label: "Gallery";
         readonly description: "Images and embedded video.";
         readonly priority: "could";
-        readonly businessRef: "BR 12";
         readonly cardinality: "collection";
         readonly itemFields: readonly [{
             readonly key: "image";
@@ -1019,17 +938,10 @@ declare const REGISTRY: {
 };
 type Registry = typeof REGISTRY;
 declare function getDescriptor(type: SectionType): SectionDescriptor;
-/**
- * FR-CFG-2. An enabled section whose content satisfies this is omitted from
- * the page entirely — no heading, no wrapper, no empty state.
- */
+/** An enabled section whose content satisfies this is omitted from the page entirely. */
 declare function isSectionEmpty(type: SectionType, content: unknown): boolean;
 
-/**
- * Presets (FR-REG-6, FR-REG-10): named starting configurations, applied once
- * at portfolio creation. A preset only sets initial state; everything it
- * produces is editable afterwards.
- */
+/** Named starting configurations, applied once at portfolio creation. */
 declare const PRESET_IDS: readonly ["software-engineer"];
 type PresetId = (typeof PRESET_IDS)[number];
 interface InitialDraft {
@@ -1040,69 +952,37 @@ interface InitialDraft {
 }
 declare function isPresetId(value: unknown): value is PresetId;
 /**
- * The initial draft tree for a preset (FR-REG-10): one entry per declared
- * section type, in registry order, enabled and defaulted as the preset sets.
- * Pure — reads no environment and touches no database.
- *
- * `name` is the display name collected on the creation screen (FR-AUTH-5).
- * It lands in the hero's `name` here, so the caller need not know that key.
+ * The initial draft tree for a preset: one entry per section type, in registry
+ * order. Pure. `name` is the display name from the creation screen and lands
+ * in the hero's `name`.
  */
 declare function createInitialDraft(presetId: PresetId, options?: {
     name?: string;
 }): InitialDraft;
 
 /**
- * Pulling a Credly badge id out of whatever the tenant pasted.
- *
- * This is extraction, not validation: the tenant hands over an embed snippet,
- * a badge link, or a bare id, and the api keeps the thirty-six characters that
- * identify the badge and discards the rest of the string.
- *
- * That discarding is the point. Persisting tenant-supplied markup and
- * injecting it at render is stored XSS, and it is what FR-THM-6 (a tenant
- * supplies values, never code) and NFR-SEC-2 forbid. The render path builds
- * the embed element itself out of the id, so there is no route from a paste
- * box to executable markup — a paste that contains no badge id yields nothing
- * at all rather than being stored as-is.
- *
- * Framework-free like the rest of the package.
+ * Extracts a Credly badge id from a pasted embed snippet, badge link, or bare
+ * id, and discards everything else. Storing tenant markup and injecting it at
+ * render would be stored XSS, so only the id is ever kept.
  */
 /** The origin the import reads from, and the host the embed points at. */
 declare const CREDLY_ORIGIN = "https://www.credly.com";
 /**
- * The badge id from a paste, or `null` when there is none to find.
- *
- * Three accepted shapes, tried in the order a tenant is most likely to have
- * produced them: the full embed snippet, a badge link, the bare id.
- *
- * The input string is not returned and must not be logged in full by the
- * caller. It has served its purpose once the id is out.
+ * The badge id from a paste, or `null` when there is none. The input is never
+ * returned, and callers must not log it in full.
  */
 declare function parseCredlyBadgeId(input: unknown): string | null;
 
 /**
- * One-time import of a public Credly wallet.
+ * One-time import of a public Credly wallet, run only on tenant action: no
+ * schedule, no cache, no connection. Kept apart from parse.ts so the portfolio
+ * build carries no HTTP client.
  *
- * This is the FR-INT-10 pattern, not the FR-INT-2 one: it runs when the tenant
- * presses a button and never otherwise. There is no schedule, no worker, no
- * `integrationCache` row and no `integrationConnections` row, because there is
- * nothing to keep in sync — the badges become ordinary achievement items the
- * moment they land, and the tenant owns them from then on. A page render never
- * reaches this module (FR-INT-1, NFR-PERF-3).
- *
- * Kept apart from parse.ts on purpose. That module is imported by the section
- * descriptors and therefore travels into the portfolio build; this one is
- * imported by nothing but the api, so the render path never carries an HTTP
- * client it has no use for.
- *
- * **The upstream endpoint is undocumented.** It is not part of any published
- * Credly API and can change shape or disappear without notice. Every field is
- * therefore read defensively and an unrecognised response produces a handled
- * error, never a throw — a broken third party must cost the tenant an error
- * message, not a 500.
+ * The upstream endpoint is undocumented and may change, so every field is read
+ * defensively and an unrecognised response is a handled error, never a throw.
  */
 
-/** Injectable so the api can supply a guarded fetch (NFR-SEC-5). */
+/** Injectable so the api can supply a guarded fetch. */
 type FetchLike = typeof fetch;
 interface CredlyImportOptions {
     readonly fetchImpl?: FetchLike;
@@ -1110,13 +990,7 @@ interface CredlyImportOptions {
 }
 interface CredlyImportSuccess {
     readonly ok: true;
-    /**
-     * New items, to be appended to the **draft** collection.
-     *
-     * Never to `published`. The tenant reviews and publishes: business req 11.3
-     * asks for high-signal badges only, and a wallet is rarely all high-signal,
-     * so most of this is expected to be deleted before it goes live.
-     */
+    /** New items, to append to the draft only. The tenant reviews before publishing. */
     readonly items: readonly AchievementItem[];
     /** Badges already present, left untouched along with any edits to them. */
     readonly duplicates: number;
@@ -1129,27 +1003,15 @@ interface CredlyImportFailure {
 }
 type CredlyImportOutcome = CredlyImportSuccess | CredlyImportFailure;
 /**
- * The wallet URL.
- *
- * The origin is a constant and the only tenant-supplied part is one path
- * segment, percent-encoded on the way in — encoding, not a rule about what the
- * username may contain, so a name with a slash or a `..` in it is escaped into
- * a single harmless segment rather than reshaping the path. No input can move
- * this request to another host, which is the SSRF requirement in NFR-SEC-5 met
- * where the URL is built. `redirect: 'error'` on the call below closes the
- * other half: a redirect cannot walk us onto a private address.
+ * The wallet URL. SSRF guard: the origin is constant and the username is one
+ * percent-encoded path segment, so no input can move the request to another
+ * host; `redirect: 'error'` on the fetch stops a redirect doing so.
  */
 declare function credlyBadgesUrl(username: string): string;
 /**
- * Reads the wallet and returns the items to append to the draft.
- *
- * `existing` is the current draft collection. Anything whose badge id is
- * already there is counted and skipped, so a second run adds only what is new
- * and never writes over a title the tenant has rewritten.
- *
- * Only the first page is read. A wallet longer than that is a review problem
- * rather than an import problem — business req 11.3 wants a handful of
- * high-signal badges, not the whole collection.
+ * Reads the wallet and returns the items to append to the draft. A badge
+ * already in `existing` is counted and skipped, so a re-run never overwrites
+ * the tenant's edits. Only the first page is read.
  */
 declare function importCredlyBadges(username: unknown, existing?: readonly AchievementItem[], options?: CredlyImportOptions): Promise<CredlyImportOutcome>;
 

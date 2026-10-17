@@ -38,7 +38,7 @@ afterAll(async () => {
 
 beforeEach(() => upstream.reset());
 
-describe('X-User-Id (FR-EDGE-4, NFR-SEC-8)', () => {
+describe('X-User-Id', () => {
   const EVIL = '5eed00000000000001020001';
 
   const routes = [
@@ -87,7 +87,7 @@ describe('X-User-Id (FR-EDGE-4, NFR-SEC-8)', () => {
   }
 });
 
-describe('X-Api-Key (FR-EDGE-4, FR-EDGE-8)', () => {
+describe('X-Api-Key', () => {
   const EVIL = 'client-supplied-key-0123456789abcdefghijklm';
 
   const routes = [
@@ -136,7 +136,7 @@ describe('X-Api-Key (FR-EDGE-4, FR-EDGE-8)', () => {
   });
 });
 
-describe('Host matching (FR-EDGE-1)', () => {
+describe('Host matching', () => {
   it.each([
     ['an unknown host', 'GET / HTTP/1.1\r\nHost: evil.example\r\n\r\n'],
     ['the apex', 'GET / HTTP/1.1\r\nHost: openfolio.test\r\n\r\n'],
@@ -164,7 +164,7 @@ describe('Host matching (FR-EDGE-1)', () => {
   });
 });
 
-describe('identity subrequest (FR-EDGE-3)', () => {
+describe('identity subrequest', () => {
   it('no cookie → resolve 401 → 401 with no body, admin never called', async () => {
     upstream.resolve.status = 401;
     upstream.resolve.headers = {};
@@ -270,7 +270,7 @@ describe('identity subrequest (FR-EDGE-3)', () => {
   });
 });
 
-describe('routing (FR-EDGE-2)', () => {
+describe('routing', () => {
   it.each([
     [ADMIN, 'GET', '/api/auth/resolve'],
     [ADMIN, 'POST', '/api/auth/resolve'],
@@ -355,7 +355,7 @@ describe('routing (FR-EDGE-2)', () => {
     expect(response.headers['set-cookie']).toEqual(SESSION_COOKIES);
   });
 
-  it('returns what the admin host must hand back untouched: status, Location, Set-Cookie (FR-EDGE-9)', async () => {
+  it('returns what the admin host must hand back untouched: status, Location, Set-Cookie', async () => {
     const response = await gateway.send(ADMIN, '/api/auth/google/callback?code=c&state=s', {
       headers: ['X-Forwarded-Host', 'admin.openfolio.test'],
     });
@@ -365,7 +365,7 @@ describe('routing (FR-EDGE-2)', () => {
   });
 });
 
-describe('forwarded headers and request ids (NFR-OPS-4)', () => {
+describe('forwarded headers and request ids', () => {
   it('originates a request id when none arrives, or one that is no UUID', async () => {
     await gateway.send(ADMIN, '/api/auth/refresh', { method: 'POST' });
     await gateway.send(ADMIN, '/api/auth/refresh', {
@@ -400,7 +400,7 @@ describe('forwarded headers and request ids (NFR-OPS-4)', () => {
     expect(read!.headers['x-forwarded-proto']).toBe('http');
   });
 
-  it('believes X-Forwarded-For from a trusted proxy only (FR-EDGE-10)', async () => {
+  it('believes X-Forwarded-For from a trusted proxy only', async () => {
     const behindProxy = await startGateway(upstream, {
       trustedProxyCidrs: ['127.0.0.0/8'],
     });
@@ -418,7 +418,7 @@ describe('forwarded headers and request ids (NFR-OPS-4)', () => {
   });
 });
 
-describe('client address (FR-EDGE-10)', () => {
+describe('client address', () => {
   const forwardedFor = async (trusted: string[], header: string) => {
     const behindProxy = await startGateway(upstream, { trustedProxyCidrs: trusted });
     try {
@@ -483,7 +483,7 @@ describe('client address (FR-EDGE-10)', () => {
   });
 });
 
-describe('rate limits (FR-AUTH-16, Q23)', () => {
+describe('rate limits', () => {
   let limited: Gateway;
 
   beforeAll(async () => {
@@ -548,7 +548,7 @@ describe('rate limits (FR-AUTH-16, Q23)', () => {
   });
 });
 
-describe('logging (FR-EDGE-7)', () => {
+describe('logging', () => {
   it('writes no cookie, token, API key or query string', async () => {
     let logged = '';
     const stream = new Writable({

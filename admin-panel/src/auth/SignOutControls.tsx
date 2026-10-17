@@ -4,10 +4,8 @@ import { Button } from '../ui/primitives';
 import { goToSignIn } from './navigation';
 
 /**
- * FR-AUTH-14: sign out of this session, or of every session.
- *
- * Either one ends at sign-in whether or not the call succeeded: the tenant
- * asked to leave, and the navigation drops everything this page held.
+ * Sign out of this session, or of every session. Either one ends at sign-in
+ * whether or not the call succeeded.
  */
 export function SignOutControls() {
   const [pending, setPending] = useState(false);

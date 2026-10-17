@@ -14,12 +14,9 @@ import {
 
 /*
  * Draft-time checks for one section's content: shape, type, and enumeration
- * only (FR-REG-8), plus the collection `max` at save. `required` and `min`
- * wait for publish, so half-written content saves.
- *
- * The registry exports no draft validator, so this walks its descriptors
- * generically. It names no section type and no field (FR-REG-1); a type
- * added under FR-REG-3 is validated with no change here.
+ * only, plus the collection `max`. `required` and `min` wait for publish, so
+ * half-written content saves. Walks the registry's descriptors generically,
+ * so a new section type needs no change here.
  */
 
 /** Seeded ids are slugs; generated ones are ObjectId hex. Both fit. */
@@ -58,8 +55,8 @@ export function validateDraftContent(
     return errors;
   }
 
-  /* D-E: `max` is enforced at save for every collection declaring one,
-     generalising FR-SEC-PROJ-2. `min` stays at publish. */
+  /* `max` is enforced at save for every collection declaring one; `min`
+     stays at publish. */
   if (descriptor.max !== undefined && items.length > descriptor.max) {
     errors.push({
       path: 'items',
@@ -91,8 +88,8 @@ export function validateDraftContent(
 
 /**
  * The content as stored: collection items missing an id get one, and every
- * rich-text field is sanitised against the registry's allowlist
- * (FR-SEC-PROJ-12). Call only on content `validateDraftContent` passed.
+ * rich-text field is sanitised against the registry's allowlist. Call only
+ * on content `validateDraftContent` passed.
  */
 export function prepareDraftContent(
   type: SectionType,
@@ -118,9 +115,9 @@ export function prepareDraftContent(
 /*
  * Checks every declared key present in `value`. A dotted key such as
  * `bodies.business` is a field of a nested object, checked as a record of its
- * own. Undeclared keys pass: the descriptors omit keys the SRS specifies —
- * a skill's `order` (FR-SEC-SKILL-1), an achievement's `published` (§5.2) —
- * so rejecting them would refuse valid content.
+ * own. Undeclared keys pass: the descriptors omit some valid keys — a
+ * skill's `order`, an achievement's `published` — so rejecting them would
+ * refuse valid content.
  */
 function checkRecord(
   fields: readonly FieldDescriptor[],
@@ -160,7 +157,7 @@ function checkRecord(
   }
 }
 
-/* Type and enumeration per field kind — never presence (FR-REG-8). */
+/* Type and enumeration per field kind — never presence. */
 function kindError(field: FieldDescriptor, value: unknown): string | null {
   switch (field.kind) {
     case 'text':

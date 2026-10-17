@@ -14,7 +14,7 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Testimonials (business req 8, FR-SEC-TEST-1).
+ * Testimonials.
  *
  * The 2–4 count is enforced by the API. The photo is optional and its absence
  * closes up rather than leaving a hole — the attribution row is a wrapping

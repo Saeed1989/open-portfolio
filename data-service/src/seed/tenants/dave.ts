@@ -2,19 +2,9 @@ import { MEDIA_HOST } from '../ids';
 import type { SeedTenant } from '../tenant';
 
 /*
- * Suspended (FR-TEN-3).
- *
- * **Dave has a published tree on purpose.** A suspended tenant with no
- * published tree would 404 for the reason carol does — §2.4, nothing to serve
- * — and the suspension path would never be exercised. Dave is a tenant whose
- * content is complete and publishable and who must still get a 404 that does
- * not disclose that the slug is registered.
- *
- * Both `users.status` and `portfolios.status` are set to `suspended`, because
- * which of the two governs the 404 is an open question (Q-7 in
- * docs/data-design.md). Setting both keeps the fixture valid under either
- * answer; when the question is settled, the losing field should be set back to
- * active so that the fixture tests the field that actually decides.
+ * Suspended, with a published tree on purpose: without one the 404 would come
+ * from having nothing to serve, and the suspension path would go untested.
+ * Both `users.status` and `portfolios.status` are `suspended`.
  */
 export const dave: SeedTenant = {
   name: 'dave',

@@ -6,7 +6,6 @@ export const gallery = {
   label: 'Gallery',
   description: 'Images and embedded video.',
   priority: 'could',
-  businessRef: 'BR 12',
   cardinality: 'collection',
   itemFields: [
     { key: 'image', label: 'Image', kind: 'image' },

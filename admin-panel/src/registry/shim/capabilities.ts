@@ -5,42 +5,25 @@ import type {
 } from './types';
 
 /*
- * TEMPORARY, and the most temporary thing in this app.
- *
- * `hideable` and `itemPublishFlag` belong on the descriptors in
- * `packages/registry` — FR-REG-1 makes the registry the single source of truth
- * and FR-REG-3 says a section's behaviour must not require a change to
- * `admin`. This file is a change to `admin` that encodes section behaviour, so
- * it is a deliberate, marked violation of both, and it exists only because the
- * package cannot express these two capabilities yet.
- *
- * It is written as an overlay rather than as forked descriptors so that the
- * breach is as small and as visible as possible: it names keys the package
- * already declares and adds one flag to each. It invents no field, renames
- * nothing, and changes no value type. When the package gains the two flags,
- * this file is deleted and `index.ts` stops applying it — nothing else moves.
- *
- * Every entry below cites the requirement that puts it there. An entry with no
- * citation is scope creep and should be refused in review.
+ * TEMPORARY. `hideable` and `itemPublishFlag` belong on the descriptors in
+ * `packages/registry`, which cannot express them yet. This overlay names keys
+ * the package already declares and adds one flag to each; it invents no
+ * field. Delete it when the package gains the two flags.
  */
 
 /** Fields the tenant may hide, keyed by section type. */
 const HIDEABLE_FIELDS: Readonly<Record<string, readonly string[]>> = {
-  /* FR-SEC-CON-2 — "Each link has an independent visibility toggle." */
+  /* Each link has an independent visibility toggle. */
   contact: ['email', 'github', 'linkedin', 'x', 'site'],
-  /* FR-SEC-EDU-1 — "plus individually hideable GPA, coursework,
-     scholarships, honours", per entry. */
+  /* GPA, coursework, scholarships and honours are individually hideable,
+     per entry. */
   education: ['gpa', 'coursework', 'scholarships', 'honours'],
 };
 
 /**
- * Collections whose items carry their own `published` flag.
- *
- * `achievements` because FR-SEC-ACH-5 has imported badges arrive unpublished
- * for the tenant to promote. `trainings` because §4.1 and FR-SEC-TRN-1 say it
- * reuses the achievements field schema verbatim — the flag comes with the
- * schema, and a type that shares a schema cannot selectively not share part of
- * it without the two ceasing to be the same schema.
+ * Collections whose items carry their own `published` flag: `achievements`,
+ * where imported badges arrive unpublished, and `trainings`, which reuses the
+ * achievements field schema.
  */
 const ITEM_PUBLISH_FLAG: readonly string[] = ['achievements', 'trainings'];
 

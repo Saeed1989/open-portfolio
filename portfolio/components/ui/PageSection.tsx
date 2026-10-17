@@ -11,7 +11,7 @@ import { cn } from './cn';
  * rather than bolted onto SectionShell as a pile of opt-outs.
  *
  * Whether a section renders at all is the caller's decision, driven by the
- * registry's emptyCondition (FR-CFG-2). This component has no empty state.
+ * registry's emptyCondition. This component has no empty state.
  */
 export type PageSectionPadding = 'section' | 'hero';
 

@@ -17,7 +17,7 @@ function jwtKeys(env: Env): string[] {
 }
 
 /**
- * Reads and validates the keys `gateway` may present (FR-EDGE-8): one, or two
+ * Reads and validates the keys `gateway` may present: one, or two
  * during a rotation. Called while `TransportModule` is instantiated, so a
  * violation refuses the boot. Messages name the variable and the rule, never
  * a value.
@@ -49,7 +49,7 @@ export function loadGatewayKeys(env: Env): readonly string[] {
     keys.push(key);
   }
 
-  /* FR-EDGE-8: the key is used for nothing else. */
+  /* The key is used for nothing else. */
   const signing = jwtKeys(env).map((key) => Buffer.from(key, 'base64url'));
   for (const key of keys) {
     const bytes = Buffer.from(key, 'base64url');

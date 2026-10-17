@@ -3,7 +3,7 @@ import { cn } from './cn';
 /**
  * The skill efficiency bar, at the design's two sizes.
  *
- * Accessibility (NFR-A11Y-3): the bar is a `progressbar` with an accessible
+ * Accessibility: the bar is a `progressbar` with an accessible
  * name and a numeric value, so its value is never carried by length or colour
  * alone. The design marked these up as role="img" with an aria-label; this
  * uses role="progressbar" with aria-valuenow instead, which conveys the same

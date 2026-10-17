@@ -10,8 +10,8 @@ export interface AccountDisplayFields {
 }
 
 /**
- * The declared in-process interface of FR-AUTH-17: the only route by which a
- * module outside `src/auth` reaches `users` or `sessions`. This file and
+ * The only route by which a module outside `src/auth` reaches `users` or
+ * `sessions`. This file and
  * `auth.module.ts` are the only auth paths the ESLint zone lets another
  * surface import.
  */
@@ -19,7 +19,7 @@ export interface AccountAccess {
   /** Null when no such user exists. */
   getDisplayFields(userId: string): Promise<AccountDisplayFields | null>;
 
-  /** Revokes every live session of the user (FR-AUTH-13, FR-AUTH-14). */
+  /** Revokes every live session of the user. */
   revokeAllForUser(userId: string): Promise<void>;
 }
 

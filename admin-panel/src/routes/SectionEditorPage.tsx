@@ -18,12 +18,9 @@ import { useSectionSave } from '../save/useSectionSave';
 import { Button, Card, Pill } from '../ui/primitives';
 
 /*
- * One editor page for every section type.
- *
- * It names no section type and branches on none. The `:type` in the URL is
- * looked up in the registry; a descriptor comes back or it does not. That is
- * the whole of FR-REG-3 on this side — a new section type is a registry entry
- * and this page renders it without being touched.
+ * One editor page for every section type. It names no section type: the
+ * `:type` in the URL is looked up in the registry, so a new section type
+ * renders here without a change.
  */
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -292,7 +289,7 @@ function Editor({
         </main>
 
         <aside className="flex flex-col gap-[12px]">
-          {/* The same rail on every section editor. It reads the D4 validator
+          {/* The same rail on every section editor. It reads the publish validator
               and knows nothing about which type it is describing. */}
           <Card className="flex flex-col gap-[6px] p-[12px]">
             <span className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-ink3">

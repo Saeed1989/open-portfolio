@@ -17,14 +17,14 @@ import { preconditionHeaders } from './precondition';
 /*
  * The one place this app speaks to the server.
  *
- * Every path is same-origin and relative (D0). The access cookie is scoped
- * `Path=/api` and the refresh cookie `Path=/api/auth`, both host-only
- * (FR-AUTH-3), so the browser attaches them to these calls and to nothing
- * else this app serves — which is exactly why `credentials: 'same-origin'` is
- * enough, no token is held in JS, and neither cookie is ever read here.
+ * Every path is same-origin and relative. The access cookie is scoped
+ * `Path=/api` and the refresh cookie `Path=/api/auth`, both host-only, so the
+ * browser attaches them to these calls and to nothing else this app serves.
+ * That is why `credentials: 'same-origin'` is enough, no token is held in JS,
+ * and neither cookie is ever read here.
  *
  * No identity is sent. `X-User-Id` is `gateway`'s to set, unconditionally, on
- * every location it proxies (FR-EDGE-4); a value from here would be
+ * every location it proxies; a value from here would be
  * overwritten, and sending one would suggest it were trusted.
  */
 
@@ -34,7 +34,7 @@ interface RequestInit_ {
   readonly method?: string;
   readonly body?: unknown;
   readonly signal?: AbortSignal | undefined;
-  /** D3: the draft revision this write was composed against. */
+  /** The draft revision this write was composed against. */
   readonly ifMatch?: number | undefined;
 }
 
@@ -70,15 +70,14 @@ async function send(path: string, init: RequestInit_): Promise<Response> {
 async function read<T>(response: Response): Promise<T> {
   if (!response.ok) throw await parseError(response);
 
-  /* 204 carries no body: logout, and the deletes of §7.2. */
+  /* 204 carries no body: logout, and the deletes. */
   if (response.status === 204) return undefined as T;
 
   return (await response.json()) as T;
 }
 
 /** The one refresh in flight on this page, shared by every 401 that arrives
- *  while it is (FR-AUTH-20). Within the page only — tabs do not coordinate
- *  (open question 17). */
+ *  while it is. Within the page only — tabs do not coordinate. */
 let refreshing: Promise<void> | null = null;
 
 /**
@@ -91,7 +90,7 @@ function sessionEnded(): Promise<never> {
 }
 
 /**
- * `POST /api/auth/refresh` (FR-AUTH-18). Resolves when the cookies were
+ * `POST /api/auth/refresh`. Resolves when the cookies were
  * re-set and the original request is worth retrying.
  *
  * A `401` ends the session. Any other failure — `429`, a `5xx`, no network —
@@ -111,10 +110,9 @@ function refreshSession(): Promise<void> {
 }
 
 /**
- * A request under FR-AUTH-20: on a `401`, refresh once and retry once. A
- * retry that answers `401` again ends the session — it is not refreshed a
- * second time. `init` is rebuilt into a request by each `send`, so the retry
- * carries the same body.
+ * On a `401`, refresh once and retry once. A retry that answers `401` again
+ * ends the session. `init` is rebuilt into a request by each `send`, so the
+ * retry carries the same body.
  */
 async function call<T>(path: string, init: RequestInit_ = {}): Promise<T> {
   let response = await send(path, init);
@@ -143,11 +141,8 @@ export const adminApi = {
     call<AdminPortfolio>(`${ADMIN}/portfolio`, { signal }),
 
   /**
-   * Replace a section's content, toggle it, or reorder it (§7.2).
-   *
-   * One PATCH per section, which is what makes D2's per-section save machine
-   * possible: two sections edited in one sitting are two independent writes
-   * with independent failure states.
+   * Replace a section's content, toggle it, or reorder it. One PATCH per
+   * section, so two sections edited in one sitting fail independently.
    */
   updateSection: (
     type: string,
@@ -190,14 +185,14 @@ export const adminApi = {
     call<readonly LinkHealth[]>(`${ADMIN}/link-health`, { signal }),
 } as const;
 
-/** §7.4. Not on the admin prefix. */
+/** Not on the admin prefix. */
 export const authApi = {
-  /* Answers 204 whether or not a session was found (FR-AUTH-14), so it is
+  /* Answers 204 whether or not a session was found, so it is
      sent once and never refreshed. */
   logout: async () =>
     read<undefined>(await send('/api/auth/logout', { method: 'POST' })),
   /* Verifies the access JWT, so it can 401 and takes the refresh-and-retry
-     of FR-AUTH-20 like an admin request. */
+     like an admin request. */
   logoutAll: () =>
     call<undefined>('/api/auth/logout-all', { method: 'POST' }),
 } as const;

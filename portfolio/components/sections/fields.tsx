@@ -7,7 +7,7 @@ import type { FieldDescriptor } from '@portfolio/registry';
  * A section declares one renderer per field key and hands the descriptor's
  * `fields` / `itemFields` array to `fieldRuns`. The walk is what produces the
  * markup, so a section physically cannot render its fields in an order the
- * registry did not declare (FR-REG-2), and every item in a collection is laid
+ * registry did not declare, and every item in a collection is laid
  * out identically because they all walk the same array.
  *
  * Two kinds of field draw nothing and are skipped rather than special-cased:

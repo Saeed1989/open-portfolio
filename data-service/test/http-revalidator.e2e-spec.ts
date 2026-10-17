@@ -4,7 +4,7 @@ import { HttpRevalidator } from '../src/external/revalidator/http-revalidator';
 
 /*
  * The HTTP revalidator against a stand-in for the portfolio app's
- * `/api/internal/revalidate` (§2.3 step 8, §7.3).
+ * `/api/internal/revalidate`.
  */
 
 interface Seen {

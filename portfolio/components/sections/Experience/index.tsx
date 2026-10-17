@@ -14,7 +14,7 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Experience (business req 5, FR-SEC-EXP-1).
+ * Experience.
  *
  * Each entry is individually collapsible. The disclosure is native
  * `<details>`, so the detail is in the initial HTML for crawlers and operable

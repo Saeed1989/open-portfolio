@@ -3,11 +3,11 @@ import { isValidSlug, resolveSlugFromHost, SLUG_HEADER } from '@/lib/tenant';
 
 /**
  * Resolves the tenant from the Host header and forwards it on
- * `x-portfolio-slug` (FR-TEN-1, FR-TEN-2).
+ * `x-portfolio-slug`.
  *
  * A request whose host carries no usable label — the apex domain, a reserved
  * label such as `api` or `admin`, a malformed one — is forwarded *without* the
- * header. The container then renders the branded 404 (FR-TEN-3). Rejecting
+ * header. The container then renders the branded 404. Rejecting
  * here with a bare 404 response would skip app/not-found.tsx and produce a
  * different body for reserved labels than for unknown ones, which is exactly
  * the disclosure that requirement forbids.
@@ -32,7 +32,7 @@ function resolveSlug(request: NextRequest): string | null {
    * Development only: TENANT_SOURCE=env names the tenant outright via DEV_SLUG,
    * so localhost:3000 serves one tenant at the root with no subdomain. Guarded
    * by NODE_ENV, so it cannot pin a production deployment to one tenant —
-   * there, FR-TEN-2 holds and the Host header alone decides.
+   * there, the Host header alone decides.
    */
   if (
     process.env.NODE_ENV !== 'production' &&

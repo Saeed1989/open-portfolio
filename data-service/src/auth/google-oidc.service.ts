@@ -5,14 +5,14 @@ import { AUTH_CONFIG, type AuthConfig } from './auth.config';
 
 const AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 
-/** What one sign-in attempt keeps in the state cookie (FR-AUTH-8). */
+/** What one sign-in attempt keeps in the state cookie. */
 export interface OidcAttempt {
   readonly state: string;
   readonly verifier: string;
   readonly nonce: string;
 }
 
-/** The claims sign-in keeps. Every Google token is discarded (FR-AUTH-22). */
+/** The claims sign-in keeps. Every Google token is discarded. */
 export interface GoogleIdentity {
   readonly sub: string;
   readonly email: string;
@@ -22,7 +22,7 @@ export interface GoogleIdentity {
 
 /**
  * The Google half of sign-in: the authorization URL, the code exchange, and
- * ID-token validation. Sole holder of the client secret (FR-AUTH-9).
+ * ID-token validation. Sole holder of the client secret.
  */
 @Injectable()
 export class GoogleOidcService {
@@ -55,7 +55,7 @@ export class GoogleOidcService {
   }
 
   /**
-   * Exchanges the code and validates the ID token per FR-AUTH-21. Null on any
+   * Exchanges the code and validates the ID token. Null on any
    * failure; the caller answers `auth_failed` and learns no detail.
    */
   async exchange(

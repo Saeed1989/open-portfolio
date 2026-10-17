@@ -34,7 +34,7 @@ export interface SeedUser {
   readonly status: UserStatus;
 }
 
-/** A signed-in user who has not created a portfolio yet (FR-AUTH-2). */
+/** A signed-in user who has not created a portfolio yet. */
 export interface SeedAccount {
   readonly name: TenantName;
   readonly user: SeedUser;
@@ -48,7 +48,7 @@ export interface SeedTenant {
   readonly presetId: string;
   readonly version: number;
   readonly draft: SeedDraft;
-  /** False leaves `published` null, so the slug 404s publicly (§2.4). */
+  /** False leaves `published` null, so the slug 404s publicly. */
   readonly publish: boolean;
   readonly media: readonly SeedMedia[];
 }

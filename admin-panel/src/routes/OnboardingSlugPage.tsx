@@ -16,8 +16,7 @@ import { TextInput } from '../fields/TextInput';
 import { Button, Card, Pill } from '../ui/primitives';
 
 /*
- * Artboard E1 — claim a subdomain, which creates the portfolio
- * (FR-AUTH-5, FR-AUTH-7, §7.2).
+ * Artboard E1 — claim a subdomain, which creates the portfolio.
  *
  * The availability check is advice, worded as advice: only the write decides,
  * so a slug shown as available can still be lost at submit (the race-lost

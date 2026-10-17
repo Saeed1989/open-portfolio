@@ -19,11 +19,7 @@ var SECTION_TYPES = [
   "opensource",
   "speaking",
   "achievements",
-  /*
-   * Registry order is the default section order, so `trainings` sits directly
-   * after `achievements` and before `gallery` (SRS §4.1). It shares that
-   * neighbour's field schema verbatim and none of its Credly path.
-   */
+  /* Registry order is the default section order. */
   "trainings",
   "gallery"
 ];
@@ -44,7 +40,6 @@ var hero = {
   label: "Hero",
   description: "Who you are, in one screen.",
   priority: "must",
-  businessRef: "BR 1",
   cardinality: "single",
   fields: [
     {
@@ -97,7 +92,6 @@ var projects = {
   label: "Selected work",
   description: "Three to five projects, each scannable in fifteen seconds.",
   priority: "must",
-  businessRef: "BR 2",
   cardinality: "collection",
   min: 3,
   max: 5,
@@ -137,16 +131,9 @@ var projects = {
       help: 'One line for the card. The long account goes in "My role" below.'
     },
     /*
-     * The case study behind the card (FR-SEC-PROJ-1, business 2.17–2.23).
-     *
-     * This array is the modal's sub-section order, not just the admin form's:
-     * ProjectModal walks these same descriptors to draw its labelled regions,
-     * so the seven cannot be rendered in an order this file did not declare
-     * (FR-REG-2). Moving an entry here moves the section in the modal.
-     *
-     * `bodies.*` keys are dotted because the three rich-text bodies nest
-     * under one object; `FieldError.path` is already a dotted path, so a
-     * failure addresses the field the tenant sees.
+     * The case study behind the card. This order is also the modal's
+     * sub-section order. `bodies.*` keys are dotted because the three
+     * rich-text bodies nest under one object.
      */
     {
       key: "bodies.business",
@@ -178,8 +165,7 @@ var projects = {
       kind: "longtext",
       required: true,
       group: "body",
-      /* FR-SEC-PROJ-8's guidance attaches here, to the long account — not to
-         the card's one-line `role` above. */
+      /* The writing guidance attaches here, not to the card's one-line `role`. */
       help: 'Plain paragraphs and lists. No links or images. First person, naming the components you owned \u2014 not "worked on".'
     },
     {
@@ -227,7 +213,6 @@ var skills = {
   label: "Prominent skills",
   description: "One list, two tiers.",
   priority: "must",
-  businessRef: "BR 3",
   cardinality: "collection",
   sectionFields: [
     { key: "legend", label: "Rating scale legend", kind: "longtext" },
@@ -269,7 +254,6 @@ var contact = {
   label: "Contact",
   description: "How to reach you. Each link toggles independently.",
   priority: "must",
-  businessRef: "BR 4",
   cardinality: "single",
   fields: [
     { key: "intro", label: "Intro", kind: "longtext", max: 200 },
@@ -295,7 +279,6 @@ var experience = {
   label: "Experience",
   description: "Roles, most recent first.",
   priority: "should",
-  businessRef: "BR 5",
   cardinality: "collection",
   itemFields: [
     {
@@ -334,7 +317,6 @@ var education = {
   label: "Education",
   description: "Qualifications, with optional detail.",
   priority: "should",
-  businessRef: "BR 6",
   cardinality: "collection",
   itemFields: [
     {
@@ -374,7 +356,6 @@ var blog = {
   label: "Writing",
   description: "Posts, entered manually or synced from a feed.",
   priority: "should",
-  businessRef: "BR 7",
   cardinality: "collection",
   itemFields: [
     { key: "date", label: "Date", kind: "date", group: "meta" },
@@ -400,7 +381,6 @@ var testimonials = {
   label: "Testimonials",
   description: "Two to four, in the words of people you worked with.",
   priority: "should",
-  businessRef: "BR 8",
   cardinality: "collection",
   min: 2,
   max: 4,
@@ -429,7 +409,6 @@ var opensource = {
   label: "Open source",
   description: "Profile, statistics, and named contributions.",
   priority: "should",
-  businessRef: "BR 9",
   cardinality: "single",
   fields: [
     { key: "stats", label: "Statistics", kind: "list", group: "stats" },
@@ -458,11 +437,7 @@ var opensource = {
       group: "links"
     }
   ],
-  /*
-   * The embed counts towards emptiness: a tenant whose only open-source
-   * content is a username still has a section worth drawing, and one with
-   * nothing at all still gets no heading (FR-CFG-2).
-   */
+  /* A username alone is enough to draw the section: the embed counts as content. */
   emptyCondition: (content) => {
     if (!isRecord(content)) return true;
     const stats = content.stats;
@@ -477,7 +452,6 @@ var speaking = {
   label: "Speaking",
   description: "Talks, with a link to video or slides.",
   priority: "could",
-  businessRef: "BR 10",
   cardinality: "collection",
   itemFields: [
     { key: "date", label: "Date", kind: "date", group: "meta" },
@@ -497,7 +471,6 @@ var achievements = {
   label: "Achievements",
   description: "Certifications, awards, rankings, hackathons.",
   priority: "should",
-  businessRef: "BR 11",
   cardinality: "collection",
   sectionFields: [
     {
@@ -512,7 +485,7 @@ var achievements = {
    * badge fields sit at the top of the render order because a badge leads
    * with its picture; an item that has none simply skips them, which is how
    * a manual achievement keeps exactly the layout it had before Credly
-   * existed (FR-REG-2).
+   * existed.
    */
   itemFields: [
     {
@@ -557,16 +530,9 @@ var achievements = {
 var trainings = {
   type: "trainings",
   label: "Training",
-  /*
-   * FR-CFG-6: the source document's guidance, surfaced in admin as advice.
-   * Both hints below are editorial judgements (11a.3, 11a.4) — the system
-   * cannot tell whether a course is role-relevant, or that the certification
-   * listed here is the same one listed under Achievements. Nothing validates
-   * them, and nothing blocks a publish over them.
-   */
+  /* The description and the title hint are advice only: nothing validates them. */
   description: "Courses, workshops, bootcamps and structured programmes. Recent and role-relevant learning only \u2014 an entry earns its place by supporting the role you are aiming at, not by having been completed.",
   priority: "could",
-  businessRef: "BR 11a",
   cardinality: "collection",
   itemFields: [
     {
@@ -592,8 +558,6 @@ var trainings = {
       group: "links"
     }
   ],
-  /* The same predicate as achievements: an item with no title draws nothing,
-     and a collection of nothing but those is an empty section (FR-CFG-2). */
   emptyCondition: (content) => collectionIsEmpty(
     content,
     (item) => isRecord(item) && hasText(item.title)
@@ -606,7 +570,6 @@ var gallery = {
   label: "Gallery",
   description: "Images and embedded video.",
   priority: "could",
-  businessRef: "BR 12",
   cardinality: "collection",
   itemFields: [
     { key: "image", label: "Image", kind: "image" },

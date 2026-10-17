@@ -7,7 +7,7 @@ interface Failure {
   readonly detail: string;
 }
 
-/* The two codes §2.5 redirects here with. The copy is keyed by code and the
+/* The two error codes sign-in redirects here with. The copy is keyed by code and the
    query value itself is never rendered. */
 const AUTH_FAILED: Failure = {
   pill: 'Sign-in failed',
@@ -28,9 +28,9 @@ const FAILURES: Record<string, Failure> = {
 const START = '/api/auth/google/start';
 
 /**
- * §2.5 step 1. The link is a navigation, not a fetch: the OAuth round trip is
- * a chain of top-level redirects that ends with `api` setting the cookies and
- * sending the browser back to the app, where FR-AUTH-7 takes over.
+ * The link is a navigation, not a fetch: the OAuth round trip is a chain of
+ * top-level redirects that ends with `api` setting the cookies and sending
+ * the browser back to the app.
  */
 export function SignInPage() {
   const [params] = useSearchParams();

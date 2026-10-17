@@ -10,29 +10,18 @@ import { createPortal } from 'react-dom';
 
 /**
  * A modal dialog: dimmed backdrop, a panel in front of it, and the focus
- * contract that makes an overlay usable without a mouse (NFR-A11Y-1, 2).
- *
- * This is the first thing in the system that takes focus away from the page,
- * and SRS §8.3 makes its behaviour the general contract every later overlay
- * inherits, so the whole of it lives here rather than in the one section that
- * currently opens it:
+ * contract every overlay in the app inherits:
  *
  *   - Tab and Shift+Tab cycle only inside the panel, wrapping at both ends.
  *   - Focus lands on the close button when it opens.
  *   - Focus returns to whatever opened it when it closes.
- *   - Escape closes it, listened for on the document in the capture phase so
- *     it works wherever focus happens to be.
+ *   - Escape closes it, listened for on the document in the capture phase.
  *   - The page behind it cannot scroll, and gets its scroll back afterwards.
  *
- * The panel is rendered into `document.body` through a portal. Nothing on this
- * page would trap a `fixed` child today, but a dialog that can be opened from
- * anywhere should not depend on the stacking context of wherever it was
- * mounted.
- *
- * Structure is fixed — header row, scrolling body, optional footer row — and
- * content is the caller's. That split is deliberate: the parts that must not
- * vary (the close control, the ARIA wiring, the scroll region) are here, and
- * the parts that differ per use are props.
+ * The panel is rendered into `document.body` through a portal, so it does not
+ * depend on the stacking context of wherever it was mounted. Structure is
+ * fixed — header row, scrolling body, optional footer row — and content is
+ * the caller's.
  */
 
 /*

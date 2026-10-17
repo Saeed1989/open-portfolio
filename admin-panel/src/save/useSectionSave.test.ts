@@ -5,17 +5,10 @@ import { AdminError } from '../api/errors';
 import { classify, useSectionSave } from './useSectionSave';
 
 /*
- * The scheduling half of D2: the manual save and the backoff.
- *
- * Fake timers throughout, because every assertion here is about *when* a write
- * is sent, and a test that waits out a backoff of wall clock to find out is a
- * test nobody runs.
- *
- * `waitFor` is deliberately not used. Testing Library detects Jest's fake
- * timers and not Vitest's, so it polls against a clock that never moves and
- * hangs. `advanceTimersByTimeAsync` moves the clock and drains the microtask
- * queue, which is what makes the awaited fetch resolve — so every wait below
- * is an explicit advance.
+ * The scheduling half of the save model: the manual save and the backoff.
+ * Fake timers throughout. `waitFor` is not used: Testing Library does not
+ * detect Vitest's fake timers and would hang, so every wait is an explicit
+ * `advanceTimersByTimeAsync`.
  */
 
 /** Advance the clock and let the promises it released settle. */
@@ -100,7 +93,7 @@ describe('manual save', () => {
 });
 
 describe('the precondition', () => {
-  test('the write carries the version it was composed against (D3)', async () => {
+  test('the write carries the version it was composed against', async () => {
     const { result } = renderHook(() =>
       useSectionSave({ type: 'invented', version: 4 }),
     );

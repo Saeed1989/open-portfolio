@@ -1,8 +1,7 @@
 /**
- * FR-AUTH-15: the fixed allowlist of post-callback redirect targets. Every
- * entry is a relative path within the admin origin — no scheme, no authority,
- * no leading `//` — and a `returnTo` is honoured only on an exact match, so
- * no user-supplied URL is ever redirected to.
+ * The fixed allowlist of post-callback redirect targets, each a relative path
+ * within the admin origin. A `returnTo` is honoured only on an exact match,
+ * so no user-supplied URL is ever redirected to.
  */
 export const RETURN_TO_ALLOWLIST: readonly string[] = [
   '/',

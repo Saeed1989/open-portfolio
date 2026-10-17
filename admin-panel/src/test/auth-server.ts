@@ -3,7 +3,8 @@ import { setupServer } from 'msw/node';
 import type { Me } from '../api/dto';
 
 /*
- * §7.4 and the two admin routes the session tests need, as MSW handlers. For
+ * The auth routes and the two admin routes the session tests need, as MSW
+ * handlers. For
  * Vitest only: nothing here is imported by the app, and there is no mock mode.
  *
  * The cookies the browser would hold are modelled as two facts — whether the

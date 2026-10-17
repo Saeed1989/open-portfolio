@@ -6,7 +6,6 @@ export const blog = {
   label: 'Writing',
   description: 'Posts, entered manually or synced from a feed.',
   priority: 'should',
-  businessRef: 'BR 7',
   cardinality: 'collection',
   itemFields: [
     { key: 'date', label: 'Date', kind: 'date', group: 'meta' },

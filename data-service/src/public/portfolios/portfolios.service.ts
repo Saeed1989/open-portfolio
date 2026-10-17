@@ -22,20 +22,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /*
- * The allowlist (FR-API-1).
- *
- * Every field below reaches the response because it is named here. Nothing is
- * spread from the stored document and nothing is stripped from it, so a field
- * added to the stored tree — by a future builder, or by a hand-edited document
- * — cannot reach a visitor by default. That is the whole point of the rule:
- * the failure mode of an allowlist is a missing field, not a leaked one.
- *
- * `config` is allowlisted field by field because each of its values is
- * public-safe for a stated reason (§2.1). `data` is not: §7.1 makes it content
- * only, bounded by what the registry declares, since draft writes are
- * validated against the descriptors (FR-API-4) and the builder adds nothing.
- * Re-deriving it here would mean restating the registry inside this service,
- * which FR-REG-1 forbids.
+ * The allowlist. Every `config` field reaches the response because it is
+ * named here; nothing is spread from the stored document, so a field added to
+ * the stored tree cannot reach a visitor by default. `data` passes through:
+ * it is content only, bounded by what the registry declares.
  */
 
 function toTheme(value: unknown): PublicThemeDto {
@@ -59,7 +49,7 @@ function toSeo(value: unknown): PublicSeoDto {
   };
 }
 
-/** Absent, not null, when the tenant has configured none (FR-ANL-3). */
+/** Absent, not null, when the tenant has configured none. */
 function toAnalytics(value: unknown): PublicAnalyticsDto | undefined {
   if (!isRecord(value)) return undefined;
   return {
@@ -100,20 +90,11 @@ export class PortfoliosService {
   ) {}
 
   /**
-   * One find on `portfolios`, projecting `published.config` and
-   * `published.data`, and no outbound HTTP (§2.2, NFR-PERF-3).
-   *
-   * The filter carries all three of FR-TEN-3's cases, so they take the same
-   * branch and produce one indistinguishable 404: an unknown slug matches
-   * nothing, an unpublished one has no `published` tree, and a suspended one
-   * is excluded by status. Deciding them separately would be the natural way
-   * to write this and would leak which it was through timing or message.
-   *
-   * `published.source` is excluded by the projection, never by deletion after
-   * the read (§5.2). It is not sent to the mapper at all.
-   *
-   * A retired slug's 301 (FR-DAT-2, AP-2) is **not** handled here — see the
-   * note in the README. This find matches the current slug only.
+   * One find on `portfolios` and no outbound HTTP. The filter covers unknown,
+   * unpublished and suspended slugs together, so all three produce one
+   * indistinguishable 404 rather than leaking which it was.
+   * `published.source` is excluded by the projection. A retired slug's
+   * redirect is not handled here.
    */
   async getRenderPayload(slug: string): Promise<RenderPayloadDto> {
     const document = await this.portfolios

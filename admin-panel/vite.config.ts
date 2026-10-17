@@ -5,13 +5,13 @@ import tailwindcss from '@tailwindcss/vite';
 import { apiProxy } from './admin-host/api-proxy';
 
 /*
- * D0: this app is built to static files and has no server of its own. In
- * development this dev server is the admin host (FR-EDGE-6): it serves the
+ * This app is built to static files and has no server of its own. In
+ * development this dev server is the admin host: it serves the
  * app and forwards `/api/*` to `gateway` by the one rule of
- * `admin-host/api-proxy.ts` (FR-EDGE-9), on plain HTTP at localhost.
+ * `admin-host/api-proxy.ts`, on plain HTTP at localhost.
  *
  * The proxy sets no identity and holds no secret. Sign-in is real, through
- * `gateway`, and the cookies are scoped as in production (NFR-OPS-6).
+ * `gateway`, and the cookies are scoped as in production.
  */
 
 /** Read with an empty prefix, in this file only: none of these is `VITE_`, so

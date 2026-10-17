@@ -36,7 +36,7 @@ export function SaveIndicator({
   return (
     <div
       /* Polite, not assertive: a save is ambient and must not interrupt
-         whatever the tenant is typing into (NFR-A11Y-5). */
+         whatever the tenant is typing into. */
       role="status"
       aria-live="polite"
       className="flex flex-wrap items-center gap-[10px]"
@@ -54,7 +54,7 @@ export function SaveIndicator({
       {state.status === 'saved' ? (
         /* A timestamp, not a tick that fades. Shape and type were validated;
            `required` was not, which is why an incomplete draft reads as
-           saved (FR-REG-8). */
+           saved. */
         <span className="font-mono text-[11px] text-ink2">
           Saved {clock(state.savedAt)}
           {state.dirty ? ' · unsaved changes' : ''}
@@ -118,7 +118,7 @@ export function SaveIndicator({
 
       {state.status === 'stale' ? (
         <>
-          {/* D3. Neither copy is thrown away: the tenant's edits stay in the
+          {/* Neither copy is thrown away: the tenant's edits stay in the
               form and stay copyable, and the server's version is taken up
               only on an explicit click. */}
           <Pill tone="warn">Changed elsewhere</Pill>

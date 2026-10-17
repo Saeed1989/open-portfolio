@@ -36,7 +36,7 @@ export class MediaController {
   constructor(private readonly media: MediaService) {}
 
   @Post('upload-url')
-  @ApiOperation({ summary: 'Issue a signed upload URL (FR-MED-1)' })
+  @ApiOperation({ summary: 'Issue a signed upload URL' })
   @ApiCreatedResponse({ type: UploadUrlDto })
   createUploadUrl(
     @Tenant() tenant: TenantScope,
@@ -48,7 +48,7 @@ export class MediaController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: "Delete a media asset of the session's portfolio (FR-TEN-4)",
+    summary: "Delete a media asset of the session's portfolio",
   })
   @ApiParam({ name: 'id', example: '66e1f0c2a1b2c3d4e5f60718' })
   @ApiNoContentResponse({ description: 'Deleted.' })

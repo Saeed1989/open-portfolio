@@ -34,7 +34,7 @@ export type ComponentName =
 export const COMPONENT_FOR_KIND: Record<FieldKind, ComponentName> = {
   text: 'TextInput',
   /* Plain multi-line text. Rich text is a different kind, and the two are not
-     interchangeable: FR-SEC-PROJ-12 sanitises one and escapes the other. */
+     interchangeable: one is sanitised and the other escaped. */
   longtext: 'TextArea',
   url: 'TextInput',
   email: 'TextInput',
@@ -43,18 +43,14 @@ export const COMPONENT_FOR_KIND: Record<FieldKind, ComponentName> = {
   boolean: 'Switch',
   image: 'MediaPicker',
   tags: 'TagList',
-  /* An ordered list of free text — the accomplishment list of FR-SEC-EXP-1.
+  /* An ordered list of free text, such as an accomplishment list.
      A repeater of one text field rather than a tag list, because order is
      meaningful and the entries are sentences. */
   list: 'Repeater',
   /*
-   * A closed set renders as a Select, not as EnumCards.
-   *
-   * EnumCards exists for a choice where each option needs a sentence — the
-   * preset picker of FR-AUTH-5 — and the descriptor has no way to say that a
-   * given enum is that kind of choice. Until it does, the default is the
-   * compact control, and the preset screen (not built in this milestone)
-   * reaches for EnumCards directly rather than through a descriptor.
+   * A closed set renders as a Select, not as EnumCards. EnumCards is for a
+   * choice where each option needs a sentence, and the descriptor has no way
+   * to say that an enum is that kind of choice.
    */
   enum: 'Select',
   multiselect: 'TagList',
@@ -71,11 +67,8 @@ export const INPUT_TYPE_FOR_KIND: Partial<
 };
 
 /**
- * The precision every `date` field renders at.
- *
- * A constant and not a function of the kind, because the registry declares one
- * `date` kind and no precision to vary on. Month is what FR-SEC-EXP-1 and
- * FR-SEC-EDU-1 need; FR-SEC-SPK-1 and FR-SEC-BLOG-1 want a full date and the
- * descriptor has no way to say so. Listed in the report as a registry gap.
+ * The precision every `date` field renders at. A constant, because the
+ * registry declares one `date` kind and no precision; some fields want a
+ * full date and the descriptor cannot say so.
  */
 export const DATE_PRECISION: 'month' | 'day' = 'month';

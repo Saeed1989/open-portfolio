@@ -5,8 +5,8 @@ export interface SignedUpload {
 }
 
 /**
- * Issues short-lived signed upload URLs. The API never proxies file bytes
- * (FR-MED-1). Switching implementations is a change to `STORAGE_MODE`.
+ * Issues short-lived signed upload URLs; the API never proxies file bytes.
+ * Switching implementations is a change to `STORAGE_MODE`.
  */
 export interface StorageSigner {
   signUpload(

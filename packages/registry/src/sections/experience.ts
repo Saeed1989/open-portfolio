@@ -6,7 +6,6 @@ export const experience = {
   label: 'Experience',
   description: 'Roles, most recent first.',
   priority: 'should',
-  businessRef: 'BR 5',
   cardinality: 'collection',
   itemFields: [
     {

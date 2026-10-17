@@ -31,7 +31,7 @@ beforeAll(() => {
 
 afterAll(() => rmSync(certs, { recursive: true, force: true }));
 
-describe('loadConfig (FR-EDGE-6)', () => {
+describe('loadConfig', () => {
   it('accepts a complete environment', () => {
     expect(loadConfig(env)).toEqual({
       adminRouteHost: 'gateway.openfolio.test',
@@ -49,7 +49,7 @@ describe('loadConfig (FR-EDGE-6)', () => {
     });
   });
 
-  it('reads TLS material when both paths are set (Q24)', () => {
+  it('reads TLS material when both paths are set', () => {
     const config = loadConfig({
       ...env,
       TLS_CERT_PATH: join(certs, 'cert.pem'),
@@ -59,7 +59,7 @@ describe('loadConfig (FR-EDGE-6)', () => {
     expect(config.tls?.key.toString()).toBe('key');
   });
 
-  it('reads the trusted proxies (FR-EDGE-10)', () => {
+  it('reads the trusted proxies', () => {
     const config = loadConfig({
       ...env,
       TRUSTED_PROXY_CIDRS: '10.0.0.0/8, 192.168.1.4 ,fd00::/8',
@@ -71,7 +71,7 @@ describe('loadConfig (FR-EDGE-6)', () => {
     ]);
   });
 
-  it('accepts trusted proxies alongside in-process TLS: the admin host connects over TLS (FR-EDGE-9, FR-EDGE-10)', () => {
+  it('accepts trusted proxies alongside in-process TLS: the admin host connects over TLS', () => {
     const config = loadConfig({
       ...env,
       TLS_CERT_PATH: join(certs, 'cert.pem'),

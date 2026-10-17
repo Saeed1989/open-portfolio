@@ -17,7 +17,7 @@ import { Testimonials } from './Testimonials';
 import { Trainings } from './Trainings';
 
 /**
- * The dispatch table: one section type, one component (FR-REG-3).
+ * The dispatch table: one section type, one component.
  *
  * Adding a section type is a registry entry in `@portfolio/registry` plus
  * a component here. Nothing else in this app changes — SectionRenderer walks
@@ -43,7 +43,7 @@ export type SectionComponent = ComponentType<SectionProps>;
  * Each section states the content type it actually accepts. The map erases
  * that to `unknown`, because a section instance arriving from the API is
  * untyped until its `type` is read. The API validates content against the same
- * registry before it is published (FR-PUB-6), and a section whose content is
+ * registry before it is published, and a section whose content is
  * malformed enough to matter is caught by its emptyCondition and never
  * rendered at all.
  */

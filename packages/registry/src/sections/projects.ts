@@ -6,7 +6,6 @@ export const projects = {
   label: 'Selected work',
   description: 'Three to five projects, each scannable in fifteen seconds.',
   priority: 'must',
-  businessRef: 'BR 2',
   cardinality: 'collection',
   min: 3,
   max: 5,
@@ -46,16 +45,9 @@ export const projects = {
       help: 'One line for the card. The long account goes in "My role" below.',
     },
     /*
-     * The case study behind the card (FR-SEC-PROJ-1, business 2.17–2.23).
-     *
-     * This array is the modal's sub-section order, not just the admin form's:
-     * ProjectModal walks these same descriptors to draw its labelled regions,
-     * so the seven cannot be rendered in an order this file did not declare
-     * (FR-REG-2). Moving an entry here moves the section in the modal.
-     *
-     * `bodies.*` keys are dotted because the three rich-text bodies nest
-     * under one object; `FieldError.path` is already a dotted path, so a
-     * failure addresses the field the tenant sees.
+     * The case study behind the card. This order is also the modal's
+     * sub-section order. `bodies.*` keys are dotted because the three
+     * rich-text bodies nest under one object.
      */
     {
       key: 'bodies.business',
@@ -87,8 +79,7 @@ export const projects = {
       kind: 'longtext',
       required: true,
       group: 'body',
-      /* FR-SEC-PROJ-8's guidance attaches here, to the long account — not to
-         the card's one-line `role` above. */
+      /* The writing guidance attaches here, not to the card's one-line `role`. */
       help: 'Plain paragraphs and lists. No links or images. First person, naming the components you owned — not "worked on".',
     },
     {

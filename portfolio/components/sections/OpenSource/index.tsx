@@ -19,21 +19,16 @@ import type { PortfolioTheme } from '@/lib/theme';
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Open source (business req 9, FR-SEC-OSS-1).
+ * Open source. Two sources of statistics, which behave differently on purpose.
  *
- * Two sources of statistics, and they behave differently on purpose.
+ * The manual figures are typed by the tenant and rendered as a real
+ * description list in the initial HTML. A missing figure is not drawn;
+ * nothing here ever produces a zero.
  *
- * The manual figures are ours: typed by the tenant, rendered as a real
- * description list, readable by a screen reader, present in the initial HTML
- * (FR-PUB-4). Where a figure is missing it is simply not drawn; nothing here
- * ever produces a zero.
- *
- * The embedded cards are not ours. They are `<img>` elements pointed at a
- * third-party service, requested by the visitor's browser and never by this
- * system — no fetch at render, no cache, no credential (FR-INT-1,
- * NFR-PERF-3). Their numbers live inside an opaque image we cannot read, so
- * where the manual figures are present the cards are marked decorative and the
- * text carries the meaning; see GitHubEmbed for the whole of that argument.
+ * The embedded cards are `<img>` elements pointed at a third-party service
+ * and requested by the visitor's browser. Their numbers sit inside an opaque
+ * image, so where the manual figures are present the cards are marked
+ * decorative — see GitHubEmbed.
  */
 const STAT_LABELS: readonly [
   key: 'repos' | 'commitsLastYear' | 'pullRequests' | 'contributions',
@@ -52,7 +47,7 @@ function presentStats(content: OpenSourceContent) {
   return STAT_LABELS.filter(([key]) => typeof stats[key] === 'number');
 }
 
-/** The descriptor's default when the tenant has not chosen (FR-REG-1). */
+/** The descriptor's default when the tenant has not chosen. */
 const DEFAULT_CARDS = REGISTRY.opensource.fields.find(
   (field) => field.key === 'embedCards',
 )?.defaultValue as readonly GitHubEmbedCard[] | undefined;

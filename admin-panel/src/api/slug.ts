@@ -7,7 +7,7 @@
  * step with `data-service/src/admin/portfolio/slug.ts`.
  */
 
-/** Where a slug is served (FR-TEN-1). */
+/** Where a slug is served. */
 export const SLUG_SUFFIX = '.openfolio.site';
 
 /* One DNS label: ASCII letters, digits and hyphens, no hyphen at either end. */

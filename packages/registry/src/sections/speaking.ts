@@ -6,7 +6,6 @@ export const speaking = {
   label: 'Speaking',
   description: 'Talks, with a link to video or slides.',
   priority: 'could',
-  businessRef: 'BR 10',
   cardinality: 'collection',
   itemFields: [
     { key: 'date', label: 'Date', kind: 'date', group: 'meta' },

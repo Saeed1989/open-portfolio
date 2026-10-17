@@ -11,7 +11,7 @@ export class UploadUrlDto {
   @ApiProperty({
     type: String,
     required: true,
-    description: 'Short-lived; the browser uploads directly to it (FR-MED-1).',
+    description: 'Short-lived; the browser uploads directly to it.',
     example: 'https://storage.site.com/uploads/abc?signature=xyz',
   })
   uploadUrl: string;

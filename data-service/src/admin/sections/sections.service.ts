@@ -37,7 +37,7 @@ export class SectionsService {
     if (!portfolio) throw new NotFoundException('portfolio_not_found');
 
     /* Admin sees every section, disabled ones included — only the published
-       tree has them removed (FR-TEN-5). */
+       tree has them removed. */
     return {
       draftRevision: portfolio.draftRevision ?? 0,
       sections: [...(portfolio.draft?.sections ?? [])]
@@ -71,7 +71,7 @@ export class SectionsService {
       ]);
     }
 
-    /* Scope is the header's user id alone (FR-TEN-4, FR-API-3). */
+    /* Scope is the header's user id alone. */
     const userId = new Types.ObjectId(tenant.userId);
     if (expectedRevision === undefined) {
       throw new StaleWriteException(

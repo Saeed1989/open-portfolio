@@ -14,10 +14,10 @@ import { sectionRegistry } from './registry';
  *
  * Four rules, in order:
  *
- *  1. `enabled: false` is dropped (FR-CFG-1).
+ *  1. `enabled: false` is dropped.
  *  2. A type the registry does not declare is dropped — a payload written
  *     against a newer registry than this build must not take the page down.
- *  3. Content satisfying the type's `emptyCondition` is dropped (FR-CFG-2).
+ *  3. Content satisfying the type's `emptyCondition` is dropped.
  *  4. What survives renders in `order`.
  *
  * A dropped section leaves no trace. There is no wrapper element, no

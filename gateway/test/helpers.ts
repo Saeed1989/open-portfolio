@@ -10,11 +10,11 @@ import type { FastifyServerOptions } from 'fastify';
 import { buildApp } from '../src/app.js';
 import type { Config } from '../src/config.js';
 
-/** `gateway`'s own hostname, which carries the admin route (FR-EDGE-1). */
+/** `gateway`'s own hostname, which carries the admin route. */
 export const ADMIN = 'gateway.openfolio.test';
 export const PUBLIC_READ = 'api.openfolio.test';
 export const ALICE = '5eed00000000000001010001';
-/** 32 bytes, base64url — the shape FR-EDGE-8 requires. */
+/** 32 bytes, base64url. */
 export const API_KEY = 'gateway-test-key-0123456789abcdefghijklmnop';
 
 export const SESSION_COOKIES = [

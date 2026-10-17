@@ -9,17 +9,12 @@ import {
 import { ErrorMessage, GapNote, Hint, Label } from '../ui/primitives';
 
 /**
- * Rich text, six controls (D10): bold, italic, underline, bulleted, numbered,
- * clear formatting.
+ * Rich text, six controls: bold, italic, underline, bulleted, numbered, clear
+ * formatting. The toolbar matches the sanitiser allowlist, so it never offers
+ * a mark that would be stripped at write time.
  *
- * The toolbar is exactly the allowlist of FR-SEC-PROJ-12 minus the tags no
- * control produces — paragraph and line break come from typing. Offering a
- * seventh control would offer a mark the sanitiser strips at write time, so
- * the tenant would watch their formatting disappear on save.
- *
- * What is typed here is *not* trusted. The sanitiser is server-side, at write
- * time, from the single constant the registry exports (FR-SEC-PROJ-12,
- * NFR-SEC-2); this editor only avoids producing marks that would be stripped.
+ * What is typed here is not trusted: the sanitiser runs server-side, at write
+ * time, from the registry's allowlist.
  */
 export interface RichTextProps {
   readonly id: string;

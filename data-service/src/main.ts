@@ -20,13 +20,13 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
 
   /* One document per surface, each built from its own module only, so the
-     public document cannot list an admin or auth route (SRS §2.1). */
+     public document cannot list an admin or auth route. */
   const publicDocument = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
       .setTitle('Portfolio API — public')
       .setDescription(
-        'Unauthenticated and read-only. Published content only, resolved by slug (SRS §7.1).',
+        'Unauthenticated and read-only. Published content only, resolved by slug.',
       )
       .setVersion('0.1.0')
       .addServer(serverUrl)
@@ -41,7 +41,7 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('Portfolio API — admin')
         .setDescription(
-          "Scoped by the X-User-Id header gateway sets. Reads and writes the draft of the caller's portfolio (SRS §7.2).",
+          "Scoped by the X-User-Id header gateway sets. Reads and writes the draft of the caller's portfolio.",
         )
         .setVersion('0.1.0')
         .addServer(serverUrl)
@@ -55,7 +55,7 @@ async function bootstrap(): Promise<void> {
       new DocumentBuilder()
         .setTitle('Portfolio API — auth')
         .setDescription(
-          'Sign-in, refresh, sign-out and session resolution. Reached through gateway at /api/auth/* (SRS §7.3, §7.4).',
+          'Sign-in, refresh, sign-out and session resolution. Reached through gateway at /api/auth/*.',
         )
         .setVersion('0.1.0')
         .addServer(serverUrl)
@@ -80,7 +80,7 @@ async function bootstrap(): Promise<void> {
 
   const port = config.getOrThrow<string>('PORT');
   /* Loopback unless told otherwise. Where it binds is not what protects
-     /auth/* and /admin/*: the API key is (FR-EDGE-5). */
+     /auth/* and /admin/*: the API key is. */
   const host = config.get<string>('API_BIND_HOST') || '127.0.0.1';
   await app.listen(port, host);
   Logger.log(`Listening on http://${host}:${port}`, 'Bootstrap');

@@ -17,17 +17,10 @@ export type FieldState =
   | 'placeholder';
 
 /**
- * Publish-readiness, orthogonal to `FieldState`.
- *
- * `pending` is the dotted grey marker: the field is required *for publish* and
- * empty, and the draft still saves (FR-REG-8 — `required` is enforced at
- * publish, not at save). It becomes `blocking` only after a publish attempt,
- * never while the tenant is typing, because otherwise a half-written draft is
- * a wall of errors.
- *
- * `blocking` deliberately renders as the invalid treatment rather than a third
- * colour: a field that blocks publish and a field that failed validation are
- * the same thing to the tenant.
+ * Publish-readiness, orthogonal to `FieldState`. `pending` is the dotted
+ * grey marker: required for publish and empty, while the draft still saves.
+ * It becomes `blocking` only after a publish attempt. `blocking` renders as
+ * the invalid treatment: to the tenant the two are the same thing.
  */
 export type Gap = 'none' | 'pending' | 'blocking';
 
@@ -49,9 +42,8 @@ export interface FieldChromeInput {
 const BASE =
   'block w-full rounded-field border px-[9px] py-[7px] font-sans text-[13px] leading-[1.35]';
 
-/* The one focus ring. `focus-visible` rather than `focus` so a pointer click
-   does not draw it, per NFR-A11Y-2's "visible focus indicator" read against
-   keyboard use. */
+/* The one focus ring. `focus-visible` rather than `focus`, so a pointer
+   click does not draw it. */
 const RING =
   'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent focus-visible:border-accent';
 
@@ -162,17 +154,10 @@ export function describedBy(
 }
 
 /**
- * The 44x44 minimum hit area of NFR-A11Y-2, applied to icon-only controls.
- *
- * Grown as a centred pseudo-element rather than as padding or a min-size, so
- * the target is 44x44 while the control still occupies only the space the mock
- * draws it in. Padding would be simpler and is what the first attempt used,
- * but it inflates the element: a removable chip became 44px tall and wide
- * enough that a tag list stopped flowing inline. The pseudo-element is out of
- * flow, receives the pointer on the button's behalf, and changes no layout.
- *
- * The mock draws several icon-only controls at 28x28 or smaller, and this is
- * the one place it is corrected rather than reproduced.
+ * A 44x44 minimum hit area for icon-only controls, grown as a centred
+ * pseudo-element rather than padding, so the target grows while the layout
+ * does not. The mock draws these controls smaller; this is the one place it
+ * is corrected rather than reproduced.
  */
 export const HIT_AREA =
   'relative inline-flex items-center justify-center ' +

@@ -33,16 +33,10 @@ export type FieldKind =
   | 'link';
 
 /**
- * A publish requirement that depends on a sibling field.
- *
- * FR-SEC-HERO-2 makes the CTA a typed choice with a label and a target; a
- * target is meaningless without a type and required once there is one. The
- * condition is data rather than code so that the renderer and the validator
- * evaluate it the same way, and so that a new conditional field costs a
- * descriptor entry rather than a branch (FR-REG-3).
- *
- * `field` names a sibling within the same content object — or, in a
- * collection, within the same item.
+ * A publish requirement that depends on a sibling field: a hero CTA's target
+ * is required once it has a type. Data rather than code, so the renderer and
+ * the validator evaluate it the same way. `field` names a sibling within the
+ * same content object or collection item.
  */
 export interface RequiredWhen {
   readonly field: string;
@@ -57,7 +51,7 @@ export interface FieldDescriptor {
   readonly key: string;
   readonly label: string;
   readonly kind: FieldKind;
-  /** Required at publish, never at save (FR-REG-8). */
+  /** Required at publish, never at save. */
   readonly required?: boolean;
   readonly help?: string;
   readonly group?: string;
@@ -73,7 +67,7 @@ export interface FieldDescriptor {
   /** @see RequiredWhen */
   readonly requiredWhen?: RequiredWhen;
   /**
-   * The field carries its own visibility toggle (FR-SEC-CON-2, FR-SEC-EDU-1).
+   * The field carries its own visibility toggle.
    *
    * The value's type is unchanged; visibility is recorded beside it, in the
    * content object's `visibility` map. Hiding keeps the value — the tenant is
@@ -96,13 +90,12 @@ interface DescriptorBase {
   readonly label: string;
   readonly description: string;
   readonly priority: 'must' | 'should' | 'could';
-  readonly businessRef: string;
   readonly emptyCondition: (content: unknown) => boolean;
 }
 
 export interface SingleSectionDescriptor extends DescriptorBase {
   readonly cardinality: 'single';
-  /** Render order (FR-REG-2). */
+  /** Render order. */
   readonly fields: readonly FieldDescriptor[];
 }
 
@@ -129,12 +122,12 @@ export interface CollectionSectionDescriptor extends DescriptorBase {
   /** Singular noun for the Add control, e.g. 'role' gives "+ Add role". */
   readonly itemNoun?: string;
   /**
-   * Items in this collection carry their own `published: boolean` (§5.2).
+   * Items in this collection carry their own `published: boolean`.
    *
    * True for `achievements`, because a Credly import cannot judge which badges
    * are high-signal and so arrives unpublished for the tenant to promote
-   * (FR-SEC-ACH-5) — and for `trainings`, which reuses that field schema
-   * verbatim (§4.1, FR-SEC-TRN-1) and therefore inherits the flag whether or
+   * — and for `trainings`, which reuses that field schema
+   * verbatim and therefore inherits the flag whether or
    * not it has an importer of its own.
    *
    * Absent means the collection has no per-item flag and every item publishes
@@ -148,10 +141,10 @@ export type SectionDescriptor =
   | CollectionSectionDescriptor;
 
 /**
- * One publish failure (D4).
+ * One publish failure.
  *
  * `{ path, code, message }` is exactly what `POST /admin/publish` is specified
- * to return per field (FR-API-4, FR-PUB-6), so the browser-side validator and
+ * to return per field, so the browser-side validator and
  * the server speak one shape and the form binds them the same way. The
  * package's `FieldError` is `{ path, message }` — the missing `code` is what
  * lets a caller branch on a rule without matching on prose.

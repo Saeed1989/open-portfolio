@@ -14,17 +14,12 @@ import {
 import { fieldRuns, renderRuns } from '../fields';
 
 /**
- * Gallery (business req 12, FR-SEC-GAL-1).
+ * Gallery. Alt text is required by the Image primitive's type, so an image
+ * with no alt text cannot be rendered here.
  *
- * Alt text is required by the Image primitive's type, which is the same
- * guarantee FR-MED-5 enforces at upload — an image with no alt text cannot be
- * rendered here at all.
- *
- * DEVIATION — FR-SEC-GAL-1 asks for video *embedded* by URL from a provider
- * allowlist. A provider iframe is a third-party frame on a page that serves a
- * strict CSP (NFR-SEC-4) and would need the allowlist enforced server-side
- * before it is worth writing. Until then a video renders as a link out, which
- * loses nothing but the inline player.
+ * DEVIATION — video should be embedded by URL from a provider allowlist. A
+ * provider iframe needs that allowlist enforced server-side first; until then
+ * a video renders as a link out.
  */
 const RENDERERS = {
   image: (item: GalleryItem) =>

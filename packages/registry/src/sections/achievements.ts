@@ -6,7 +6,6 @@ export const achievements = {
   label: 'Achievements',
   description: 'Certifications, awards, rankings, hackathons.',
   priority: 'should',
-  businessRef: 'BR 11',
   cardinality: 'collection',
   sectionFields: [
     {
@@ -21,7 +20,7 @@ export const achievements = {
    * badge fields sit at the top of the render order because a badge leads
    * with its picture; an item that has none simply skips them, which is how
    * a manual achievement keeps exactly the layout it had before Credly
-   * existed (FR-REG-2).
+   * existed.
    */
   itemFields: [
     {

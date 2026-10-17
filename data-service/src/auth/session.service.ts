@@ -5,13 +5,13 @@ import { Model, Types } from 'mongoose';
 import { Session } from './schemas/session.schema';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-/** FR-AUTH-3: 30 days idle, 90 days absolute, whichever falls first. */
+/** A session expires after 30 days idle or 90 days absolute, whichever is first. */
 export const IDLE_MS = 30 * DAY_MS;
 export const ABSOLUTE_MS = 90 * DAY_MS;
 
 /** A refresh token just minted, and the session it now names. */
 export interface IssuedSession {
-  /** The raw token. It goes to the refresh cookie and nowhere else (FR-AUTH-10). */
+  /** The raw token. It goes to the refresh cookie and nowhere else. */
   readonly refreshToken: string;
   readonly userId: string;
   /** Already capped at `absoluteExpiresAt`, so it is the earlier of the two. */
@@ -22,12 +22,12 @@ export function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
 
-/** 256 bits of cryptographic randomness (FR-AUTH-10). */
+/** 256 bits of cryptographic randomness. */
 function newToken(): string {
   return randomBytes(32).toString('base64url');
 }
 
-/** The sole reader and writer of `sessions` (FR-AUTH-13). */
+/** The sole reader and writer of `sessions`. */
 @Injectable()
 export class SessionService {
   constructor(
@@ -51,7 +51,7 @@ export class SessionService {
   }
 
   /**
-   * FR-AUTH-18. One atomic update decides the rotation, so two requests
+   * One atomic update decides the rotation, so two requests
    * presenting the same token cannot both win. Null on any failure; a token
    * matching `previousTokenHash` is reuse and revokes the session.
    */
@@ -98,7 +98,7 @@ export class SessionService {
     };
   }
 
-  /** Revokes the session the token currently names, if any (FR-AUTH-14). */
+  /** Revokes the session the token currently names, if any. */
   async revoke(presented: string): Promise<void> {
     await this.sessions.updateOne(
       { tokenHash: hashToken(presented), revokedAt: null },

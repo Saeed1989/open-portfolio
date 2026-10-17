@@ -7,7 +7,6 @@ export const opensource = {
   label: 'Open source',
   description: 'Profile, statistics, and named contributions.',
   priority: 'should',
-  businessRef: 'BR 9',
   cardinality: 'single',
   fields: [
     { key: 'stats', label: 'Statistics', kind: 'list', group: 'stats' },
@@ -36,11 +35,7 @@ export const opensource = {
       group: 'links',
     },
   ],
-  /*
-   * The embed counts towards emptiness: a tenant whose only open-source
-   * content is a username still has a section worth drawing, and one with
-   * nothing at all still gets no heading (FR-CFG-2).
-   */
+  /* A username alone is enough to draw the section: the embed counts as content. */
   emptyCondition: (content) => {
     if (!isRecord(content)) return true;
     const stats = content.stats;

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Heading, PageSection, Stack, Text } from '@/components/ui';
 
 /**
- * The branded 404 (FR-TEN-3).
+ * The branded 404.
  *
  * Byte-identical for every case: a slug that was never registered, one whose
  * owner has not published, one that has been unpublished, and one that is
@@ -10,8 +10,7 @@ import { Heading, PageSection, Stack, Text } from '@/components/ui';
  * has no input that could vary, so it cannot leak which case occurred. The
  * copy is deliberately about the address, not about an account.
  *
- * `noindex` keeps unpublished and suspended tenants out of search results
- * (FR-PUB-5).
+ * `noindex` keeps unpublished and suspended tenants out of search results.
  */
 export const metadata: Metadata = {
   title: 'Not found',

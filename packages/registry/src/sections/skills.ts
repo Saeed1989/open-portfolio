@@ -6,7 +6,6 @@ export const skills = {
   label: 'Prominent skills',
   description: 'One list, two tiers.',
   priority: 'must',
-  businessRef: 'BR 3',
   cardinality: 'collection',
   sectionFields: [
     { key: 'legend', label: 'Rating scale legend', kind: 'longtext' },

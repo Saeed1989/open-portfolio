@@ -21,19 +21,12 @@ import {
 } from '../fields';
 
 /**
- * The case study behind a project card — the deeper of the two depths
- * FR-SEC-PROJ-6 asks for, and the resolution of SRS §10.3 open question 3:
- * a dialog over the page, not a route of its own.
+ * The case study behind a project card: a dialog over the page, not a route
+ * of its own. Everything about being a dialog belongs to the Dialog
+ * primitive; this is only what a project puts inside one.
  *
- * Everything about *being* a dialog — the focus trap, the scroll lock, the
- * close control, Escape, the backdrop — belongs to the Dialog primitive. What
- * is here is only what a project puts inside one.
- *
- * The seven labelled sub-sections are walked out of the registry rather than
- * written as JSX, exactly as the card is, so both depths take their order from
- * the same declaration and neither can drift from it (FR-REG-2). Their labels
- * come from the descriptors too — the heading a visitor reads and the label
- * the tenant fills in are the same string by construction.
+ * The seven labelled sub-sections are walked out of the registry, as the card
+ * is, so both depths take their order and labels from one declaration.
  */
 
 /* One dialog exists at a time, so this is stable across a content swap. */
@@ -155,7 +148,7 @@ export function ProjectModal({
     ? fieldRuns(REGISTRY.projects.itemFields, project, SUBSECTION_RENDERERS)
     : [];
 
-  /* FR-SEC-PROJ-4: confidential work never offers a repository, whether or not
+  /* Confidential work never offers a repository, whether or not
      one happens to be recorded — the note stands in its place. */
   const showRepo = Boolean(project?.repoUrl) && !project?.confidential;
 
@@ -206,7 +199,7 @@ export function ProjectModal({
       */}
       {project ? (
         <>
-          {/* FR-SEC-PROJ-5: the impact leads the case study, as a pull-quote. */}
+          {/* The impact leads the case study, as a pull-quote. */}
           {project.impact ? (
             <Text variant="tagline" balance className="max-w-pull">
               {project.impact}

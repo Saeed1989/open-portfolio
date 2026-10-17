@@ -2,8 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 
 /**
- * SRS §5.8. One document is one refresh-token session: a sign-in and every
- * rotation descended from it. The raw token is never stored (FR-AUTH-10).
+ * One document is one refresh-token session: a sign-in and every rotation
+ * descended from it. The raw token is never stored.
  */
 @Schema({
   collection: 'sessions',

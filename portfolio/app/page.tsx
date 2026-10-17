@@ -15,14 +15,13 @@ import { SLUG_HEADER } from '@/lib/tenant';
  * slug — the whole tree below this file is a pure function of its props.
  *
  * `getPortfolio` is memoised per request, so this call, the layout's theme
- * lookup and `generateMetadata` below are one upstream read between them
- * (NFR-PERF-3).
+ * lookup and `generateMetadata` below are one upstream read between them.
  *
  * Rendering is dynamic because tenancy comes from the Host header. Per-slug
- * caching therefore lives in the fetch data cache, tagged `portfolio:<slug>` —
- * see lib/api.ts — which is what the internal revalidation endpoint drops on
- * publish. Full-route ISR would require middleware to rewrite the tenant into
- * the pathname; the header contract asked for here rules that out.
+ * caching belongs in the fetch data cache, tagged `portfolio:<slug>`, but the
+ * fetch is currently `no-store` — see the TODO in lib/api.ts. Full-route ISR
+ * would require middleware to rewrite the tenant into the pathname; the header
+ * contract asked for here rules that out.
  */
 async function currentSlug(): Promise<string | null> {
   return (await headers()).get(SLUG_HEADER);
@@ -31,7 +30,7 @@ async function currentSlug(): Promise<string | null> {
 /**
  * A missing slug (apex host, reserved label) and an unpublished or suspended
  * one both land here identically. Neither this function nor the 404 it renders
- * can tell them apart (FR-TEN-3).
+ * can tell them apart.
  */
 async function loadPortfolio(): Promise<PortfolioPayload> {
   const slug = await currentSlug();
@@ -86,10 +85,8 @@ export default async function PortfolioPage() {
   const portfolio = await loadPortfolio();
 
   /*
-   * No filtering here. SectionRenderer drops disabled sections, unknown types
-   * and anything satisfying its registry emptyCondition, then orders what is
-   * left — duplicating any of that would give two places to disagree about
-   * FR-CFG-2.
+   * No filtering here: SectionRenderer drops disabled, unknown and empty
+   * sections and orders the rest, and a second copy of that could disagree.
    */
   return (
     <main id="main">

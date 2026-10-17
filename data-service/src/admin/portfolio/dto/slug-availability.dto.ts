@@ -8,7 +8,7 @@ const SLUG_STATUSES: readonly SlugStatus[] = [
   'available',
 ];
 
-/** Advisory only: the write decides (§7.2). */
+/** Advisory only: the write decides. */
 export class SlugAvailabilityDto {
   @ApiProperty({
     type: String,

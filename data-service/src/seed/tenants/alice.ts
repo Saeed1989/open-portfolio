@@ -2,16 +2,10 @@ import { MEDIA_HOST } from '../ids';
 import type { SeedTenant } from '../tenant';
 
 /*
- * The happy path, and the fixture the frontend develops against.
- *
- * Published, all four Must sections enabled and complete: four projects, one
- * of them confidential and therefore carrying no repository link
- * (FR-SEC-PROJ-3, FR-SEC-PROJ-4), and twelve skills of which six are prominent
- * — inside FR-SEC-SKILL-3's five-to-eight band.
- *
- * Every project carries all seven modal-level fields, so
- * `validateProjectsForPublish` returns nothing for this tenant. That is the
- * assertion the fixture exists to support.
+ * The happy path, and the fixture the frontend develops against. Published,
+ * with the four core sections complete: four projects, one confidential and
+ * so carrying no repository link, and twelve skills of which six are
+ * prominent. Every project carries all seven modal-level fields.
  */
 export const alice: SeedTenant = {
   name: 'alice',

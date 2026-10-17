@@ -1,8 +1,8 @@
 import type { ProxyOptions } from 'vite';
 
 /*
- * The admin host's `/api/*` rule (FR-EDGE-9), and the only copy of it. The
- * dev server applies it (FR-EDGE-6), and `api-proxy.test.ts` holds it to the
+ * The admin host's `/api/*` rule, and the only copy of it. The
+ * dev server applies it, and `api-proxy.test.ts` holds it to the
  * requirement against a stub upstream.
  *
  * A pass-through that holds nothing: method, path, query, body and `Cookie`
@@ -16,7 +16,7 @@ export function apiProxy(gatewayOrigin: string): Record<string, ProxyOptions> {
     /* With the trailing slash: `/api/*`, and not `/apiary`. */
     '/api/': {
       target: gatewayOrigin,
-      /* `Host` is gateway's own hostname, which is what it matches (FR-EDGE-1). */
+      /* `Host` is gateway's own hostname, which is what it matches. */
       changeOrigin: true,
       /* X-Forwarded-For, -Proto and -Host; -Host is the admin host's name. */
       xfwd: true,

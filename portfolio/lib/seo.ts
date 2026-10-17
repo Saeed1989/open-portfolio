@@ -3,8 +3,7 @@ import { REGISTRY, type HeroContent } from '@portfolio/registry';
 import type { PortfolioPayload } from './api';
 
 /**
- * Builds the page's metadata from `payload.seo`, falling back to hero content
- * (FR-PUB-1, FR-PUB-2, FR-PUB-3).
+ * Builds the page's metadata from `payload.seo`, falling back to hero content.
  *
  * The fallbacks read the hero through the registry's own emptyCondition rather
  * than by poking at fields, so a hero that would not render also does not
@@ -48,7 +47,7 @@ export function buildMetadata(
   payload: PortfolioPayload,
   /**
    * The tenant's own origin, e.g. `https://alice.site.com`, taken from the
-   * request. Used to resolve a relative OG image path (FR-PUB-3) when the
+   * request. Used to resolve a relative OG image path when the
    * tenant has not set a canonical URL — a crawler cannot fetch `/og.png`.
    */
   origin?: string,

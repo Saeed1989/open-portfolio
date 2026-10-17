@@ -11,8 +11,8 @@ export type SignInResult =
   | { readonly refused: 'auth_failed' | 'account_suspended' };
 
 /**
- * The sole reader and writer of `users` (FR-AUTH-13), and the implementation
- * of the interface other modules reach accounts through (FR-AUTH-17).
+ * The sole reader and writer of `users`, and the implementation
+ * of the interface other modules reach accounts through.
  */
 @Injectable()
 export class AccountService implements AccountAccess {
@@ -25,8 +25,8 @@ export class AccountService implements AccountAccess {
 
   /**
    * Upserts by `(provider: 'google', providerId: sub)` and refreshes the
-   * profile fields (FR-AUTH-21). A suspended user is refused before any
-   * write (FR-AUTH-9). Creates a user and nothing else (FR-AUTH-2).
+   * profile fields. A suspended user is refused before any
+   * write. Creates a user and nothing else.
    */
   async signInWithGoogle(identity: GoogleIdentity): Promise<SignInResult> {
     const key = { provider: 'google', providerId: identity.sub } as const;
@@ -58,7 +58,7 @@ export class AccountService implements AccountAccess {
       if (!(error instanceof mongo.MongoServerError && error.code === 11000)) {
         throw error;
       }
-      /* The unique index on `email` (§5.1): another user holds the address. */
+      /* The unique index on `email`: another user holds the address. */
       this.logger.warn(
         `sign-in refused: email collision for sub ${identity.sub}`,
       );

@@ -6,8 +6,8 @@ import {
 } from '../../../schemas/portfolio.schema';
 
 /*
- * The public render payload (SRS §7.1). Each class is an allowlist: a field
- * reaches the response because it is named here (FR-API-1). Nothing below is
+ * The public render payload. Each class is an allowlist: a field
+ * reaches the response because it is named here. Nothing below is
  * shared with, or derived from, an admin DTO.
  */
 
@@ -96,7 +96,7 @@ export class PublicConfigDto {
   @ApiProperty({
     type: PublicAnalyticsDto,
     required: false,
-    description: 'Absent when the tenant has configured none (FR-ANL-3).',
+    description: 'Absent when the tenant has configured none.',
   })
   analytics?: PublicAnalyticsDto;
 

@@ -5,7 +5,7 @@ import {
 import type { FieldError } from '@portfolio/registry';
 
 /**
- * Every failure at once, per field (FR-PUB-6). Each `path` is the section
+ * Every failure at once, per field. Each `path` is the section
  * type, then the path within its content: `projects.items[0].impact`.
  */
 export class PublishValidationException extends UnprocessableEntityException {
@@ -18,7 +18,7 @@ export class PublishValidationException extends UnprocessableEntityException {
   }
 }
 
-/** FR-CFG-4: no enabled section has content. */
+/** No enabled section has content. */
 export class NothingToPublishException extends UnprocessableEntityException {
   constructor() {
     super({

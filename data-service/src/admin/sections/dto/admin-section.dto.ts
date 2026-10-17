@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SECTION_TYPES, type SectionType } from '@portfolio/registry';
 
-/** One entry in the draft's section array (SRS §5.2). */
+/** One entry in the draft's section array. */
 export class AdminSectionDto {
   @ApiProperty({
     enum: [...SECTION_TYPES],

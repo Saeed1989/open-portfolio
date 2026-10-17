@@ -16,14 +16,14 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Education (business req 6, FR-SEC-EDU-1).
+ * Education.
  *
  * GPA, coursework, scholarships and honours are each individually hideable —
  * which here needs no flag: an omitted field has no renderer output, so it
  * leaves no label and no row behind.
  *
  * The default position below experience and projects is a matter of section
- * order, which the tenant controls (FR-CFG-3) and the payload carries. This
+ * order, which the tenant controls and the payload carries. This
  * component does not assume where on the page it sits.
  */
 const RENDERERS = {

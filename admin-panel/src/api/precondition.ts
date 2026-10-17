@@ -1,20 +1,15 @@
 /*
- * D3 — optimistic concurrency, in one module.
- *
- * PROVISIONAL. Not in srs.md. The proposed requirement text is in
- * admin-panel/README.md; this is the whole of its implementation on the client
- * side, so changing the scheme means changing this file and nothing else.
+ * Optimistic concurrency, in one module.
  *
  * Every draft write carries `If-Match: <draftRevision>` — the revision `api`
  * returns with the portfolio and increments on every draft write. It is not
- * the `version` of SRS §5.2, which moves only when `published` is written. A
- * write whose precondition no longer holds is refused with `409 stale_write`
- * and the current revision; the client refetches the draft to show what
- * changed.
+ * `version`, which moves only when `published` is written. A stale write is
+ * refused with `409 stale_write` and the current revision; the client
+ * refetches the draft to show what changed.
  *
- * Why the draft's revision rather than an ETag per section: a section PATCH
- * writes the portfolio. Two sections edited in two tabs are two writes to one
- * document, and the second one *should* be told about the first.
+ * The revision is per draft, not per section: two sections edited in two
+ * tabs are two writes to one document, and the second should hear of the
+ * first.
  */
 
 /** The header name, in one place so a rename is one edit. */

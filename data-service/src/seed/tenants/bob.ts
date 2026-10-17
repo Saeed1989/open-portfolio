@@ -2,15 +2,8 @@ import { MEDIA_HOST } from '../ids';
 import type { SeedTenant } from '../tenant';
 
 /*
- * The second real tenant, so the cross-tenant isolation suite (NFR-SEC-1) has
- * genuine ids to attempt an admin endpoint with rather than a fabricated one.
- *
- * **Every field differs from alice's.** Not only the names: the
- * theme, the analytics provider, the project count, the skill count, the
- * prominent count, the categories, the ratings, the link visibility. A test
- * that leaks bob's content into alice's response fails on whichever field it
- * happens to assert on, instead of passing because the two fixtures happened
- * to agree there.
+ * The second real tenant, for cross-tenant isolation tests. Every field
+ * differs from alice's, so a leak fails on whichever field a test asserts on.
  */
 export const bob: SeedTenant = {
   name: 'bob',

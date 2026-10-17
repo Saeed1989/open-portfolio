@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 /**
- * The draft's SEO fields (FR-PUB-1, FR-PUB-3), and the body of
+ * The draft's SEO fields, and the body of
  * PATCH /admin/portfolio/seo.
  */
 export class AdminSeoDto {

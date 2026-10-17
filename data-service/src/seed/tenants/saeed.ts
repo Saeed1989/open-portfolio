@@ -2,36 +2,14 @@ import { MEDIA_HOST } from '../ids';
 import type { SeedTenant } from '../tenant';
 
 /*
- * Ported verbatim from portfolio/fixtures/portfolios/saeed.json, the fixture
- * the portfolio app develops against, so that the same content is reachable
- * through the API rather than only through USE_FIXTURES.
+ * Ported verbatim from portfolio/fixtures/portfolios/saeed.json, so the same
+ * content is reachable through the API. Published: hero, five projects,
+ * twenty-four skills of which seven are prominent, and contact.
  *
- * Published, with the four Must sections: hero, five projects (at FR-SEC-PROJ's
- * three-to-five cap), twenty-four skills of which seven are prominent (inside
- * FR-SEC-SKILL-3's five-to-eight band), and contact.
- *
- * **This tenant is not publish-ready, on purpose.** The fixture carries
- * eighteen `TODO` placeholders and they are reproduced here unchanged rather
- * than invented, because they stand in for one real person's contact details
- * and a plausible-looking guess would be worse than an obvious gap:
- *
- *   hero.ctas[0].href                     résumé download
- *   projects.items[0..2].demoUrl          live demo links
- *   projects.items[0..3].tools[0]         the tools list on four projects
- *   contact.{email,github,linkedin,x,site} value and href on all five
- *
- * Only `title`, `problem`, `impact`, `designation`, `bodies.*`,
- * `stackWorkedOn`, `tools` and `fullStack` are required of a project, so every
- * item here clears the registry's publish validation despite carrying no
- * screenshot, year, or repository link. What the placeholders cost is a
- * rendered page with dead links, not a refused publish.
- *
- * `media` is empty and `hero.avatar` is null because the fixture references no
- * image at all. `user.avatarUrl` is an account-level field from OAuth, never
- * part of the public payload (§2.1), so it points at the placeholder host like
- * every other seeded tenant. `seo.ogImageAlt` is carried through even though
- * the fixture sets no `ogImageUrl` and `PublicSeoDto` would not serve the alt
- * text on its own — FR-PUB-3 expects the image to be generated at publish.
+ * The fixture's `TODO` placeholders are reproduced unchanged rather than
+ * invented, since they stand in for one real person's details: the résumé
+ * link, three demo links, four tools lists, and all five contact links. They
+ * cost dead links on the rendered page, not a refused publish.
  */
 export const saeed: SeedTenant = {
   name: 'saeed',

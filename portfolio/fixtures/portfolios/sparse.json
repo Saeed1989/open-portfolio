@@ -14,7 +14,7 @@
   },
   "sections": [
     {
-      "_note": "The software-engineer preset (FR-REG-6): hero, projects, skills, contact. Everything else is simply absent from the payload.",
+      "_note": "The software-engineer preset: hero, projects, skills, contact. Everything else is simply absent from the payload.",
       "type": "hero",
       "enabled": true,
       "order": 0,
@@ -77,7 +77,7 @@
       }
     },
     {
-      "_note": "Five prominent skills — the floor FR-SEC-SKILL-3 enforces. `DevOps` is declared but has no skills, so FR-SEC-SKILL-8 drops the column.",
+      "_note": "Five prominent skills — the enforced floor. `DevOps` is declared but has no skills, so its column is dropped.",
       "type": "skills",
       "enabled": true,
       "order": 2,

@@ -5,7 +5,7 @@ import { ApiHeaderOptions } from '@nestjs/swagger';
  * editable on the endpoint being tested. `UserIdGuard` reads it.
  */
 
-/** Says which tenant the caller speaks for (FR-TEN-4, FR-EDGE-4). */
+/** Says which tenant the caller speaks for. */
 export const USER_ID_HEADER: ApiHeaderOptions = {
   name: 'X-User-Id',
   required: true,

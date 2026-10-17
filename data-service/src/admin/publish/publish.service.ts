@@ -32,8 +32,8 @@ export class PublishService {
   ) {}
 
   /**
-   * SRS §2.3 steps 2–8, without step 4: no sync writes a payload yet, so
-   * there is none to merge.
+   * Validates the draft, builds and stores the published tree, then
+   * revalidates. Merges no integration payload: no sync writes one yet.
    */
   async publish(portfolioId: string | null): Promise<PublishResultDto> {
     if (portfolioId === null)
@@ -42,7 +42,7 @@ export class PublishService {
     const _id = new Types.ObjectId(portfolioId);
     const portfolio = await this.portfolios
       .findById(_id)
-      .select('slug status draft')
+      .select('slug status draft draftRevision')
       .lean();
     if (!portfolio) throw new NotFoundException('portfolio_not_found');
     if (portfolio.status === 'suspended')
@@ -67,11 +67,19 @@ export class PublishService {
       throw new NothingToPublishException();
 
     const publishedAt = new Date();
+    /* The revision read with the draft above, not the current one: a draft
+       write landing meanwhile is not in this publish. */
+    const publishedDraftRevision = portfolio.draftRevision ?? 0;
     const updated = await this.portfolios
       .findOneAndUpdate(
         { _id },
         {
-          $set: { published, publishedAt, status: 'published' },
+          $set: {
+            published,
+            publishedAt,
+            publishedDraftRevision,
+            status: 'published',
+          },
           $inc: { version: 1 },
         },
         { new: true },
@@ -81,7 +89,7 @@ export class PublishService {
     if (!updated) throw new NotFoundException('portfolio_not_found');
 
     await this.revalidator.revalidate(portfolio.slug);
-    return { version: updated.version, publishedAt };
+    return { version: updated.version, publishedAt, publishedDraftRevision };
   }
 
   unpublish(portfolioId: string): Promise<void> {

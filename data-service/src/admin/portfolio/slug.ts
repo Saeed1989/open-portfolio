@@ -1,12 +1,9 @@
 /**
- * Slug rules (FR-DAT-1). Format, then reservation; whether a slug is taken is
+ * Slug rules. Format, then reservation; whether a slug is taken is
  * the database's to say, and only the unique index on `slug` decides a race.
  */
 
-/**
- * FR-DAT-1's list, plus labels the operator uses itself. Add a label here and
- * nowhere else.
- */
+/** Reserved labels, including the operator's own. Add a label here and nowhere else. */
 export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   'www',
   'admin',

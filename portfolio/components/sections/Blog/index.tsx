@@ -11,12 +11,12 @@ import {
 import { fieldRuns, renderRuns, type RunWrappers } from '../fields';
 
 /**
- * Writing (business req 7, FR-SEC-BLOG-1).
+ * Writing.
  *
  * Posts arrive already merged: the sync worker writes RSS results to the
  * integration cache and the API resolves manual values over synced ones
- * (FR-INT-4) before this ever runs. Nothing here knows or cares which is
- * which, and no feed is fetched during a render (FR-INT-1).
+ * before this ever runs. Nothing here knows or cares which is
+ * which, and no feed is fetched during a render.
  */
 const RENDERERS = {
   date: (post: BlogPost) =>

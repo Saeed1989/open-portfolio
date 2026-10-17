@@ -13,7 +13,7 @@ export class CreateUploadUrlDto {
   @ApiProperty({
     type: String,
     required: true,
-    description: 'Required at upload time (FR-MED-5).',
+    description: 'Required at upload time.',
     example: 'Screenshot of the dashboard',
   })
   @IsString()

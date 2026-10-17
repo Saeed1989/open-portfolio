@@ -3,19 +3,13 @@ import { cn } from './cn';
 import type { SpaceToken } from './Stack';
 
 /**
- * The design's auto-fit grid.
+ * The design's auto-fit grid: `repeat(auto-fit, minmax(min(100%, X), 1fr))`.
+ * It states no column count, so the layout reflows on available width with no
+ * breakpoint. The `X` values live as `--track-*` tokens, so `tracks` names a
+ * token rather than a pixel value.
  *
- * Every grid in spec/uiDesign/portfolio.html is
- * `repeat(auto-fit, minmax(min(100%, X), 1fr))` — it never states a column
- * count, so the layout reflows purely on available width and needs no
- * breakpoint. The four `X` values live as `--track-*` tokens and are exposed
- * through tailwind.config.ts, so `tracks` here names a token rather than
- * smuggling a pixel value into an arbitrary class.
- *
- * `min(100%, X)` is what keeps a single column from overflowing below 320px
- * (NFR-RESP-1); `skills` additionally satisfies NFR-RESP-2, collapsing to one
- * column under 640px because its 300px floor plus the page gutters no longer
- * fit two.
+ * `min(100%, X)` keeps a single column from overflowing below 320px; `skills`
+ * collapses to one column under 640px.
  */
 export type GridTracks = 'cards' | 'skills' | 'groups' | 'pairs';
 

@@ -48,7 +48,7 @@ export class PortfolioController {
 
   @Get('me')
   @AllowWithoutPortfolio()
-  @ApiOperation({ summary: 'Account behind the current session (FR-AUTH-3)' })
+  @ApiOperation({ summary: 'Account behind the current session' })
   @ApiOkResponse({ type: MeDto })
   getMe(@Tenant() tenant: TenantScope): Promise<MeDto> {
     return this.portfolio.getMe(tenant.userId);
@@ -58,7 +58,7 @@ export class PortfolioController {
   @AllowWithoutPortfolio()
   @UseGuards(PerUserRateLimitGuard)
   @ApiOperation({
-    summary: 'Whether a slug could be claimed now — advisory only (§7.2)',
+    summary: 'Whether a slug could be claimed now — advisory only',
   })
   @ApiQuery({ name: 'slug', type: String, required: true })
   @ApiOkResponse({ type: SlugAvailabilityDto })
@@ -74,7 +74,7 @@ export class PortfolioController {
   @Post('portfolio')
   @AllowWithoutPortfolio()
   @ApiOperation({
-    summary: "Create the tenant's portfolio, once (§7.2, FR-AUTH-7)",
+    summary: "Create the tenant's portfolio, once",
   })
   @ApiCreatedResponse({
     type: AdminPortfolioDto,
@@ -100,7 +100,7 @@ export class PortfolioController {
   }
 
   @Get('portfolio')
-  @ApiOperation({ summary: "Full draft of the session's portfolio (FR-TEN-4)" })
+  @ApiOperation({ summary: "Full draft of the session's portfolio" })
   @ApiOkResponse({
     type: AdminPortfolioDto,
     description: 'The `ETag` header carries `draftRevision`.',
@@ -115,7 +115,7 @@ export class PortfolioController {
   }
 
   @Patch('portfolio/theme')
-  @ApiOperation({ summary: 'Update the draft theme (FR-THM-1)' })
+  @ApiOperation({ summary: 'Update the draft theme' })
   @ApiOkResponse({ type: AdminPortfolioDto })
   updateTheme(
     @Tenant() tenant: TenantScope,
@@ -125,7 +125,7 @@ export class PortfolioController {
   }
 
   @Patch('portfolio/seo')
-  @ApiOperation({ summary: 'Update the draft SEO fields (FR-PUB-1)' })
+  @ApiOperation({ summary: 'Update the draft SEO fields' })
   @ApiOkResponse({ type: AdminPortfolioDto })
   updateSeo(
     @Tenant() tenant: TenantScope,
@@ -135,7 +135,7 @@ export class PortfolioController {
   }
 
   @Patch('portfolio/slug')
-  @ApiOperation({ summary: 'Change the portfolio slug (FR-DAT-1)' })
+  @ApiOperation({ summary: 'Change the portfolio slug' })
   @ApiOkResponse({ type: AdminPortfolioDto })
   updateSlug(
     @Tenant() tenant: TenantScope,

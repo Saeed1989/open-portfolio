@@ -51,7 +51,7 @@ const IF_MATCH_HEADER = {
 };
 
 /* An item's fields are declared by the registry for its section type, so the
-   body is an open object here rather than a field list (FR-REG-1). */
+   body is an open object here rather than a field list. */
 const ITEM_BODY = {
   description: "One item, shaped by the registry's itemFields for :type.",
   schema: { type: 'object', additionalProperties: true },
@@ -68,7 +68,7 @@ export class SectionsController {
   constructor(private readonly sections: SectionsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List the draft sections (FR-CFG-1)' })
+  @ApiOperation({ summary: 'List the draft sections' })
   @ApiOkResponse({
     type: AdminSectionsDto,
     description: 'The `ETag` header carries `draftRevision`.',
@@ -84,8 +84,7 @@ export class SectionsController {
 
   @Patch(':type')
   @ApiOperation({
-    summary:
-      'Toggle a section, reorder it, or replace its content (FR-CFG-1, FR-CFG-3)',
+    summary: 'Toggle a section, reorder it, or replace its content',
   })
   @ApiParam(TYPE_PARAM)
   @ApiHeader(IF_MATCH_HEADER)
@@ -123,7 +122,7 @@ export class SectionsController {
   }
 
   @Post(':type/items')
-  @ApiOperation({ summary: 'Add an item to a collection section (FR-API-4)' })
+  @ApiOperation({ summary: 'Add an item to a collection section' })
   @ApiParam(TYPE_PARAM)
   @ApiBody(ITEM_BODY)
   @ApiCreatedResponse({ type: AdminSectionDto })
@@ -137,7 +136,7 @@ export class SectionsController {
 
   @Patch(':type/items/:itemId')
   @ApiOperation({
-    summary: 'Update an item in a collection section (FR-API-4)',
+    summary: 'Update an item in a collection section',
   })
   @ApiParam(TYPE_PARAM)
   @ApiParam({ name: 'itemId', example: '66e1f0c2a1b2c3d4e5f60718' })
@@ -155,7 +154,7 @@ export class SectionsController {
   @Delete(':type/items/:itemId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Remove an item from a collection section (FR-API-4)',
+    summary: 'Remove an item from a collection section',
   })
   @ApiParam(TYPE_PARAM)
   @ApiParam({ name: 'itemId', example: '66e1f0c2a1b2c3d4e5f60718' })

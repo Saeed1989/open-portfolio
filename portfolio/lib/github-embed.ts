@@ -1,16 +1,10 @@
 import type { GitHubEmbedCard } from '@portfolio/registry';
 
 /**
- * URLs for the GitHub stat cards.
- *
- * These are `<img>` sources, not fetch targets. Nothing in this system ever
- * requests them: the URL is written into the markup and the *visitor's*
- * browser asks the card service for the picture. That is what keeps FR-INT-1
- * and NFR-PERF-3 true for this feature by construction rather than by
- * discipline — there is no cache entry, no credential, no sync job and no
- * `integrationConnections` row behind any of it, so there is nothing to go
- * stale and nothing to leak. The accepted cost is recorded in the report: an
- * uncontrolled third party, degrading silently (business req 13.5, FR-INT-5).
+ * URLs for the GitHub stat cards. These are `<img>` sources, not fetch
+ * targets: the visitor's browser asks the card service for the picture, so
+ * there is no cache entry, credential or sync job behind them. The cost is an
+ * uncontrolled third party that degrades silently.
  */
 const EMBED_HOST = 'https://github-readme-stats.vercel.app';
 
@@ -56,10 +50,8 @@ export interface CardDimensions {
 }
 
 /**
- * The card service's own output size. Exported because the component must set
- * `width` and `height` on every `<img>`: the browser needs the aspect ratio
- * before the bytes land, or the cards shove the page down as they arrive and
- * Cumulative Layout Shift blows past NFR-PERF-2.
+ * The card service's output size. The component sets `width` and `height` on
+ * every `<img>` so the cards cannot shift the layout as they arrive.
  */
 export const CARD_DIMENSIONS: Record<CardKind, CardDimensions> = {
   stats: { width: 495, height: 195 },

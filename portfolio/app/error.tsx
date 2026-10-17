@@ -12,7 +12,7 @@ import { Heading, PageSection, Stack, Text } from '@/components/ui';
  * the payload, so the branding around this copy is intact.
  *
  * Deliberately says nothing about the cause, for the same reason the 404 does
- * not (FR-TEN-3): a visitor must not be able to tell an upstream outage from a
+ * not: a visitor must not be able to tell an upstream outage from a
  * malformed payload, nor learn whether the slug is registered. The thrown
  * error stays server-side; Next sends only a digest.
  *

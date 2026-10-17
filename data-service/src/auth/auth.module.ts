@@ -12,9 +12,9 @@ import { User, UserSchema } from './schemas/user.schema';
 import { SessionService } from './session.service';
 
 /**
- * The auth surface (SRS §2.1): sole owner of `users` and `sessions`, sole
+ * The auth surface: sole owner of `users` and `sessions`, sole
  * holder of the OAuth client secret and the JWT keys. It exports the
- * interface of FR-AUTH-17 and nothing else.
+ * account-access interface and nothing else.
  */
 @Module({
   imports: [

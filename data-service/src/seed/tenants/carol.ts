@@ -2,24 +2,17 @@ import { MEDIA_HOST } from '../ids';
 import type { SeedTenant } from '../tenant';
 
 /*
- * Draft only. No published tree, so `/public/portfolios/carol` 404s (§2.4).
+ * Draft only: no published tree, so `/public/portfolios/carol` 404s.
+ * Deliberately half-written, which a draft may be, so publish validation has
+ * something to fail on. A publish attempt should report, all at once:
  *
- * Deliberately incomplete, so that publish validation has something real to
- * fail on. A draft is *allowed* to be in this state — FR-REG-8 validates
- * shape, type and enumeration at save and defers `required` to publish — so
- * nothing here is a malformed document. It is a half-written one.
+ *   projects  2 items against a minimum of 3
+ *   projects  items[0] bodies.solution, bodies.role, tools, fullStack empty
+ *   projects  items[1] designation, stackWorkedOn empty
+ *   projects  items[1] impact empty
+ *   skills    3 prominent against a band of 5 to 8
  *
- * What a publish attempt should report, all at once (FR-PUB-6):
- *
- *   projects  2 items against a minimum of 3            FR-SEC-PROJ-2
- *   projects  items[0] bodies.solution, bodies.role,
- *             tools, fullStack empty                    FR-SEC-PROJ-11
- *   projects  items[1] designation, stackWorkedOn empty FR-SEC-PROJ-11
- *   projects  items[1] impact empty                     FR-SEC-PROJ-5
- *   skills    3 prominent against a band of 5 to 8      FR-SEC-SKILL-3
- *
- * Adding a field to any of these items weakens the fixture. If a test needs a
- * complete draft, use alice.
+ * Adding a field to any of these items weakens the fixture.
  */
 export const carol: SeedTenant = {
   name: 'carol',
@@ -105,7 +98,7 @@ export const carol: SeedTenant = {
               bodies: {
                 business:
                   '<p>A type change on one column could break any dashboard downstream of it, and the only way to find out was to ask around.</p>',
-                /* Left empty on purpose: FR-SEC-PROJ-11. */
+                /* Left empty on purpose. */
                 solution: '',
                 role: '',
               },
@@ -120,14 +113,14 @@ export const carol: SeedTenant = {
               year: '2025',
               problem:
                 'The billing replica lagged the primary by up to four hours at month end.',
-              /* Left empty on purpose: FR-SEC-PROJ-5. */
+              /* Left empty on purpose. */
               impact: '',
               stack: ['Debezium', 'Kafka'],
               solution: 'Replaced the nightly dump with change data capture.',
               role: 'I ran the migration.',
               repoUrl: 'https://github.com/example/billing-cdc',
               confidential: false,
-              /* Left empty on purpose: FR-SEC-PROJ-11. */
+              /* Left empty on purpose. */
               designation: '',
               bodies: {
                 business:

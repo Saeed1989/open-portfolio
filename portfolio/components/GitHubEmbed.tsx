@@ -15,12 +15,12 @@ import {
  *
  * Nothing here fetches. Each card is an `<img>` whose `src` points at the card
  * service; the visitor's browser makes that request and this system makes
- * none, at render or anywhere else (FR-INT-1, NFR-PERF-3).
+ * none, at render or anywhere else.
  *
  * A client component for exactly one reason — `onError`. A card that 404s, is
  * rate-limited, or whose service is down removes itself from the page, and
  * when the last one goes the cards leave no trace: no heading, no frame, no
- * broken-image icons (business req 13.5, FR-INT-5). There is deliberately no
+ * broken-image icons. There is deliberately no
  * skeleton and no spinner; a card either renders or it was never there.
  *
  * The light/dark swap is `<picture>` plus a `prefers-color-scheme` media
@@ -47,7 +47,7 @@ export interface GitHubEmbedProps {
    * are the best available and they describe the picture, not its contents.
    * Where the tenant has filled in the manual stats the section renders those
    * as a real `<dl>`, which makes the cards duplicate decoration, and
-   * decoration takes `alt=""` (NFR-A11Y-4). That is the only configuration in
+   * decoration takes `alt=""`. That is the only configuration in
    * which this section is genuinely accessible.
    */
   decorative?: boolean;
@@ -104,8 +104,7 @@ export function GitHubEmbed({
                   loading="lazy"
                   decoding="async"
                   /* The intrinsic size reserves the box; these two let it
-                     shrink below 320px without distorting it (FR-MED-6,
-                     NFR-PERF-2, NFR-RESP-1). */
+                     shrink below 320px without distorting it. */
                   style={{ maxWidth: '100%', height: 'auto' }}
                   onError={() =>
                     setFailed((current) =>
@@ -123,7 +122,7 @@ export function GitHubEmbed({
 
       {/* Outside the error-hiding logic on purpose: the link is our own text,
           not the third party's picture, and it is what the section falls back
-          to when every card has gone (FR-INT-4, FR-INT-5). */}
+          to when every card has gone. */}
       <Link href={profileUrlFor(username)} variant="underline">
         github.com/{username}
       </Link>

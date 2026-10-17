@@ -10,19 +10,13 @@ import {
 import './globals.css';
 
 /**
- * The document shell.
+ * The document shell. The tenant's theme renders as CSS custom properties on
+ * <html>; only configured values are written, so there is no per-tenant
+ * stylesheet.
  *
- * FR-THM-2: the tenant's theme renders as CSS custom properties on <html>.
- * Only configured values are written, so everything the tenant has not chosen
- * keeps the token layer's own value from globals.css — there is no per-tenant
- * stylesheet, and nothing about a theme is baked into the build.
- *
- * NOTE — the container (app/page.tsx) owns the payload, but an app-router
- * layout cannot receive props from the page it wraps, and only the layout
- * renders <html>. So the layout reads the theme itself. This does not cost a
- * second upstream read: `getPortfolio` is wrapped in React's `cache()`, so the
- * layout, `generateMetadata` and the page share one call per request. The
- * layout takes the theme and nothing else — it never sees sections.
+ * A layout cannot receive props from the page it wraps, so it reads the theme
+ * itself. `getPortfolio` is wrapped in React's `cache()`, so the layout,
+ * `generateMetadata` and the page share one call per request.
  */
 export default async function RootLayout({
   children,

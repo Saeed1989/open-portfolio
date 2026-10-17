@@ -10,4 +10,12 @@ export class PublishResultDto {
     example: '2026-09-01T10:00:00.000Z',
   })
   publishedAt: Date;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    example: 7,
+    description: 'The `draftRevision` this publish carried.',
+  })
+  publishedDraftRevision: number;
 }

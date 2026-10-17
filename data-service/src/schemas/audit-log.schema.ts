@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema, Types } from 'mongoose';
 import { Portfolio } from './portfolio.schema';
 
-/** SRS §5.7. */
 @Schema({ collection: 'auditLog' })
 export class AuditLog {
   @Prop({

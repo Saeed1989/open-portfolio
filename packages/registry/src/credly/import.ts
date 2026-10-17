@@ -1,23 +1,10 @@
 /**
- * One-time import of a public Credly wallet.
+ * One-time import of a public Credly wallet, run only on tenant action: no
+ * schedule, no cache, no connection. Kept apart from parse.ts so the portfolio
+ * build carries no HTTP client.
  *
- * This is the FR-INT-10 pattern, not the FR-INT-2 one: it runs when the tenant
- * presses a button and never otherwise. There is no schedule, no worker, no
- * `integrationCache` row and no `integrationConnections` row, because there is
- * nothing to keep in sync — the badges become ordinary achievement items the
- * moment they land, and the tenant owns them from then on. A page render never
- * reaches this module (FR-INT-1, NFR-PERF-3).
- *
- * Kept apart from parse.ts on purpose. That module is imported by the section
- * descriptors and therefore travels into the portfolio build; this one is
- * imported by nothing but the api, so the render path never carries an HTTP
- * client it has no use for.
- *
- * **The upstream endpoint is undocumented.** It is not part of any published
- * Credly API and can change shape or disappear without notice. Every field is
- * therefore read defensively and an unrecognised response produces a handled
- * error, never a throw — a broken third party must cost the tenant an error
- * message, not a 500.
+ * The upstream endpoint is undocumented and may change, so every field is read
+ * defensively and an unrecognised response is a handled error, never a throw.
  */
 
 import type { AchievementItem } from '../content';
@@ -26,7 +13,7 @@ import { CREDLY_ORIGIN } from './parse';
 
 const DEFAULT_TIMEOUT_MS = 10000;
 
-/** Injectable so the api can supply a guarded fetch (NFR-SEC-5). */
+/** Injectable so the api can supply a guarded fetch. */
 export type FetchLike = typeof fetch;
 
 export interface CredlyImportOptions {
@@ -36,13 +23,7 @@ export interface CredlyImportOptions {
 
 export interface CredlyImportSuccess {
   readonly ok: true;
-  /**
-   * New items, to be appended to the **draft** collection.
-   *
-   * Never to `published`. The tenant reviews and publishes: business req 11.3
-   * asks for high-signal badges only, and a wallet is rarely all high-signal,
-   * so most of this is expected to be deleted before it goes live.
-   */
+  /** New items, to append to the draft only. The tenant reviews before publishing. */
   readonly items: readonly AchievementItem[];
   /** Badges already present, left untouched along with any edits to them. */
   readonly duplicates: number;
@@ -77,15 +58,9 @@ const UNAVAILABLE =
   'Could not import from Credly just now. The badge list is unavailable or in a form we do not recognise — try again later, or add a badge by pasting its embed code.';
 
 /**
- * The wallet URL.
- *
- * The origin is a constant and the only tenant-supplied part is one path
- * segment, percent-encoded on the way in — encoding, not a rule about what the
- * username may contain, so a name with a slash or a `..` in it is escaped into
- * a single harmless segment rather than reshaping the path. No input can move
- * this request to another host, which is the SSRF requirement in NFR-SEC-5 met
- * where the URL is built. `redirect: 'error'` on the call below closes the
- * other half: a redirect cannot walk us onto a private address.
+ * The wallet URL. SSRF guard: the origin is constant and the username is one
+ * percent-encoded path segment, so no input can move the request to another
+ * host; `redirect: 'error'` on the fetch stops a redirect doing so.
  */
 export function credlyBadgesUrl(username: string): string {
   const path = `/users/${encodeURIComponent(username)}/badges`;
@@ -152,15 +127,9 @@ function badgeArray(payload: unknown): unknown[] | null {
 }
 
 /**
- * Reads the wallet and returns the items to append to the draft.
- *
- * `existing` is the current draft collection. Anything whose badge id is
- * already there is counted and skipped, so a second run adds only what is new
- * and never writes over a title the tenant has rewritten.
- *
- * Only the first page is read. A wallet longer than that is a review problem
- * rather than an import problem — business req 11.3 wants a handful of
- * high-signal badges, not the whole collection.
+ * Reads the wallet and returns the items to append to the draft. A badge
+ * already in `existing` is counted and skipped, so a re-run never overwrites
+ * the tenant's edits. Only the first page is read.
  */
 export async function importCredlyBadges(
   username: unknown,

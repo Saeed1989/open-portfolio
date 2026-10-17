@@ -4,7 +4,7 @@ import { Button } from '../ui/primitives';
 import { DASHBOARD_PATH, ONBOARDING_PATH, useMe } from './me';
 
 /**
- * FR-AUTH-7: a tenant with no portfolio is sent to the creation screen from
+ * A tenant with no portfolio is sent to the creation screen from
  * every route, and a tenant with one is sent away from it. `GET /admin/me`
  * decides, and is read once per load.
  */

@@ -41,14 +41,10 @@ export default tseslint.config(
       ],
 
       /*
-       * §2.1's separation, applied from this side. `admin` is one of three
-       * consumers of the registry and may not reach into another deployable:
-       * `api`'s DTOs are its own (FR-API-1 and §2.1 — no DTO is shared between
-       * surfaces), and `portfolio`'s components render the public page.
-       *
-       * The registry is reachable, but only as the published library §2.1
-       * describes — its declared entrypoints, never its source or its build
-       * output, so that admin consumes the same artifact api and portfolio do.
+       * `admin` may not reach into another deployable: `api`'s DTOs are its
+       * own, and `portfolio`'s components render the public page. The registry
+       * is reachable only through its declared entrypoints, never its source
+       * or build output.
        */
       'import/no-restricted-paths': [
         'error',
@@ -58,30 +54,30 @@ export default tseslint.config(
               target: './src',
               from: '../data-service',
               message:
-                'apps may not import from api (SRS §2.1). Admin speaks to it over /api/admin/* only.',
+                'apps may not import from api. Admin speaks to it over /api/admin/* only.',
             },
             {
               target: './src',
               from: '../portfolio',
               message:
-                'apps may not import from portfolio (SRS §2.1). Shared meaning lives in packages/registry.',
+                'apps may not import from portfolio. Shared meaning lives in packages/registry.',
             },
             {
               target: './src',
               from: '../landing-page',
-              message: 'apps may not import from www (SRS §2.1).',
+              message: 'apps may not import from www.',
             },
             {
               target: './src',
               from: '../packages/registry/src',
               message:
-                'import @portfolio/registry through its published entrypoints, not its source (SRS §2.1).',
+                'import @portfolio/registry through its published entrypoints, not its source.',
             },
             {
               target: './src',
               from: '../packages/registry/dist',
               message:
-                'import @portfolio/registry through its published entrypoints, not its build output (SRS §2.1).',
+                'import @portfolio/registry through its published entrypoints, not its build output.',
             },
           ],
         },

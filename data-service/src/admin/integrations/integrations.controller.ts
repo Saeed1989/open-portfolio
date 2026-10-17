@@ -49,7 +49,7 @@ export class IntegrationsController {
 
   @Get()
   @ApiOperation({
-    summary: 'List connections with status and cached payload (FR-INT-3)',
+    summary: 'List connections with status and cached payload',
   })
   @ApiOkResponse({ type: [IntegrationDto] })
   list(@Tenant() tenant: TenantScope): Promise<IntegrationDto[]> {
@@ -58,7 +58,7 @@ export class IntegrationsController {
 
   @Post('credly/import')
   @ApiOperation({
-    summary: 'Populate achievements from a public Credly profile (FR-INT-13)',
+    summary: 'Populate achievements from a public Credly profile',
   })
   @ApiCreatedResponse({ type: AdminSectionDto })
   importCredly(
@@ -70,7 +70,7 @@ export class IntegrationsController {
 
   @Post('credly/badge')
   @ApiOperation({
-    summary: 'Add one badge from a pasted Credly embed code (FR-INT-14)',
+    summary: 'Add one badge from a pasted Credly embed code',
   })
   @ApiCreatedResponse({ type: AdminSectionDto })
   addCredlyBadge(
@@ -81,7 +81,7 @@ export class IntegrationsController {
   }
 
   @Post(':provider')
-  @ApiOperation({ summary: 'Connect an integration provider (FR-INT-2)' })
+  @ApiOperation({ summary: 'Connect an integration provider' })
   @ApiParam(PROVIDER_PARAM)
   @ApiCreatedResponse({ type: IntegrationDto })
   connect(
@@ -94,7 +94,7 @@ export class IntegrationsController {
 
   @Post(':provider/sync')
   @HttpCode(HttpStatus.ACCEPTED)
-  @ApiOperation({ summary: 'Request a manual refresh (FR-INT-2)' })
+  @ApiOperation({ summary: 'Request a manual refresh' })
   @ApiParam(PROVIDER_PARAM)
   @ApiAcceptedResponse({ description: 'Refresh handed to the sync worker.' })
   requestSync(
@@ -106,7 +106,7 @@ export class IntegrationsController {
 
   @Delete(':provider')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Disconnect an integration provider (FR-INT-6)' })
+  @ApiOperation({ summary: 'Disconnect an integration provider' })
   @ApiParam(PROVIDER_PARAM)
   @ApiNoContentResponse({ description: 'Disconnected.' })
   disconnect(
